@@ -21,13 +21,15 @@
  *   ace stop                   setStatus stopped + appendEvent
  *   ace snapshot               create snapshot
  *   ace restore <id>           restore snapshot
+ *   ace verify [--json]        run configured verification (lint/typecheck/test/build)
+ *   ace autopilot [status|on|run|off]  the always-on loop (PAW parity)
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import crypto from "node:crypto";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
 
 // ---------------------------------------------------------------------------
 // Dynamic lib imports — degrade gracefully if a worker hasn't landed yet
@@ -662,6 +664,422 @@ async function cmdRestart() {
 }
 
 // ---------------------------------------------------------------------------
+// verify — run configured package.json scripts (PAW parity: `paw verify`)
+// ---------------------------------------------------------------------------
+
+const VERIFY_CHECK_NAMES = ["lint", "typecheck", "test", "build"];
+
+function workspaceInitialized(dir) {
+  const pkg = readJson(path.join(dir, "package.json"));
+  return Boolean(pkg && pkg.ace);
+}
+
+function writeStructuredError(payload) {
+  process.stderr.write(JSON.stringify(payload, null, 2) + "\n");
+}
+
+function notInitialized(cmd) {
+  writeStructuredError({
+    code: "PROJECT_NOT_INITIALIZED",
+    message: `${cmd} requires an initialized ACE workspace (package.json with an "ace" key).`,
+    recoverable: true,
+    suggestions: ["Run `ace init` first"],
+  });
+  process.exitCode = 1;
+}
+
+/**
+ * Run the configured verification scripts. Zero-dependency: each script is
+ * executed exactly as npm would run it (`npm run <name>`), with output
+ * captured so callers control their own stdout — this function never prints.
+ * Scripts that are not configured are an honest pass, never a fake one.
+ */
+function runVerifyChecks(dir, only) {
+  const pkg = readJson(path.join(dir, "package.json")) || {};
+  const scripts = pkg.scripts || {};
+  const wanted = only ? [only] : VERIFY_CHECK_NAMES;
+  const checks = [];
+  for (const name of wanted) {
+    if (typeof scripts[name] !== "string") {
+      checks.push({ name, configured: false, ok: true });
+      continue;
+    }
+    const r = spawnSync("npm", ["run", name], {
+      cwd: dir,
+      encoding: "utf8",
+      shell: process.platform === "win32",
+    });
+    if (r.error) {
+      checks.push({ name, configured: true, ok: false, exitCode: null, detail: r.error.message });
+      continue;
+    }
+    const ok = r.status === 0;
+    const out = `${r.stderr || ""}\n${r.stdout || ""}`.trim();
+    const tail = out.split("\n").filter(Boolean).slice(-3).join(" | ");
+    checks.push({
+      name,
+      configured: true,
+      ok,
+      exitCode: r.status,
+      ...(ok ? {} : { detail: tail.slice(0, 300) }),
+    });
+  }
+  return {
+    checks,
+    ok: checks.every((c) => c.ok),
+    configured: checks.some((c) => c.configured),
+  };
+}
+
+async function cmdVerify(args) {
+  const dir = process.cwd();
+  if (!workspaceInitialized(dir)) return notInitialized("verify");
+
+  const json = args.includes("--json");
+  const selector = args.find((a) => !a.startsWith("--"));
+  if (selector !== undefined && !VERIFY_CHECK_NAMES.includes(selector)) {
+    writeStructuredError({
+      code: "COMMAND_NOT_FOUND",
+      message: `Unknown verify target: ${selector}`,
+      recoverable: true,
+      suggestions: [
+        `Use one of: ${VERIFY_CHECK_NAMES.join(", ")}`,
+        "Or run `ace verify` with no target to run every configured check",
+      ],
+    });
+    process.exitCode = 2;
+    return;
+  }
+
+  const result = runVerifyChecks(dir, selector);
+  const note = result.configured
+    ? undefined
+    : "no verification scripts configured — honest pass";
+
+  if (json) {
+    printJson({ command: "verify", ...(note ? { note } : {}), checks: result.checks, ok: result.ok });
+  } else if (!result.configured) {
+    console.log("verify: PASS — no verification scripts configured (lint/typecheck/test/build)");
+  } else {
+    const ran = result.checks.filter((c) => c.configured).length;
+    console.log(`verify: ${result.ok ? "PASS" : "FAIL"} — ${ran} script(s) run`);
+    for (const c of result.checks) {
+      if (!c.configured) {
+        console.log(`  - ${c.name} (none configured)`);
+      } else {
+        console.log(`  ${c.ok ? "✓" : "✗"} ${c.name}${c.ok ? "" : ` (exit ${c.exitCode})${c.detail ? ` — ${c.detail}` : ""}`}`);
+      }
+    }
+  }
+  if (!result.ok) process.exitCode = 1;
+}
+
+// ---------------------------------------------------------------------------
+// autopilot — the always-on loop (PAW parity: `paw autopilot`)
+//
+//   ace autopilot [status] [--json]
+//   ace autopilot on  [--interval <sec>] [--mission "<text>"]
+//   ace autopilot run [--interval <sec>] [--max-cycles <n>] [--json]
+//   ace autopilot off
+//
+// One cycle walks the state machine recorded in `.ace/autopilot.json`:
+//   PLAN → EXECUTE → VERIFY → CHECKPOINT → SUCCESS | FAIL → REPLAN → (next)
+//
+// Scope honesty (v0): EXECUTE runs the two commands the workspace already
+// trusts — verification (`ace verify`'s checks) and a checkpoint (snapshot) —
+// through the same code paths, and adds the loop, the state file and the
+// history. A mission passed to `on`/`run` is recorded and reported; task
+// decomposition is NOT implemented — status says so instead of pretending.
+// A cycle never edits the repository.
+// ---------------------------------------------------------------------------
+
+const AUTOPILOT_DEFAULT_INTERVAL = 300;
+const AUTOPILOT_HISTORY_LIMIT = 25;
+const AUTOPILOT_VALUE_FLAGS = new Set(["--interval", "--mission", "--max-cycles"]);
+
+function autopilotFile(dir) { return path.join(dir, ".ace", "autopilot.json"); }
+function autopilotLogFile(dir) { return path.join(dir, ".ace", "autopilot.log"); }
+
+function defaultAutopilotFile() {
+  return {
+    version: 1,
+    state: "IDLE",
+    pid: null,
+    intervalSec: AUTOPILOT_DEFAULT_INTERVAL,
+    mission: null,
+    cycleCount: 0,
+    lastCycle: null,
+    history: [],
+    humanGate: [],
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function loadAutopilotFile(dir) {
+  const parsed = readJson(autopilotFile(dir));
+  if (!parsed) return defaultAutopilotFile();
+  return { ...defaultAutopilotFile(), ...parsed };
+}
+
+function saveAutopilotFile(dir, file) {
+  file.updatedAt = new Date().toISOString();
+  writeJson(autopilotFile(dir), file);
+}
+
+function pidAlive(pid) {
+  if (pid === null || typeof pid !== "number") return false;
+  try { process.kill(pid, 0); return true; } catch { return false; }
+}
+
+function clampInterval(raw, fallback) {
+  if (raw === undefined) return fallback;
+  const n = Number.parseInt(String(raw), 10);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(86_400, Math.max(10, n));
+}
+
+function parseAutopilotArgs(argv) {
+  const positionals = [];
+  const flags = {};
+  for (let i = 0; i < argv.length; i++) {
+    const t = argv[i];
+    if (t.startsWith("--")) {
+      const eq = t.indexOf("=");
+      if (eq >= 0) { flags[t.slice(0, eq)] = t.slice(eq + 1); continue; }
+      const next = argv[i + 1];
+      if (AUTOPILOT_VALUE_FLAGS.has(t) && next !== undefined && !next.startsWith("-")) {
+        flags[t] = next;
+        i++;
+        continue;
+      }
+      flags[t] = true;
+      continue;
+    }
+    positionals.push(t);
+  }
+  return { positionals, flags };
+}
+
+/** Checkpoint step: ACE's checkpoint IS the snapshot (honest skip if the runtime is absent). */
+async function runCheckpointStep(dir) {
+  const rt = await loadLib("runtime.mjs");
+  if (!rt || typeof rt.snapshot !== "function") {
+    return { ran: false, reason: "runtime not available (lib/runtime.mjs)" };
+  }
+  try {
+    const snap = rt.snapshot(dir);
+    return { ran: true, exitCode: 0, snapshot: snap.id };
+  } catch (err) {
+    return { ran: true, exitCode: 1, reason: String((err && err.message) || err) };
+  }
+}
+
+/**
+ * One cycle: PLAN → EXECUTE → VERIFY → CHECKPOINT → SUCCESS | FAIL → REPLAN.
+ * Never edits the repository; verify/checkpoint run through the same code
+ * paths a manual run uses, and neither prints — so `run --json` can keep
+ * stdout to exactly ONE document.
+ */
+async function runAutopilotCycle(dir, file) {
+  const startedAt = new Date().toISOString();
+  const transitions = ["PLAN", "EXECUTE"];
+  file.state = "PLAN";
+  file.cycleCount += 1;
+
+  const verify = runVerifyChecks(dir);
+  transitions.push("VERIFY");
+  file.state = "VERIFY";
+
+  const checkpoint = await runCheckpointStep(dir);
+  transitions.push("CHECKPOINT");
+  file.state = "CHECKPOINT";
+
+  const checkpointOk = checkpoint.ran ? checkpoint.exitCode === 0 : true;
+  const ok = verify.ok && checkpointOk;
+  const finalState = ok ? "SUCCESS" : "FAIL";
+  transitions.push(finalState, "REPLAN");
+  file.state = finalState;
+
+  const record = {
+    cycle: file.cycleCount,
+    startedAt,
+    finishedAt: new Date().toISOString(),
+    transitions,
+    verifyOk: verify.ok,
+    checks: verify.checks.map((c) => ({ name: c.name, configured: c.configured, ok: c.ok })),
+    checkpoint,
+    ok,
+  };
+  file.lastCycle = record;
+  file.history = [...file.history, record].slice(-AUTOPILOT_HISTORY_LIMIT);
+  saveAutopilotFile(dir, file);
+  return record;
+}
+
+function autopilotPayload(dir, file) {
+  const running = pidAlive(file.pid);
+  return {
+    command: "autopilot",
+    armed: file.state !== "IDLE",
+    state: file.state,
+    loopRunning: running,
+    pid: running ? file.pid : null,
+    intervalSec: file.intervalSec,
+    mission: file.mission,
+    missionDecomposed: false,
+    cycleCount: file.cycleCount,
+    lastCycle: file.lastCycle,
+    humanGate: file.humanGate,
+    repository: path.basename(dir),
+    updatedAt: file.updatedAt,
+    note: "v0: each cycle runs verification then a snapshot checkpoint and records the result. A recorded mission is reported, not executed — task decomposition arrives with the planner.",
+  };
+}
+
+function renderAutopilotStatus(payload) {
+  const on = payload.loopRunning === true;
+  const mission = typeof payload.mission === "string" && payload.mission.length > 0
+    ? payload.mission
+    : "(none — verify loop)";
+  const last = payload.lastCycle;
+  const lastLine = last === null
+    ? "never ran"
+    : `#${last.cycle} at ${last.finishedAt} · verify ${last.verifyOk ? "PASS" : "FAIL"} · checkpoint ${
+        last.checkpoint.ran
+          ? (last.checkpoint.exitCode === 0 ? "PASS" : "FAIL")
+          : `skipped (${last.checkpoint.reason || "n/a"})`
+      }`;
+  const gate = (payload.humanGate || []).length;
+  return [
+    "┌─────────────────────────────────────────────────────┐",
+    `│ ACE AUTOPILOT                                  ${on ? "ON " : "OFF"} │`,
+    "├─────────────────────────────────────────────────────┤",
+    `│ Repository: ${String(payload.repository).padEnd(42)}│`,
+    `│ Mission: ${mission.slice(0, 44).padEnd(45)}│`,
+    `│ State: ${String(payload.state).padEnd(12)} cycle ${String(payload.cycleCount).padEnd(22)}│`,
+    `│ Loop: ${on ? `pid ${payload.pid}, every ${payload.intervalSec}s` : "not running"}${"".padEnd(on ? 26 : 35)}│`,
+    `│ Last: ${lastLine.slice(0, 47).padEnd(48)}│`,
+    `│ Human gate: ${String(gate).padEnd(41)}│`,
+    "├─────────────────────────────────────────────────────┤",
+    "│ v0: verify + checkpoint per cycle; mission recorded, │",
+    "│ not decomposed. A blocked branch never stops the run. │",
+    "└─────────────────────────────────────────────────────┘",
+  ].join("\n");
+}
+
+function autopilotSleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function cmdAutopilot(args) {
+  const dir = process.cwd();
+  if (!workspaceInitialized(dir)) return notInitialized("autopilot");
+
+  const { positionals, flags } = parseAutopilotArgs(args);
+  const json = flags["--json"] === true;
+  const sub = positionals[0] || "status";
+  const file = loadAutopilotFile(dir);
+  const emit = (text, payload) => {
+    process.stdout.write(json ? `${JSON.stringify(payload, null, 2)}\n` : text);
+  };
+
+  if (sub === "status") {
+    const payload = autopilotPayload(dir, file);
+    emit(`${renderAutopilotStatus(payload)}\n`, payload);
+    return;
+  }
+
+  if (sub === "on") {
+    if (pidAlive(file.pid)) {
+      const payload = { ...autopilotPayload(dir, file), message: "already running" };
+      emit(`autopilot already running (pid ${file.pid})\n`, payload);
+      return;
+    }
+    file.intervalSec = clampInterval(flags["--interval"], file.intervalSec);
+    const mission = flags["--mission"];
+    if (typeof mission === "string" && mission.length > 0) file.mission = mission;
+    file.state = "PLAN";
+    saveAutopilotFile(dir, file);
+
+    const logFd = fs.openSync(autopilotLogFile(dir), "a");
+    try {
+      const child = spawn(
+        process.execPath,
+        [HERE_FILE, "autopilot", "run", "--interval", String(file.intervalSec)],
+        { cwd: dir, env: process.env, detached: true, stdio: ["ignore", logFd, logFd] }
+      );
+      child.unref();
+      file.pid = child.pid ?? null;
+    } finally {
+      fs.closeSync(logFd);
+    }
+    saveAutopilotFile(dir, file);
+    const payload = autopilotPayload(dir, file);
+    emit(
+      `autopilot ON — pid ${file.pid}, first cycle starts now, then every ${file.intervalSec}s (log: ${path.relative(dir, autopilotLogFile(dir))})\n`,
+      payload
+    );
+    return;
+  }
+
+  if (sub === "off") {
+    const running = pidAlive(file.pid);
+    if (running && file.pid !== null) {
+      try { process.kill(file.pid, "SIGTERM"); } catch { /* exited between check and signal — state below is still truthful */ }
+    }
+    file.state = "IDLE";
+    file.pid = null;
+    saveAutopilotFile(dir, file);
+    const payload = { ...autopilotPayload(dir, file), stopped: running };
+    emit(
+      running
+        ? `autopilot OFF — pid stopped after ${file.cycleCount} cycle(s)\n`
+        : "autopilot was not running\n",
+      payload
+    );
+    return;
+  }
+
+  if (sub === "run") {
+    const maxRaw = flags["--max-cycles"];
+    const parsedMax = maxRaw === undefined ? Number.NaN : Number.parseInt(String(maxRaw), 10);
+    const maxCycles = Number.isFinite(parsedMax) ? Math.max(1, parsedMax) : Number.POSITIVE_INFINITY;
+    file.intervalSec = clampInterval(flags["--interval"], file.intervalSec);
+    if (file.state === "IDLE") file.state = "PLAN";
+    saveAutopilotFile(dir, file);
+
+    let cycles = 0;
+    while (true) {
+      const record = await runAutopilotCycle(dir, file);
+      cycles += 1;
+      if (json) {
+        process.stdout.write(`${JSON.stringify({ command: "autopilot cycle", cycle: record }, null, 2)}\n`);
+      } else {
+        process.stdout.write(
+          `cycle ${record.cycle}: ${record.ok ? "SUCCESS" : "FAIL"} · verify ${record.verifyOk ? "PASS" : "FAIL"} · checkpoint ${
+            record.checkpoint.ran
+              ? (record.checkpoint.exitCode === 0 ? `snapshot ${record.checkpoint.snapshot || "ok"}` : "FAIL")
+              : `skipped: ${record.checkpoint.reason || "n/a"}`
+          }\n`
+        );
+      }
+      if (cycles >= maxCycles) break;
+      await autopilotSleep(file.intervalSec * 1000);
+    }
+    if (file.lastCycle && file.lastCycle.ok !== true) process.exitCode = 1;
+    return;
+  }
+
+  writeStructuredError({
+    code: "COMMAND_NOT_FOUND",
+    message: `Unknown autopilot subcommand: ${sub}`,
+    recoverable: true,
+    suggestions: ["Use: ace autopilot [status] | on | run | off"],
+  });
+  process.exitCode = 2;
+}
+
+// ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
 
@@ -687,6 +1105,8 @@ const COMMANDS = {
   activity: cmdActivity,
   logs: cmdLogs,
   restart: cmdRestart,
+  verify: cmdVerify,
+  autopilot: cmdAutopilot,
 };
 
 async function main() {
@@ -721,11 +1141,19 @@ Commands:
   activity               NOW / NEXT activity stream
   logs [--limit N]       Tail the event log (default 20)
   restart                Recover + continue
+  verify [check] [--json] Run configured verification (lint/typecheck/test/build)
+  autopilot [status]     The always-on loop: verify + checkpoint per cycle [--json]
+  autopilot on           Start the detached loop (--interval N, --mission "text")
+  autopilot run          Run cycles here, then exit (--max-cycles N) [--json]
+  autopilot off          Stop exactly the recorded pid
 
 Options:
   --name <n>             Target directory for init
   --limit N              Limit for events/logs command
-  --json                 JSON output for context/compose/doctor
+  --interval N           Autopilot cycle interval in seconds (min 10, default 300)
+  --mission "<text>"     Mission recorded by autopilot on (not decomposed)
+  --max-cycles N         Stop autopilot run after N cycles
+  --json                 JSON output for context/compose/doctor/verify/autopilot
 `);
     return;
   }

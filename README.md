@@ -75,6 +75,11 @@ node ace.mjs install git+https://example.com/owner/repo.git
 | `ace activity` | NOW / NEXT activity stream |
 | `ace logs [--limit N]` | Tail the event log (default 20) |
 | `ace restart` | Recover + continue |
+| `ace verify [check] [--json]` | Run configured verification (`lint`/`typecheck`/`test`/`build` scripts); honest pass when none are configured |
+| `ace autopilot [status] [--json]` | The always-on loop: `PLAN → EXECUTE → VERIFY → CHECKPOINT → SUCCESS/FAIL → REPLAN` per cycle (`.ace/autopilot.json`) |
+| `ace autopilot on [--interval N] [--mission "…"]` | Start the detached loop; the mission is recorded, never claimed to be decomposed |
+| `ace autopilot run [--max-cycles N] [--json]` | Run cycles in this terminal, then exit (non-zero if the last cycle failed) |
+| `ace autopilot off` | Stop exactly the recorded pid |
 
 ## How It Works
 
@@ -87,6 +92,8 @@ ace run                        → init .ace/ state, set status running
 ace status / context / agents  → inspect runtime
 ace stop                       → graceful stop (state preserved)
 ace snapshot / restore         → checkpoint and roll back
+ace verify                     → run configured verification scripts
+ace autopilot on               → 24/7 loop: verify + checkpoint every cycle
 ```
 
 ### What Gets Generated
