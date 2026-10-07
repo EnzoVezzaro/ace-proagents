@@ -118,14 +118,14 @@ code, pre { font: inherit; }
 .claim {
   margin: 0 0 1.6rem;
   color: var(--ink);
-  font-size: clamp(1.05rem, 5.3vw, 6rem);   /* 27ch line fits at every width */
+  font-size: clamp(1.05rem, 5.3vw, 5rem);   /* longest line is 14ch — fits the 80-col sheet at every width */
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: -0.03em;
   text-shadow: 0 0 10px rgba(51, 255, 102, 0.35);
 }
 
-.claim .c-line { display: block; white-space: nowrap; overflow: hidden; }
+.claim .c-line { display: block; width: max-content; white-space: nowrap; overflow: hidden; }
 
 .lead {
   max-width: 72ch;
@@ -155,10 +155,31 @@ code, pre { font: inherit; }
 }
 
 .status-print {
-  margin: 2rem 0 0;
+  margin: 0;
   color: var(--dim);
   font-size: 13px;
 }
+
+/* trust chips — bracketed status tokens under the claim */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 78ch;
+  margin: 1.8rem 0 0.8rem;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+  color: var(--dim);
+  font-size: 13px;
+  padding: 0.22rem 0.65rem;
+  white-space: nowrap;
+}
+.chip::before { content: "[ "; }
+.chip::after { content: " ]"; }
+.chip.live { border-color: var(--ink); color: var(--ink); }
 
 .cursor-row { margin: 1.2rem 0 0; height: 1.4em; }
 
@@ -325,6 +346,80 @@ code, pre { font: inherit; }
   color: var(--dim);
   font-size: 14px;
 }
+
+/* pricing receipt — the free tier stated as numbers, nothing invented */
+.receipt {
+  max-width: 64ch;
+  margin: 1.8rem 0 0;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.receipt .r-head {
+  margin: 0;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.receipt .r-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1ch;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--read);
+  font-variant-numeric: tabular-nums;
+}
+.receipt .r-row b { color: var(--hot); font-weight: 700; }
+.receipt .r-row.total { color: var(--ink); }
+.receipt .r-row.total b { color: var(--ink); }
+
+/* docs cards — where to go next */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26ch, 1fr));
+  gap: 0.9rem;
+  max-width: 84ch;
+  margin: 2.2rem 0 0;
+}
+
+.card {
+  display: block;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+  text-decoration: none;
+}
+.card:hover, .card:focus-visible { border-color: var(--ink); }
+.card .c-t { display: block; margin: 0 0 0.25rem; color: var(--ink); font-weight: 700; }
+.card:hover .c-t { color: var(--hot); }
+.card .c-d { display: block; margin: 0; color: var(--dim); font-size: 13.5px; line-height: 1.5; }
+
+footer .foot-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18ch, 1fr));
+  gap: 1.6rem 2rem;
+  max-width: 84ch;
+  margin: 0 0 1.8rem;
+}
+
+footer h4 {
+  margin: 0 0 0.55rem;
+  color: var(--dim);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+footer ul { margin: 0; padding: 0; list-style: none; }
+footer li { margin: 0 0 0.35rem; }
+footer .foot-cols a {
+  color: var(--read);
+  text-decoration: none;
+  font-size: 14px;
+}
+footer .foot-cols a:hover { color: var(--hot); text-decoration: underline; }
 
 footer {
   margin: 4.5rem 0 0;

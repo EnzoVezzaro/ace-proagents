@@ -28,14 +28,22 @@
     <header id="hero">
       <p class="boot"><span class="prompt">~/ace $</span> ace/v1 · loading environment spec · ok</p>
       <h1 class="claim"><span class="c-line">ACE is npm for</span>
-        <span class="c-line">agentic coding environments.</span></h1>
+        <span class="c-line">agentic coding</span>
+        <span class="c-line">environments.</span></h1>
       <p class="lead">An open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. An ACE package describes the <em>environment</em> — orchestrator, workers, tools, models, policies, memory, lifecycle — not application source. Git remains the source of truth; the registry indexes specifications.</p>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
         <code id="q-start">node ace-proagents/ace.mjs init --name my-workspace</code>
         <button type="button" class="copy" data-copy="q-start">copy</button>
       </div>
-      <p class="status-print">exp-007 · MVP phases 1–6 · spec ace/v1 · zero runtime dependencies</p>
+      <div class="chips" aria-label="what ace is">
+        <span class="chip live">mit-style free</span>
+        <span class="chip">zero runtime deps</span>
+        <span class="chip">spec ace/v1</span>
+        <span class="chip">git-native</span>
+        <span class="chip">orchestrator: opencode</span>
+      </div>
+      <p class="status-print">exp-007 · MVP phases 1–6</p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
@@ -171,6 +179,13 @@ ace status</pre>
     <section id="end" class="band">
       <h2 class="cmd">$ ace status</h2>
       <p class="read">ACE is an MVP (phases 1–6), MIT-style free, zero runtime dependencies. The environment you just watched is the environment you get: orchestrator, workers, tools, models, policies, memory, lifecycle, described in one manifest, locked by hash, restored anywhere.</p>
+      <div class="receipt">
+        <p class="r-head">pricing · what ACE costs today</p>
+        <div class="r-row"><span>ACE core · MVP phases 1–6</span><b>$0.00</b></div>
+        <div class="r-row"><span>runtime dependencies</span><b>0</b></div>
+        <div class="r-row"><span>git-native install</span><b>$0.00</b></div>
+        <div class="r-row total"><span>total today</span><b>$0.00</b></div>
+      </div>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
         <code id="q-quick">cd my-workspace &amp;&amp; node ../ace-proagents/ace.mjs run</code>
@@ -178,9 +193,55 @@ ace status</pre>
       </div>
       <a class="sponsor" id="checkout-btn" data-checkout hidden>Sponsor / ACE Pro</a>
       <p class="checkout-state" id="checkout-state">Checkout opens when the live Stripe payment link ships; this experiment has not published one yet.</p>
-      <p class="fine">See <code>README.md</code> and <code>PLAN.md</code> in <code>github.com/EnzoVezzaro/ace-proagents</code> for the full specification.</p>
+      <div class="cards">
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">
+          <span class="c-t">quick start</span>
+          <span class="c-d">init, install, run — copy-paste commands, zero dependencies.</span>
+        </a>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PLAN.md" target="_blank" rel="noopener">
+          <span class="c-t">the plan</span>
+          <span class="c-d">MVP phases 1–6: scope, order of work, what ships when.</span>
+        </a>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PRODUCT.md" target="_blank" rel="noopener">
+          <span class="c-t">product spec</span>
+          <span class="c-d">what ACE is: manifest, agents, policies, lifecycle.</span>
+        </a>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">
+          <span class="c-t">source</span>
+          <span class="c-d">MIT on GitHub — issues and PRs open.</span>
+        </a>
+      </div>
       <footer>
-        <p>end of transmission · exp-007 ace · spec ace/v1 · <a href="donate.html">donate</a> <span class="cursor" aria-hidden="true"></span></p>
+        <div class="foot-cols">
+          <div class="foot-col">
+            <h4>transcript</h4>
+            <ul>
+              <li><a href="#session">ace run</a></li>
+              <li><a href="#spec">package.json</a></li>
+              <li><a href="#cli">ace --help</a></li>
+              <li><a href="#git">install</a></li>
+              <li><a href="#state">.ace/</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h4>docs</h4>
+            <ul>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">quick start</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PLAN.md" target="_blank" rel="noopener">the plan</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PRODUCT.md" target="_blank" rel="noopener">product spec</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/DESIGN.md" target="_blank" rel="noopener">design system</a></li>
+            </ul>
+          </div>
+          <div class="foot-col">
+            <h4>source</h4>
+            <ul>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">github</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/issues" target="_blank" rel="noopener">issues</a></li>
+              <li><a href="donate.html">donate</a></li>
+            </ul>
+          </div>
+        </div>
+        <p>end of transmission · exp-007 ace · spec ace/v1 <span class="cursor" aria-hidden="true"></span></p>
       </footer>
     </section>
 

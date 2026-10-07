@@ -359,7 +359,7 @@ window.setInterval(() => {
 (function closing() {
   const end = document.getElementById("end");
   if (!end || REDUCED) return;
-  const parts = [...end.querySelectorAll(".read, .action-line, .checkout-state, .fine")];
+  const parts = [...end.querySelectorAll(".read, .receipt, .action-line, .checkout-state, .cards, .fine")];
   setInitial(parts);
   armReveal(end, 0.15, () => {
     parts.forEach((p, i) => printIn(p, { delay: i * 0.09 }));
