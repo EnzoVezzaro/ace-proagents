@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Donate to ACE, the open package ecosystem for agentic coding environments.">
-  <title>Donate — ACE</title>
+  <meta name="description" content="Sponsor ACE Pro — a $9.00 USD/month support subscription for ACE, the open package ecosystem for agentic coding environments.">
+  <title>Sponsor ACE Pro — ACE</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,16 +13,16 @@
   <nav class="rail" aria-label="session history">
     <a href="index.html">~ index</a>
     <a href="index.html#end">ace status</a>
-    <a class="active" href="donate.html" aria-current="page">donate</a>
+    <a class="active" href="donate.html" aria-current="page">sponsor</a>
   </nav>
 
   <main class="sheet">
 
     <section id="donate" class="band">
-      <p class="boot">~/ace $ donate</p>
-      <h1 class="cmd">$ donate</h1>
+      <p class="boot">~/ace $ ace pro --subscribe</p>
+      <h1 class="cmd">$ ace pro --subscribe</h1>
 
-      <p class="read">ACE is free: MIT-style, zero runtime dependencies, no telemetry. The spec, the runtime, and this page are built in the open. Donations keep the work on the ecosystem instead of on client deadlines.</p>
+      <p class="read">ACE is free: MIT-style, zero runtime dependencies, no telemetry. The spec, the runtime, and this page are built in the open. If you want to fund the work, ACE Pro is a <strong>$9.00 USD/month</strong> Stripe subscription — billed monthly, cancel any time, and ACE itself stays free whether you subscribe or not.</p>
 
       <div class="rows">
         <div class="row">
@@ -39,8 +39,8 @@
         </div>
       </div>
 
-      <a class="sponsor" id="donate-btn" data-donate hidden>Donate to ACE</a>
-      <p class="checkout-state" id="donate-state">Donations are not open on this page yet. Set <code>window.ACE_DONATE_URL</code> in <code>donate.html</code> to a live Stripe payment link and this button activates. It stays honest until then.</p>
+      <a class="sponsor" id="donate-btn" data-donate hidden>Sponsor ACE Pro — $9.00/mo</a>
+      <p class="checkout-state" id="donate-state">ACE Pro is $9.00 USD/month on Stripe. Opening checkout needs JavaScript; the direct link is <a href="https://buy.stripe.com/dRmfZi94q0rv5q8dUHcs805" rel="noopener">buy.stripe.com/dRmfZi94q0rv5q8dUHcs805</a>. This is a recurring subscription, not a one-off tip.</p>
 
       <p class="fine">Prefer code over coins? Star the repo, open an issue, or ship a package: <code>github.com/EnzoVezzaro/ace-proagents</code></p>
 
@@ -52,10 +52,10 @@
   </main>
 
   <script>
-    /* Honest donate gate — mirrors the checkout gate on index.html.
-     * Leave ACE_DONATE_URL null until a live Stripe payment link ships;
-     * never invent a price or a link. */
-    window.ACE_DONATE_URL = null;
+    /* Live ACE Pro subscription — $9.00 USD/month, real Stripe Payment Link
+     * in live mode (acct_1U7JJtLbT22cdeyL). Never replace this with a
+     * test-mode or invented link, and never quote a price we do not charge. */
+    window.ACE_DONATE_URL = "https://buy.stripe.com/dRmfZi94q0rv5q8dUHcs805";
     (function setupDonate() {
       var url = window.ACE_DONATE_URL;
       var btn = document.getElementById("donate-btn");

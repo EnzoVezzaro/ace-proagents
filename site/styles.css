@@ -180,6 +180,8 @@ code, pre { font: inherit; }
 .chip::before { content: "[ "; }
 .chip::after { content: " ]"; }
 .chip.live { border-color: var(--ink); color: var(--ink); }
+a.chip { text-decoration: none; }
+a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot); }
 
 .cursor-row { margin: 1.2rem 0 0; height: 1.4em; }
 
