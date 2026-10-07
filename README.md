@@ -1,87 +1,123 @@
-# ACE — Agentic Compute Environment
+# ACE
 
-> **ACE is npm for agentic coding environments.**
+ACE — Agentic Compute Environment. The CLI for reproducible orchestrator-driven agentic coding environments.
 
-An open, Git-native package ecosystem for **reproducible orchestrator-driven
-agentic coding environments**. An ACE package describes the *environment* —
-orchestrator, workers, tools, models, policies, memory, lifecycle — not
-application source. Git remains the source of truth; the registry indexes
-specifications.
+**Zero runtime dependencies.** Node ESM only (`ace.mjs`). Spec `ace/v1`. MIT.
 
-Status: MVP (phases 1–6). Spec `ace/v1`. Zero runtime dependencies.
+**Git stays the source of truth.** An ACE package describes the *environment* — orchestrator, workers, tools, models, policies, memory, lifecycle — not application source. The local registry indexes specifications; it is optional.
 
-## Quick start
+**Specification is not state.** `package.json` (the `ace` key) + `ace-lock.json` describe what should exist. Runtime state under `.ace/` describes what does exist.
+
+## Install
+
+The CLI is not published to npm yet. Clone this repository and run it with Node (18+):
 
 ```bash
-node ace-proagents/ace.mjs init --name my-workspace
+git clone https://github.com/EnzoVezzaro/ace-proagents.git
+cd ace-proagents
+node ace.mjs --help
+```
+
+`package.json` declares `"bin": { "ace": "./ace.mjs" }`, so once published (or after a local `npm link` from this checkout) the command name is `ace`. Until then, use `node ace.mjs`.
+
+## Quickstart
+
+```bash
+node ace.mjs init --name my-workspace
 cd my-workspace
-node ../ace-proagents/ace.mjs install
-node ../ace-proagents/ace.mjs run
-node ../ace-proagents/ace.mjs status
-node ../ace-proagents/ace.mjs context --json
+node ace.mjs install
+node ace.mjs run
+node ace.mjs status
+node ace.mjs context --json
+node ace.mjs stop
 ```
 
-## CLI
+`init` copies `ace.mjs` and `lib/` into the workspace, so after `cd my-workspace` you can invoke `node ace.mjs` directly.
 
-```text
-ace init [--name <n>]        scaffold a package
-ace install [<pkg>]          install from local registry, or a git ref
-ace list                    installed packages
-ace info <pkg>              package detail
-ace search <q>              search the local registry
-ace run                     start the runtime
-ace status                  human overview
-ace context [--json]        environment context
-ace agents                  list agents
-ace tasks                   list tasks
-ace events [--limit N]      event stream
-ace stop                    graceful stop
-ace snapshot                create a snapshot
-ace restore <id>            restore a snapshot
-```
+During `ace init`, the CLI will:
 
-Git-native install (registry optional):
+1. Create `package.json` with an `ace` key (`ace/v1` environment spec)
+2. Write an empty `ace-lock.json`
+3. Scaffold a starter `README.md`
+4. Copy `ace.mjs` + `lib/` so the package is self-contained
+
+Git-native install (local registry optional):
 
 ```bash
-node ace-proagents/ace.mjs install github:EnzoVezzaro/fullstack-team
-node ace-proagents/ace.mjs install github:EnzoVezzaro/fullstack-team#v1.2.0
+node ace.mjs install github:owner/repo
+node ace.mjs install github:owner/repo#v1.2.0
+node ace.mjs install git+https://example.com/owner/repo.git
 ```
 
-## Package format
+## Commands
 
-```text
+| Command | Description |
+|---------|-------------|
+| `ace init [--name <n>]` | Scaffold `package.json` (with `ace` key) + `ace-lock.json` + README; copy CLI into the target |
+| `ace install [<pkg>]` | Install from local lockfile/registry, or a git ref (`github:…` / `git+https://…`) |
+| `ace list` | List installed packages |
+| `ace info <pkg>` | Show package detail |
+| `ace search <q>` | Search the local registry |
+| `ace run` | Start the runtime |
+| `ace status` | Human-readable status overview |
+| `ace context [--json]` | Show environment context |
+| `ace agents` | List agents |
+| `ace tasks` | List tasks |
+| `ace events [--limit N]` | Show event stream (default 20) |
+| `ace stop` | Stop the runtime |
+| `ace snapshot` | Create a snapshot |
+| `ace restore <id>` | Restore a snapshot |
+| `ace compose [--json]` | Print composed spec (extends + overrides + capabilities) |
+| `ace doctor [--json]` | Environment diagnostics |
+| `ace update` | Update dependencies per version constraints |
+| `ace uninstall <pkg>` | Remove a dependency from `package.json` |
+| `ace secret set <name>` | Inject a secret into `.ace/secrets/<name>` |
+| `ace activity` | NOW / NEXT activity stream |
+| `ace logs [--limit N]` | Tail the event log (default 20) |
+| `ace restart` | Recover + continue |
+
+## How It Works
+
+### Workflow
+
+```
+ace init --name my-workspace   → scaffold package + lockfile + self-contained CLI
+ace install                    → resolve lockfile / local registry, or clone a git ref
+ace run                        → init .ace/ state, set status running
+ace status / context / agents  → inspect runtime
+ace stop                       → graceful stop (state preserved)
+ace snapshot / restore         → checkpoint and roll back
+```
+
+### What Gets Generated
+
+```
 my-workspace/
-├── package.json      # npm-style manifest (name, version, dependencies, engines.ace)
-├── package.json (ace key)    # the environment specification (ace/v1)
+├── package.json      # npm-style manifest + ace key (ace/v1 environment spec)
 ├── ace-lock.json     # resolved versions + integrity
-├── schemas/          # ace/v1 JSON Schema
-└── README.md
+├── ace.mjs           # copied CLI entry
+├── lib/              # pkg / runtime / registry modules
+├── README.md
+└── .ace/             # runtime state (created on run; private, not published)
+    ├── state.json
+    ├── events.jsonl
+    ├── agents/
+    ├── tasks/
+    ├── context/
+    └── snapshots/
 ```
 
-`package.json (ace key)` defines the orchestrator, worker topology, tools, models,
-runtime, network, filesystem, memory, git, policies, and lifecycle.
+Public package files (`package.json`, `ace-lock.json`, `README.md`) are publishable. Runtime state under `.ace/` is private and never published.
 
-## Runtime state
+### Package format
 
-```text
-.ace/
-├── state.json        # status, active agent, agents[], tasks[]
-├── events.jsonl      # append-only event stream
-├── agents/<id>.json
-├── tasks/<id>.json
-├── context/context.json
-└── snapshots/<id>.json
-```
-
-Public package files (`package.json`, `package.json (ace key)`, `README.md`) are
-publishable. Runtime state under `.ace/` is private and never published.
-
-## Workspace entry points
-
-Like npm's `main`/`bin`/`scripts`, the `ace` key declares the workspace document entry points:
+The `ace` key in `package.json` defines the orchestrator, worker topology, tools, models, runtime, network, filesystem, memory, git, policies, and lifecycle. Like npm's `main` / `bin` / `scripts`, it may also declare workspace document entry points:
 
 ```json
 "ace": {
+  "spec": "ace/v1",
+  "name": "my-workspace",
+  "orchestrator": { "runtime": "opencode", "role": "orchestrator" },
   "entry": {
     "manifest": "package.json",
     "readme": "README.md",
@@ -91,21 +127,60 @@ Like npm's `main`/`bin`/`scripts`, the `ace` key declares the workspace document
 }
 ```
 
-`validateWorkspace` checks that every value is a non-empty relative path.
+`validateWorkspace` checks that every `entry` value is a non-empty relative path.
+
+### Local registry
+
+MVP registry is file-backed at `.ace-registry/` (gitignored). `ace search` / `ace info` / lockfile install read it. Git-native install clones into `.ace/workspaces/<name>` and reads that checkout's `package.json` `ace` key.
+
+## Configuration
+
+All environment shape lives in the `ace` key. Minimal example (fields match what `ace init` scaffolds):
+
+```json
+{
+  "name": "my-workspace",
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "ace": ">=1.0.0" },
+  "dependencies": {},
+  "ace": {
+    "spec": "ace/v1",
+    "name": "my-workspace",
+    "orchestrator": { "runtime": "opencode", "role": "orchestrator" },
+    "agents": {
+      "strategy": "dynamic",
+      "defaults": { "runtime": "opencode" },
+      "workers": [
+        { "role": "architect" },
+        { "role": "frontend" },
+        { "role": "backend" },
+        { "role": "tester" },
+        { "role": "reviewer" }
+      ]
+    },
+    "tools": ["git", "github", "filesystem", "terminal"],
+    "runtime": { "provider": "local" },
+    "extends": []
+  }
+}
+```
 
 ## Architecture
 
-See [PLAN.md](./PLAN.md) for the full specification, module contracts, and
-worker assignments.
-
-## The killer experience
-
-```bash
-npm install -g ace
-ace install @ace/fullstack
-ace run
-ace status
+```text
+ACE REGISTRY  →  package metadata / specifications / versions / integrity
+      │
+ACE PACKAGE   →  package.json (manifest + ace spec) + ace-lock.json
+      │
+ACE RUNTIME   →  orchestrator + workers + tools + state + events
+      │
+ACE STATE     →  .ace/state.json, events.jsonl, agents/, tasks/, context/
 ```
 
-The user did not configure five agents, five terminals, Docker, MCP, Git
-worktrees, tools, permissions, and runtime state. They installed a package.
+Status: MVP (phases 1–6). See [PLAN.md](./PLAN.md) for module contracts and worker assignments. Product framing: [PRODUCT.md](./PRODUCT.md).
+
+## License
+
+MIT — see [LICENSE](./LICENSE).

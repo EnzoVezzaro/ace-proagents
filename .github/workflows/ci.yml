@@ -1,0 +1,42 @@
+name: ci
+
+# Quality gate for the ACE package: syntax check, a real scaffold smoke
+# run, and the built-in test runner when a test/ suite exists.
+# Zero install — the package has no dependencies.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: |
+          node --check ace.mjs
+          for f in lib/*.mjs site/app.js; do node --check "$f"; done
+
+      - name: Scaffold smoke test
+        run: |
+          d=$(mktemp -d)
+          cd "$d"
+          node "$GITHUB_WORKSPACE/ace.mjs" init --name ci-smoke
+          test -f ci-smoke/package.json
+          test -f ci-smoke/ace-lock.json
+          node "$GITHUB_WORKSPACE/ace.mjs" --help
+
+      - name: Tests
+        run: |
+          if [ -d test ]; then node --test test/; else echo "no test suite yet - skipped"; fi
