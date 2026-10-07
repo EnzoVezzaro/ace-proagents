@@ -1,0 +1,94 @@
+{
+  "name": "ace",
+  "version": "0.1.0",
+  "description": "ACE \u2014 Agentic Compute Environment. npm for agentic coding environments.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ace": "./ace.mjs"
+  },
+  "keywords": [
+    "agentic",
+    "coding",
+    "environment",
+    "orchestrator",
+    "package-manager"
+  ],
+  "engines": {
+    "ace": ">=1.0.0"
+  },
+  "dependencies": {},
+  "ace": {
+    "spec": "ace/v1",
+    "name": "ace",
+    "description": "ACE \u2014 Agentic Compute Environment. The package manager and registry for reproducible orchestrator-driven agentic coding environments.",
+    "orchestrator": {
+      "runtime": "opencode",
+      "role": "orchestrator"
+    },
+    "agents": {
+      "strategy": "dynamic",
+      "defaults": {
+        "runtime": "opencode"
+      },
+      "workers": [
+        {
+          "role": "architect"
+        },
+        {
+          "role": "frontend"
+        },
+        {
+          "role": "backend"
+        },
+        {
+          "role": "tester"
+        },
+        {
+          "role": "reviewer"
+        }
+      ]
+    },
+    "tools": [
+      "git",
+      "github",
+      "filesystem",
+      "terminal"
+    ],
+    "models": {
+      "default": {
+        "provider": "opencode",
+        "model": "fledge-alpha-free"
+      }
+    },
+    "runtime": {
+      "provider": "local"
+    },
+    "network": {
+      "mode": "restricted"
+    },
+    "filesystem": {
+      "mode": "workspace"
+    },
+    "memory": {
+      "persistent": true
+    },
+    "git": {
+      "worktrees": true
+    },
+    "policies": {
+      "require_review_before_merge": true
+    },
+    "lifecycle": {
+      "autonomous": true,
+      "restart_on_failure": true
+    },
+    "extends": [],
+    "entry": {
+      "manifest": "package.json",
+      "readme": "README.md",
+      "main": "ace.mjs",
+      "lockfile": "ace-lock.json"
+    }
+  }
+}

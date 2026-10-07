@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Donate to ACE, the open package ecosystem for agentic coding environments.">
+  <title>Donate — ACE</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="crt" aria-hidden="true"></div>
+
+  <nav class="rail" aria-label="session history">
+    <a href="index.html">~ index</a>
+    <a href="index.html#end">ace status</a>
+    <a class="active" href="donate.html" aria-current="page">donate</a>
+  </nav>
+
+  <main class="sheet">
+
+    <section id="donate" class="band">
+      <p class="boot">~/ace $ donate</p>
+      <h1 class="cmd">$ donate</h1>
+
+      <p class="read">ACE is free: MIT-style, zero runtime dependencies, no telemetry. The spec, the runtime, and this page are built in the open. Donations keep the work on the ecosystem instead of on client deadlines.</p>
+
+      <div class="rows">
+        <div class="row">
+          <code>spec + runtime</code>
+          <span>ace/v1 phases, orchestrator and worker fixes, hash-locked manifests</span>
+        </div>
+        <div class="row">
+          <code>registry</code>
+          <span>the package format, validators, and restore tooling</span>
+        </div>
+        <div class="row">
+          <code>docs + examples</code>
+          <span>reference environments you can clone and run today</span>
+        </div>
+      </div>
+
+      <a class="sponsor" id="donate-btn" data-donate hidden>Donate to ACE</a>
+      <p class="checkout-state" id="donate-state">Donations are not open on this page yet. Set <code>window.ACE_DONATE_URL</code> in <code>donate.html</code> to a live Stripe payment link and this button activates. It stays honest until then.</p>
+
+      <p class="fine">Prefer code over coins? Star the repo, open an issue, or ship a package: <code>github.com/EnzoVezzaro/ace-proagents</code></p>
+
+      <footer>
+        <p><a href="index.html">return to session</a> · end of transmission · spec ace/v1 <span class="cursor" aria-hidden="true"></span></p>
+      </footer>
+    </section>
+
+  </main>
+
+  <script>
+    /* Honest donate gate — mirrors the checkout gate on index.html.
+     * Leave ACE_DONATE_URL null until a live Stripe payment link ships;
+     * never invent a price or a link. */
+    window.ACE_DONATE_URL = null;
+    (function setupDonate() {
+      var url = window.ACE_DONATE_URL;
+      var btn = document.getElementById("donate-btn");
+      var state = document.getElementById("donate-state");
+      if (!btn || !state) return;
+      if (url) {
+        btn.setAttribute("href", url);
+        btn.removeAttribute("hidden");
+        state.setAttribute("hidden", "");
+      }
+      /* else: keep the button hidden and the honest message visible. */
+    })();
+  </script>
+</body>
+</html>

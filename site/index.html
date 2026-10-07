@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACE — npm for agentic coding environments</title>
+  <meta name="description" content="ACE is an open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. An ACE package describes the environment, not application source.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="crt" aria-hidden="true"></div>
+
+  <nav class="rail" aria-label="Transcript sections">
+    <a href="#hero" class="active">~</a>
+    <a href="#session">ace run</a>
+    <a href="#spec">package.json</a>
+    <a href="#cli">ace --help</a>
+    <a href="#git">install</a>
+    <a href="#state">.ace/</a>
+    <a href="#end">ace status</a>
+  </nav>
+
+  <main class="sheet">
+
+    <!-- boot / first viewport -->
+    <header id="hero">
+      <p class="boot"><span class="prompt">~/ace $</span> ace/v1 · loading environment spec · ok</p>
+      <h1 class="claim"><span class="c-line">ACE is npm for</span>
+        <span class="c-line">agentic coding environments.</span></h1>
+      <p class="lead">An open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. An ACE package describes the <em>environment</em> — orchestrator, workers, tools, models, policies, memory, lifecycle — not application source. Git remains the source of truth; the registry indexes specifications.</p>
+      <div class="action-line">
+        <span class="prompt" aria-hidden="true">$</span>
+        <code id="q-start">node ace-proagents/ace.mjs init --name my-workspace</code>
+        <button type="button" class="copy" data-copy="q-start">copy</button>
+      </div>
+      <p class="status-print">exp-007 · MVP phases 1–6 · spec ace/v1 · zero runtime dependencies</p>
+      <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
+    </header>
+
+    <!-- live session -->
+    <section id="session" class="band">
+      <h2 class="cmd">$ ace init &amp;&amp; ace run</h2>
+      <p class="note">demo output: synthetic lines, real command structure from README</p>
+      <div class="transcript" id="session-block">
+        <p class="t-line">node ../ace-proagents/ace.mjs init --name my-workspace</p>
+        <p class="out">wrote package.json · spec ace/v1 · orchestrator=opencode · workers=5</p>
+        <p class="t-line">node ../ace-proagents/ace.mjs install</p>
+        <p class="out">resolved ace@0.1.0 · integrity sha256 · lockfile ace-lock.json</p>
+        <p class="t-line">node ../ace-proagents/ace.mjs run</p>
+        <p class="out">runtime started · network=restricted · filesystem=workspace · memory=persistent</p>
+        <p class="t-line">node ../ace-proagents/ace.mjs status</p>
+        <p class="out">agents 5 · tasks 0 · events 0 · state: running</p>
+      </div>
+      <button type="button" class="replay" id="session-replay">replay session</button>
+    </section>
+
+    <!-- package format -->
+    <section id="spec" class="band">
+      <h2 class="cmd">$ cat package.json</h2>
+      <dl class="label-grid" id="spec-grid">
+        <div class="row"><dt>spec</dt><dd>ace/v1</dd></div>
+        <div class="row"><dt>orchestrator</dt><dd>opencode</dd></div>
+        <div class="row"><dt>workers</dt><dd>architect · frontend · backend · tester · reviewer</dd></div>
+        <div class="row"><dt>tools</dt><dd>git · github · filesystem · terminal</dd></div>
+        <div class="row"><dt>network</dt><dd>restricted</dd></div>
+        <div class="row"><dt>filesystem</dt><dd>workspace</dd></div>
+        <div class="row"><dt>memory</dt><dd>persistent</dd></div>
+        <div class="row"><dt>policy</dt><dd>require_review_before_merge</dd></div>
+        <div class="row"><dt>lifecycle</dt><dd>autonomous · restart_on_failure</dd></div>
+        <div class="row"><dt>lockfile</dt><dd>ace-lock.json · sha256 integrity</dd></div>
+      </dl>
+      <div class="code-block">
+        <div class="code-head">
+          <span>the ace key: environment specification</span>
+          <button type="button" class="copy" data-copy="code-ace-key">copy</button>
+        </div>
+<pre id="code-ace-key">"ace": {
+  "spec": "ace/v1",
+  "orchestrator": { "runtime": "opencode" },
+  "agents": {
+    "strategy": "dynamic",
+    "workers": [
+      { "role": "architect" },
+      { "role": "frontend" },
+      { "role": "backend" },
+      { "role": "tester" },
+      { "role": "reviewer" }
+    ]
+  },
+  "network":  { "mode": "restricted" },
+  "policies": { "require_review_before_merge": true },
+  "lifecycle": { "autonomous": true, "restart_on_failure": true },
+  "entry": {
+    "manifest": "package.json",
+    "main": "ace.mjs",
+    "lockfile": "ace-lock.json"
+  }
+}</pre>
+      </div>
+      <p class="fine">Package files are public (<code>package.json</code>, its <code>ace</code> key, <code>README.md</code>). Runtime state under <code>.ace/</code> is private and never published.</p>
+    </section>
+
+    <!-- cli -->
+    <section id="cli" class="band">
+      <h2 class="cmd">$ ace --help</h2>
+      <div class="rows" id="cli-rows">
+        <div class="row"><code>ace init [--name &lt;n&gt;]</code><span>scaffold a package</span></div>
+        <div class="row"><code>ace install [&lt;pkg&gt;]</code><span>install from local registry, or a git ref</span></div>
+        <div class="row"><code>ace list</code><span>installed packages</span></div>
+        <div class="row"><code>ace search &lt;q&gt;</code><span>search the local registry</span></div>
+        <div class="row"><code>ace run</code><span>start the runtime</span></div>
+        <div class="row"><code>ace status</code><span>human overview</span></div>
+        <div class="row"><code>ace context [--json]</code><span>environment context</span></div>
+        <div class="row"><code>ace agents</code><span>list agents</span></div>
+        <div class="row"><code>ace events [--limit N]</code><span>event stream</span></div>
+        <div class="row"><code>ace snapshot / restore &lt;id&gt;</code><span>snapshot and roll back the environment</span></div>
+        <div class="row"><code>ace stop</code><span>graceful stop</span></div>
+      </div>
+    </section>
+
+    <!-- git-native install -->
+    <section id="git" class="band">
+      <h2 class="cmd">$ ace install github:&lt;owner&gt;/&lt;repo&gt;</h2>
+      <div class="transcript" id="git-block">
+        <p class="t-line">ace install github:EnzoVezzaro/fullstack-team</p>
+        <p class="out">cloned · resolved spec · wrote ace-lock.json</p>
+        <p class="t-line">ace install github:EnzoVezzaro/fullstack-team#v1.2.0</p>
+        <p class="out">pinned to ref v1.2.0 · integrity recorded</p>
+      </div>
+      <p class="fine">Git-native install works without a registry. Git remains the source of truth; the registry only indexes specifications.</p>
+      <div class="code-block">
+        <div class="code-head">
+          <span>the target UX (README, “the killer experience”)</span>
+          <button type="button" class="copy" data-copy="code-killer">copy</button>
+        </div>
+<pre id="code-killer">npm install -g ace
+ace install @ace/fullstack
+ace run
+ace status</pre>
+      </div>
+      <p class="fine">Published to npm when ACE ships 1.0; until then the quick start above is what runs today.</p>
+    </section>
+
+    <!-- runtime state -->
+    <section id="state" class="band">
+      <h2 class="cmd">$ ls .ace/</h2>
+      <div class="code-block">
+        <div class="code-head">
+          <span>runtime state: private, never published</span>
+          <button type="button" class="copy" data-copy="code-tree">copy</button>
+        </div>
+<pre id="code-tree">.ace/
+├── state.json           # status, active agent, agents[], tasks[]
+├── events.jsonl         # append-only event stream
+├── agents/&lt;id&gt;.json
+├── tasks/&lt;id&gt;.json
+├── context/context.json
+└── snapshots/&lt;id&gt;.json</pre>
+      </div>
+      <div class="transcript" id="events-block">
+        <p class="out">{ "type": "task.start", "agent": "frontend", "seq": 1 }</p>
+        <p class="out">{ "type": "task.done", "agent": "backend", "seq": 2 }</p>
+        <p class="out">{ "type": "review.request", "policy": "require_review_before_merge", "seq": 3 }</p>
+      </div>
+      <p class="note">example event shapes, structure from the ace/v1 event stream</p>
+    </section>
+
+    <!-- close -->
+    <section id="end" class="band">
+      <h2 class="cmd">$ ace status</h2>
+      <p class="read">ACE is an MVP (phases 1–6), MIT-style free, zero runtime dependencies. The environment you just watched is the environment you get: orchestrator, workers, tools, models, policies, memory, lifecycle, described in one manifest, locked by hash, restored anywhere.</p>
+      <div class="action-line">
+        <span class="prompt" aria-hidden="true">$</span>
+        <code id="q-quick">cd my-workspace &amp;&amp; node ../ace-proagents/ace.mjs run</code>
+        <button type="button" class="copy" data-copy="q-quick">copy</button>
+      </div>
+      <a class="sponsor" id="checkout-btn" data-checkout hidden>Sponsor / ACE Pro</a>
+      <p class="checkout-state" id="checkout-state">Checkout opens when the live Stripe payment link ships; this experiment has not published one yet.</p>
+      <p class="fine">See <code>README.md</code> and <code>PLAN.md</code> in <code>github.com/EnzoVezzaro/ace-proagents</code> for the full specification.</p>
+      <footer>
+        <p>end of transmission · exp-007 ace · spec ace/v1 · <a href="donate.html">donate</a> <span class="cursor" aria-hidden="true"></span></p>
+      </footer>
+    </section>
+
+  </main>
+</body>
+</html>

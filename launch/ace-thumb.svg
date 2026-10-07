@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <rect width="240" height="240" fill="#0a0e14"/>
+  <rect x="10" y="10" width="220" height="220" fill="none" stroke="#1f2937" stroke-width="2"/>
+  <text x="120" y="130" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="72" font-weight="700" letter-spacing="8" fill="#e6edf3">ACE</text>
+  <text x="120" y="168" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" letter-spacing="2" fill="#4ade80">ace/v1</text>
+  <circle cx="40" cy="40" r="5" fill="#4ade80"/>
+  <circle cx="54" cy="40" r="5" fill="#facc15"/>
+  <circle cx="68" cy="40" r="5" fill="#ef4444"/>
+</svg>

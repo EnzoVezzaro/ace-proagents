@@ -1,0 +1,367 @@
+/* ACE landing — Phosphor Terminal world
+ * Direction contract: .impeccable/surfaces/experiments-exp-007-ace-site-index-html.md
+ * One monospaced voice in an 80-column field on curved glass. Bright phosphor
+ * is reserved for live and actionable elements; dim phosphor reads; hairline
+ * green rules are the visible armature. Motion is driven from app.js (Motion
+ * v14, vendored) — CSS never transitions transform/opacity on animated nodes.
+ */
+
+:root {
+  --bg: #0a0f0a;
+  --bg-deep: #060906;
+  --ink: #33ff66;         /* live / actionable — 14:1 on bg */
+  --read: #6ccf95;        /* reading text — ~9:1 on bg */
+  --dim: #4aab73;         /* secondary — ~6.5:1 on bg */
+  --line: #1c4432;        /* hairline armature, never text */
+  --hot: #d9ffe6;         /* bloom-white of the live line */
+  --scan: rgba(0, 0, 0, 0.24);
+  --sheet: 84ch;
+  --rail-w: 15ch;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--read);
+  font: 16px/1.65 ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--ink); color: var(--bg); }
+body { caret-color: var(--ink); }
+
+/* themed browser surfaces */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--line); border: 2px solid var(--bg-deep); }
+::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+html { scrollbar-color: var(--line) var(--bg-deep); scrollbar-width: thin; }
+
+a { color: var(--ink); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--hot); }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+code, pre { font: inherit; }
+
+/* ---------- CRT material (world texture) ---------- */
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, var(--scan) 0 1px, transparent 1px 3px),
+    radial-gradient(130% 105% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* ---------- left rail: history position ---------- */
+.rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--rail-w);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 2.2rem 0.8rem;
+  border-right: 1px solid var(--line);
+  background: var(--bg-deep);
+  font-size: 13px;
+  z-index: 40;
+}
+
+.rail a {
+  color: var(--dim);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rail a::before { content: "  "; white-space: pre; }
+.rail a.active { color: var(--ink); }
+.rail a.active::before { content: "> "; color: var(--ink); }
+.rail a:hover { color: var(--hot); }
+
+/* ---------- sheet ---------- */
+.sheet {
+  margin-left: var(--rail-w);
+  max-width: var(--sheet);
+  padding: 4.5rem clamp(1rem, 4vw, 3.5rem) 0;
+}
+
+/* ---------- hero ---------- */
+#hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 3rem;
+}
+
+.boot {
+  color: var(--dim);
+  font-size: 13px;
+  margin: 0 0 2.2rem;
+}
+
+.claim {
+  margin: 0 0 1.6rem;
+  color: var(--ink);
+  font-size: clamp(1.05rem, 5.3vw, 6rem);   /* 27ch line fits at every width */
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 10px rgba(51, 255, 102, 0.35);
+}
+
+.claim .c-line { display: block; white-space: nowrap; overflow: hidden; }
+
+.lead {
+  max-width: 72ch;
+  margin: 0 0 2.6rem;
+  color: var(--read);
+}
+.lead em { font-style: normal; color: var(--ink); }
+
+.action-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  max-width: 78ch;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.action-line .prompt { color: var(--ink); }
+
+.action-line code {
+  flex: 1 1 30ch;
+  color: var(--hot);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.status-print {
+  margin: 2rem 0 0;
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.cursor-row { margin: 1.2rem 0 0; height: 1.4em; }
+
+.cursor {
+  display: inline-block;
+  width: 0.62em;
+  height: 1.15em;
+  background: var(--ink);
+  vertical-align: text-bottom;
+  box-shadow: 0 0 8px rgba(51, 255, 102, 0.6);
+  animation: blink 1.06s steps(2, start) infinite;
+}
+
+@keyframes blink { to { visibility: hidden; } }
+
+/* ---------- sections ---------- */
+.band {
+  padding: 5.5rem 0 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.band > .cmd {
+  margin: 0 0 2.4rem;    /* heading sits close to its content, far from what precedes it */
+  color: var(--ink);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.read, .fine, .note { max-width: 72ch; }
+.read { color: var(--read); margin: 0 0 2rem; }
+.fine { color: var(--dim); font-size: 14px; margin: 1.4rem 0 0; }
+.fine code { color: var(--read); }
+.note { color: var(--dim); font-size: 12.5px; margin: 0 0 1rem; }
+
+/* transcript blocks */
+.transcript { max-width: 80ch; margin: 0 0 1.4rem; }
+
+.transcript p {
+  margin: 0;
+  padding: 0.18em 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.transcript .t-line { color: var(--hot); }
+.transcript .t-line::before { content: "$ "; color: var(--ink); }
+.transcript .out { color: var(--dim); padding-left: 1.6ch; }
+
+/* afterimage: a printed line's phosphor ghost sweeps off behind it */
+.transcript .out.printed { animation: afterimage 0.6s ease-out 1 both; }
+
+@keyframes afterimage {
+  from { text-shadow: -10px 0 8px rgba(51, 255, 102, 0.5); }
+  to { text-shadow: 0 0 0 rgba(51, 255, 102, 0); }
+}
+
+.replay {
+  appearance: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+.replay:hover { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+
+/* label grid — spec rows ruled like a stock label */
+.label-grid {
+  max-width: 78ch;
+  margin: 0 0 2.6rem;
+  border-top: 1px solid var(--line);
+}
+
+.label-grid .row {
+  display: grid;
+  grid-template-columns: 14ch 1fr;
+  gap: 1ch;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.label-grid dt { color: var(--dim); margin: 0; }
+.label-grid dd { color: var(--read); margin: 0; overflow-wrap: anywhere; }
+
+/* code blocks */
+.code-block {
+  max-width: 80ch;
+  margin: 0;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.code-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1ch;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 1rem 0.9rem;
+  overflow-x: auto;
+  color: var(--read);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* copy — bright ink means actionable */
+.copy {
+  appearance: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 0.2rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.copy:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.copy[data-state="copied"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* cli rows */
+.rows { max-width: 80ch; border-top: 1px solid var(--line); }
+
+.rows .row {
+  display: grid;
+  grid-template-columns: minmax(24ch, 34ch) 1fr;
+  gap: 1.5ch;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.rows .row code { color: var(--hot); }
+.rows .row span { color: var(--dim); }
+
+/* close / checkout honesty */
+.sponsor {
+  display: inline-block;
+  margin: 1.5rem 0 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--ink);
+  color: var(--bg);
+  background: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+.sponsor:hover { background: var(--hot); border-color: var(--hot); color: var(--bg); }
+
+.checkout-state {
+  max-width: 60ch;
+  margin: 0 0 1.5rem;
+  color: var(--dim);
+  font-size: 14px;
+}
+
+footer {
+  margin: 4.5rem 0 0;
+  padding: 1.6rem 0 3rem;
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  font-size: 13px;
+}
+footer .cursor { width: 0.55em; height: 1em; }
+
+[hidden] { display: none !important; }
+
+/* ---------- narrow screens: rail becomes a top history bar ---------- */
+@media (max-width: 900px) {
+  .rail {
+    position: sticky;
+    top: 0;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    flex-direction: row;
+    gap: 1.2rem;
+    padding: 0.7rem 1rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+  }
+  .sheet { margin-left: 0; padding-top: 2.5rem; }
+  #hero { min-height: auto; padding: 3rem 0 2.5rem; }
+  .band { padding-top: 4rem; }
+  .label-grid .row { grid-template-columns: 1fr; gap: 0.1rem; }
+  .rows .row { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
+/* ---------- reduced motion: everything is already final ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor { animation: none; }
+  .transcript .out.printed { animation: none; }
+}

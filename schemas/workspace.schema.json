@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ace.workspace/v1",
+  "title": "ACE Workspace (the \"ace\" key in package.json)",
+  "type": "object",
+  "required": [
+    "spec",
+    "name"
+  ],
+  "properties": {
+    "spec": {
+      "const": "ace/v1"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "orchestrator": {
+      "type": "object",
+      "required": [
+        "runtime",
+        "role"
+      ],
+      "properties": {
+        "runtime": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "properties": {
+        "strategy": {
+          "enum": [
+            "fixed",
+            "dynamic"
+          ]
+        },
+        "defaults": {
+          "type": "object"
+        },
+        "workers": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "models": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "network": {
+      "type": "object"
+    },
+    "filesystem": {
+      "type": "object"
+    },
+    "memory": {
+      "type": "object"
+    },
+    "git": {
+      "type": "object"
+    },
+    "policies": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object"
+    },
+    "extends": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entry": {
+      "type": "object",
+      "description": "Workspace document entry points (role to relative path). Like npm main/bin/scripts but for the agentic workspace documents.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "properties": {
+        "agents": {
+          "type": "string",
+          "description": "Agent identity/contract doc (e.g. AGENTS.md)"
+        },
+        "agentConfig": {
+          "type": "string",
+          "description": "Agent runtime config (e.g. opencode.json)"
+        },
+        "readme": {
+          "type": "string",
+          "description": "Human-readable README"
+        },
+        "manifest": {
+          "type": "string",
+          "description": "Package manifest (package.json)"
+        },
+        "lockfile": {
+          "type": "string",
+          "description": "Resolved dependency lock (ace-lock.json)"
+        },
+        "main": {
+          "type": "string",
+          "description": "CLI/main entry (e.g. ace.mjs)"
+        },
+        "orchestrator": {
+          "type": "string",
+          "description": "Orchestrator config (if separate from agentConfig)"
+        }
+      }
+    }
+  },
+  "description": "Validates the object at manifest.ace in package.json."
+}
