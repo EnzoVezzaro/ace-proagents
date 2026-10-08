@@ -10,7 +10,13 @@ ACE — Agentic Compute Environment. The CLI for reproducible orchestrator-drive
 
 ## Install
 
-The CLI is not published to npm yet. Clone this repository and run it with Node (18+):
+Install from npm (published, free):
+
+```bash
+npm i ace-proagents
+```
+
+Or clone this repository and run it with Node (18+):
 
 ```bash
 git clone https://github.com/EnzoVezzaro/ace-proagents.git
@@ -18,7 +24,7 @@ cd ace-proagents
 node ace.mjs --help
 ```
 
-`package.json` declares `"bin": { "ace": "./ace.mjs" }`, so once published (or after a local `npm link` from this checkout) the command name is `ace`. Until then, use `node ace.mjs`.
+`package.json` declares `"bin": { "ace": "./ace.mjs" }`, the npm package installs the `ace` command (or run `node ace.mjs` from a clone).
 
 ## Quickstart
 
