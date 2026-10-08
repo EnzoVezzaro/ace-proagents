@@ -1,6 +1,6 @@
 {
   "name": "ace-proagents",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ACE — Agentic Compute Environment. npm for agentic coding environments.",
   "license": "MIT",
   "type": "module",
@@ -97,5 +97,9 @@
     "schemas/",
     "README.md",
     "package.json"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EnzoVezzaro/ace-proagents.git"
+  }
 }
