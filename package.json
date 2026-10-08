@@ -1,7 +1,7 @@
 {
-  "name": "ace",
+  "name": "ace-proagents",
   "version": "0.1.0",
-  "description": "ACE \u2014 Agentic Compute Environment. npm for agentic coding environments.",
+  "description": "ACE — Agentic Compute Environment. npm for agentic coding environments.",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -21,7 +21,7 @@
   "ace": {
     "spec": "ace/v1",
     "name": "ace",
-    "description": "ACE \u2014 Agentic Compute Environment. The package manager and registry for reproducible orchestrator-driven agentic coding environments.",
+    "description": "ACE — Agentic Compute Environment. The package manager and registry for reproducible orchestrator-driven agentic coding environments.",
     "orchestrator": {
       "runtime": "opencode",
       "role": "orchestrator"
@@ -90,5 +90,12 @@
       "main": "ace.mjs",
       "lockfile": "ace-lock.json"
     }
-  }
+  },
+  "files": [
+    "ace.mjs",
+    "lib/",
+    "schemas/",
+    "README.md",
+    "package.json"
+  ]
 }
