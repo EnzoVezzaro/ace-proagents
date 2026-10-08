@@ -26,6 +26,10 @@ node ace.mjs --help
 
 `package.json` declares `"bin": { "ace": "./ace.mjs" }`, the npm package installs the `ace` command (or run `node ace.mjs` from a clone).
 
+## ACE Pro
+
+ACE core is free and stays free (MIT). ACE Pro is an optional **$9.00 USD/month** support subscription, billed through Stripe: **[buy.stripe.com/9B6dRaclLgbjbqx1bB28800](https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800)**. Cancel any time. The product site — spec, design, and live demo — is at **[ace-seven-blue.vercel.app](https://ace-seven-blue.vercel.app)**.
+
 ## Quickstart
 
 ```bash
