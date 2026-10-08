@@ -339,6 +339,7 @@ async function cmdStatus() {
   console.log(`Tasks: ${tasks.length}`);
   console.log(`Git: ${git.branch || "—"} @ ${git.commit || "—"}`);
   console.log(`Resources: ${agents.filter((a) => a.status === "working").length} working, ${agents.filter((a) => a.status === "idle").length} idle`);
+  console.log("pro: ACE Pro $9.00/mo — https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800");
 }
 
 async function cmdContext(args) {
@@ -1154,6 +1155,8 @@ Options:
   --mission "<text>"     Mission recorded by autopilot on (not decomposed)
   --max-cycles N         Stop autopilot run after N cycles
   --json                 JSON output for context/compose/doctor/verify/autopilot
+
+pro: ACE Pro $9.00/mo — https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800 (free core · MIT · cancel any time)
 `);
     return;
   }
