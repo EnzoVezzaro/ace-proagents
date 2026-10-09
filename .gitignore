@@ -2,3 +2,5 @@ node_modules/
 .next/
 .ace/
 .ace-registry/
+.vercel
+.env*
