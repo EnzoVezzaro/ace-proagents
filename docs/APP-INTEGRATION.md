@@ -3,14 +3,28 @@
 ## Status: the landing lives here; a separate application's source does not
 
 `https://ace-seven-blue.vercel.app` serves the static landing in `site/`
-(`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`), built
-and deployed from this repository against Vercel project `ace` (`vercel --prod`
-from `site/`). Deploys come from the CLI only: the project carries no Git link,
-because it once carried one to the lab repository and every push there deployed
-that repository's root — which has no `index.html` — silently replacing this
-landing with a 404 (first observed 2026-10-13; link removed). What this
-repository does not contain is an application's source: what such an application
-would consume is the surface described below.
+(`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`),
+built and deployed from this repository (`vercel --prod` from `site/`). Three
+hosts serve that same landing, all verified serving an identical 32,489-byte
+page with the three live Stripe links:
+
+| Host | Vercel project | How it deploys |
+| --- | --- | --- |
+| `ace-seven-blue.vercel.app` | `ace` | CLI only (`vercel --prod` from `site/`) — no Git link |
+| `ace-enzovezzaros-projects.vercel.app` | `ace` | the project's automatic team alias |
+| `ace-proagents.vercel.app` | `ace-proagents` | Git push to `main`, **Root Directory `site`** |
+
+Both projects read the same `site/` tree. The `ace` project has **no** Git link
+by choice, because it once carried one to the lab repository and every push
+there deployed *that* repository's root — which has no `index.html` — silently
+replacing this landing with a 404 (first observed 2026-10-13; link removed). The
+`ace-proagents` project is the push-to-deploy path, and it only works because its
+Root Directory is `site`; with the root directory unset it deployed this
+repository's root and served the same 404 (fixed 2026-10-13). If a deploy ever
+reports 404 again, check `rootDirectory` before touching the landing.
+
+What this repository does not contain is an application's source: what such an
+application would consume is the surface described below.
 
 What this repository does provide is the machine-consumable surface such an
 application needs, in two layers:
