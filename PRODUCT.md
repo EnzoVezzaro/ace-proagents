@@ -60,9 +60,9 @@ The mechanism a neighbouring tool cannot copy:
 - **It verifies what it wrote**, by importing the installed modules and running
   ACE's own configuration validation over the generated `ace` key.
 
-Status: the installer and the governance runtime are on `origin/main` (pushed
-2026-10-13); the `v0.1.3` tag holds the runtime only, and **npm serves `0.1.2`**,
-which predates the installer.
+Status: the installer and the governance runtime are on `origin/main` and in the
+published package — **npm `0.1.4`**, the first release with the installer;
+npm's `0.1.2` and the `v0.1.3` tag predate it.
 
 ## Capabilities
 Installer first:

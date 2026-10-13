@@ -181,7 +181,7 @@ Zero radius, everywhere, without exception: buttons, code blocks, action line, t
 ### Action Line (signature)
 The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 78ch. Left to right: a Phosphor Live `~/ace $` prompt, the Bloom White command in selectable horizontally-scrollable text, and a copy button. This is the page's primary CTA and it looks like input, not like marketing.
 
-The command in it is the one a visitor can run today — currently the clone plus `node ace-proagents/ace.mjs setup`, because the published package predates the installer. When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
+The command in it is the one a visitor can run today — the clone plus `node ace-proagents/ace.mjs setup` (or `npx ace-proagents setup`, now that the published `0.1.4` ships the installer). When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
 
 ### Cards / Containers (code blocks)
 - **Corner Style:** 0px. **Border:** 1px Armature Line. **Background:** Glass Deep.

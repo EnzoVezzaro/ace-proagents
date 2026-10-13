@@ -139,11 +139,12 @@ node orchestration/tabs.mjs cap        # reads the generated data; no multiplexe
   and a fake to `lib/adapters/impl.mjs`.
 - **Never report a check you did not run.** Reports carry `checksNotRun`, and a
   completion claim with no command that exited 0 is rejected.
-- **The npm release is not the repository.** `origin/main` carries the installer
-  and the runtime; npm serves `0.1.2`, which predates the installer, and the
-  `v0.1.3` tag predates it too. State the registry version as it is — never claim
-  the published package has `ace setup`. Do not bump the version, publish, push a
-  tag or deploy without being asked.
+- **The npm release lags the repository until it is published deliberately.**
+  `origin/main` carries the installer and the runtime, and npm ships `0.1.4`, the
+  first release with the installer; `0.1.2` and the `v0.1.3` tag predate it.
+  State the registry version as it actually is. Bump the version, publish, push a
+  tag or deploy only when asked — and when you do, update this file, `README.md`,
+  `PRODUCT.md` and the landing page in the same change.
 
 ## Ownership
 

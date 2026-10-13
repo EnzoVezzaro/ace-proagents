@@ -43,12 +43,11 @@ node ace.mjs --help
 ```
 
 `package.json` declares `"bin": { "ace": "./ace.mjs" }`, so `npm i ace-proagents`
-also installs an `ace` command — but **npm serves `0.1.2`, which predates the
-installer**: the published package has no `ace setup`. The installer —
-`lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`,
-`docs/STACK.md`, `test/stack.test.mjs` — is on `origin/main` (pushed
-2026-10-13), so a clone has it; the `v0.1.3` tag predates it and carries the
-`ace/v1` package, the CLI and the governance runtime.
+also installs an `ace` command. **The published package is `0.1.4`**, the first
+release that ships the installer — `lib/stack.mjs`, `lib/intake.mjs`,
+`lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs`
+— alongside the governance runtime. Both are on `origin/main` as well (pushed
+2026-10-13); npm's `0.1.2` and the `v0.1.3` tag predate the installer.
 
 Run `ace setup` from a checkout that has the installer, with the **target
 repository** as the working directory:

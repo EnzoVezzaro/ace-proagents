@@ -25,8 +25,8 @@ runtime implements — not because it describes the current architecture.
 
 **Pushed 2026-10-13.** The installer files (`lib/stack.mjs`, `lib/intake.mjs`,
 `lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs`)
-are on `origin/main`; the `v0.1.3` tag carries the runtime only, and npm serves
-`0.1.2`.
+are on `origin/main` and in the published package (`0.1.4`); npm's `0.1.2` and
+the `v0.1.3` tag predate the installer.
 
 > **Historical positioning (v0.1.x).** ACE was first built as *npm for agentic
 > coding environments*: an open, Git-native package ecosystem for reproducible

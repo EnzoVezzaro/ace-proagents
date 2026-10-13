@@ -1,6 +1,6 @@
 {
   "name": "ace-proagents",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "ACE — install a crew of coding agents into any repository: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that price every task, ACC memory, and the ProAgents money contract. One skill, one CLI.",
   "license": "MIT",
   "type": "module",
@@ -108,6 +108,7 @@
     "lib/",
     "assets/",
     "schemas/",
+    "docs/",
     "README.md",
     "package.json"
   ],
