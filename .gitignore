@@ -2,5 +2,6 @@ node_modules/
 .next/
 .ace/
 .ace-registry/
+.acc-memory.md
 .vercel
 .env*

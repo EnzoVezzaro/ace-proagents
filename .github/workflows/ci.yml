@@ -2,8 +2,8 @@ name: ci
 
 # Quality gate for the ACE package: syntax check, a real scaffold smoke run
 # (including the governance commands inside the scaffold, which proves the
-# recursive lib/ copy), and the built-in test runner. Zero install — the
-# package has no dependencies.
+# recursive lib/ copy), a real crew-stack install whose own proof has to pass,
+# and the built-in test runner. Zero install — the package has no dependencies.
 
 on:
   push:
@@ -32,7 +32,55 @@ jobs:
       - name: Syntax check
         run: |
           node --check ace.mjs
-          for f in lib/*.mjs lib/adapters/*.mjs site/app.js; do node --check "$f"; done
+          for f in lib/*.mjs lib/adapters/*.mjs assets/stack/orchestration/*.mjs assets/stack/orchestration/lib/*.mjs site/app.js; do node --check "$f"; done
+
+      # The installer's acceptance test, end to end and without a terminal:
+      # interrogate → inspect → plan → apply → verify, then run the code that was
+      # WRITTEN into the target repo. If the shipped bundle still depended on this
+      # lab (an engine/ or proagents/ import left in place), the installed
+      # selftest is where it shows up.
+      - name: Crew stack smoke test
+        env:
+          SENTINEL_PORT: "45999"
+          SENTINEL_OPENCODE_BIN: /nonexistent/opencode
+        run: |
+          d=$(mktemp -d)
+          cd "$d"
+          mkdir -p experiments/alpha-api experiments/beta-web
+          printf '%s\n' '{"name":"ci-stack","version":"1.0.0","scripts":{"test":"node --test"}}' > package.json
+          echo '# alpha' > experiments/alpha-api/README.md
+          echo '# beta' > experiments/beta-web/README.md
+
+          node "$GITHUB_WORKSPACE/ace.mjs" setup --json \
+            --goal "ship the paid API" \
+            --money "the 19/mo plan" \
+            --projects experiments/alpha-api,experiments/beta-web > setup.json
+          node -e 'const d=JSON.parse(require("fs").readFileSync("setup.json","utf8"));if(!d.verify.ok)throw new Error("install verify failed: "+JSON.stringify(d.verify.checks.filter(c=>c.status==="fail")));if(d.applied.written.length<20)throw new Error("too few files written: "+d.applied.written.length);'
+
+          test -f orchestration/projects.json
+          test -f orchestration/tabs.mjs
+          test -f orchestration/lib/ego.mjs
+          test -f .acc/config/config.yaml
+          test -f proagents/MONEY-CONTRACT.md
+          test -f STACK.md
+
+          # The written code proves itself, offline, with no multiplexer.
+          node orchestration/selftest.mjs
+          node orchestration/tabs.mjs cap > cap.json
+          node -e 'const c=JSON.parse(require("fs").readFileSync("cap.json","utf8"));if(c.cap!==4)throw new Error("cap not read from the generated data: "+JSON.stringify(c));'
+
+          # A second install must not overwrite the memory it seeded, and must not
+          # fail on files it already wrote.
+          before=$(cat .acc-memory.md)
+          node "$GITHUB_WORKSPACE/ace.mjs" setup --goal "ship the paid API" --money "the 19/mo plan" --projects experiments/alpha-api,experiments/beta-web > /dev/null
+          test "$before" = "$(cat .acc-memory.md)"
+
+          # An install with no answers and no terminal refuses and names the fields.
+          d2=$(mktemp -d)
+          cd "$d2"
+          if node "$GITHUB_WORKSPACE/ace.mjs" setup > intake.txt 2>&1; then echo "setup should have refused"; exit 1; fi
+          grep -q "INTAKE_INVALID" intake.txt
+          test ! -f orchestration/projects.json
 
       - name: Scaffold smoke test
         run: |

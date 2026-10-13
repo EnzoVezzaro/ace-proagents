@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ACE — npm for agentic coding environments</title>
-  <meta name="description" content="ACE is an open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. An ACE package describes the environment, not application source.">
+  <title>ACE — install a crew of coding agents into any repository</title>
+  <meta name="description" content="ACE is one skill and one CLI that installs a crew of coding agents into a repository: Herdr spaces, one browser space per project, a governor over a global worker budget, a supervisor and workers per project with a money line on every task, durable memory, and a handoff convention. Zero runtime dependencies, MIT.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ACE — npm for agentic coding environments">
-  <meta property="og:description" content="An open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. MIT-style free, zero runtime dependencies.">
+  <meta property="og:title" content="ACE — install a crew of coding agents into any repository">
+  <meta property="og:description" content="One skill and one CLI that writes the whole arrangement: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers with a money line on every task, durable memory. MIT, zero runtime dependencies.">
   <meta property="og:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
@@ -20,11 +20,13 @@
 
   <nav class="rail" aria-label="Transcript sections">
     <a href="#hero" class="active">~</a>
-    <a href="#session">ace run</a>
-    <a href="#spec">package.json</a>
-    <a href="#cli">ace --help</a>
+    <a href="#session">ace setup</a>
+    <a href="#parts">6 parts</a>
+    <a href="#spec">projects.json</a>
+    <a href="#cli">commands</a>
     <a href="#git">install</a>
-    <a href="#state">.ace/</a>
+    <a href="#state">state</a>
+    <a href="#govern">govern</a>
     <a href="#end">ace status</a>
   </nav>
 
@@ -32,14 +34,14 @@
 
     <!-- boot / first viewport -->
     <header id="hero">
-      <p class="boot"><span class="prompt">~/ace $</span> ace/v1 · loading environment spec · ok</p>
-      <h1 class="claim"><span class="c-line">ACE is npm for</span>
-        <span class="c-line">agentic coding</span>
-        <span class="c-line">environments.</span></h1>
-      <p class="lead">An open, Git-native package ecosystem for reproducible orchestrator-driven agentic coding environments. An ACE package describes the <em>environment</em> — orchestrator, workers, tools, models, policies, memory, lifecycle — not application source. Git remains the source of truth; the registry indexes specifications.</p>
+      <p class="boot"><span class="prompt">~/ace $</span> ace/v1 · reading the repo · ok</p>
+      <h1 class="claim"><span class="c-line">Six parts, one name:</span>
+        <span class="c-line">a crew of agents</span>
+        <span class="c-line">for your repository.</span></h1>
+      <p class="lead">One skill and one CLI. <code>ace setup</code> asks what the work is, reads what your repository already says about itself, then writes the whole arrangement: a Herdr tab per project plus a control plane, one Ego Lite browser space per project, a governor over a <em>global</em> worker budget, one supervisor and its workers per project with the dollar on every task, durable memory per tree, and the handoff convention every mission ends with. The parts are held together by one name — <code>project.id === its tab label === its browser space === basename(its tree)</code>.</p>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
-        <code id="q-start">npm i ace-proagents &amp;&amp; npx ace init --name my-workspace</code>
+        <code id="q-start">git clone https://github.com/EnzoVezzaro/ace-proagents &amp;&amp; node ace-proagents/ace.mjs --help</code>
         <button type="button" class="copy" data-copy="q-start">copy</button>
       </div>
       <div class="chips" aria-label="what ace is">
@@ -47,200 +49,338 @@
         <span class="chip">mit-style free</span>
         <span class="chip">zero runtime deps</span>
         <span class="chip">spec ace/v1</span>
-        <span class="chip">git-native</span>
-        <span class="chip">orchestrator: opencode</span>
-        <span class="chip">4 agents/project by default</span>
+        <span class="chip">6 linked parts</span>
+        <span class="chip">one global worker budget</span>
+        <span class="chip">node 20+</span>
       </div>
       <a class="sponsor" href="https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800" rel="noopener">Sponsor / ACE Pro — $9.00/mo</a>
-      <p class="status-print">exp-007 · spec draft ace/v1</p>
+      <p class="status-print">exp-007 · spec ace/v1 · npm serves 0.1.2 · <code>ace setup</code> is committed here and not pushed — <code>origin/main</code> gives the runtime, not the installer</p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
-    <!-- live session -->
+    <!-- the installer -->
     <section id="session" class="band">
-      <h2 class="cmd">$ ace init &amp;&amp; ace run</h2>
-      <p class="note">verbatim output: a fresh workspace, nothing installed yet</p>
+      <h2 class="cmd">$ ace setup</h2>
+      <p class="note">verbatim output, from the checkout that has the installer — a repo with two work areas, nothing installed yet</p>
       <div class="transcript" id="session-block">
-        <p class="t-line">node ../ace-proagents/ace.mjs init --name my-workspace</p>
-        <p class="out">Initialized ACE package in my-workspace</p>
-        <p class="t-line">node ../ace-proagents/ace.mjs install</p>
-        <p class="out">install: no packages in lockfile — nothing to install</p>
-        <p class="t-line">node ../ace-proagents/ace.mjs run</p>
-        <p class="out">Runtime started.</p>
-        <p class="t-line">node ../ace-proagents/ace.mjs status</p>
-        <p class="out">Status: running</p>
-        <p class="out">Governance: governor governor · opencode:fledge-alpha-free · 1 supervisor(s), 5 worker(s) declared</p>
-        <p class="out">Budget: 0/4 active</p>
-        <p class="out">Watchdog: armed, not running · governor NOT ALIVE</p>
-        <p class="out">Goal: (none declared — set goal.statement in the ace key)</p>
+        <p class="t-line">node ace-proagents/ace.mjs setup</p>
+        <p class="out">ACE setup — demo-repo
+
+intake
+  goal        ship the paid API
+  money       the $19/mo plan
+  projects    alpha-api (experiments/alpha-api), beta-web (experiments/beta-web)
+  harness     opencode
+  budget      4 worker(s), global across every project
+  browser     yes — one space per project
+  proof       npm run test &amp;&amp; npm run build
+  detected    node v26.8.2
+
+plan — 6 part(s), 21 write(s)
+  herdr-spaces
+      Herdr spaces — one tab per project, one control plane
+      → orchestration/tabs.mjs
+      → orchestration/selftest.mjs
+      → orchestration/README.md
+      → orchestration/lib/topology.mjs
+      → orchestration/lib/cap.mjs
+      → orchestration/lib/herdr.mjs
+      → orchestration/projects.json
+      → orchestration/state/.gitignore
+  ego-lite-spaces
+      Ego Lite spaces — one browser space per project
+      → orchestration/lib/ego.mjs
+  govern
+      Govern — one governor over a global worker budget
+      → orchestration/lib/free-models.mjs
+  supervisors-workers
+      Supervisors and workers — one owner per project, priced tasks
+      → orchestration/lib/handoff.mjs
+      → package.json
+  acc
+      ACC — durable memory per tree
+      → .acc/config/config.yaml
+      → .acc/config/templates/agents.md
+      → .acc-memory.md
+      → experiments/alpha-api/.acc-memory.md
+      → experiments/beta-web/.acc-memory.md
+  proagents
+      ProAgents — the money contract and the handoff convention
+      → proagents/MONEY-CONTRACT.md
+      → proagents/knowledge/CREW-PROTOCOL.md
+      → proagents/registry/experts.json
+      → STACK.md
+
+linked
+  herdr-spaces → ego-lite-spaces: project.id — the tab label and the browser space are the same string
+  ego-lite-spaces → herdr-spaces: browser_space — the space name is the project id, which is also its tab label
+  govern → supervisors-workers: cap — the budget the supervisor must respect when it starts a worker
+  supervisors-workers → proagents: tasks[].money — the money contract is what the supervisor enforces at dispatch
+  acc → govern: memory — the governor reports against what the memory records as decided
+  proagents → supervisors-workers: acceptance — a handoff that claims DONE without evidence is not accepted
+
+apply — 21 written, 0 left alone
+  + orchestration/tabs.mjs
+  + orchestration/selftest.mjs
+  + orchestration/README.md
+  + orchestration/lib/topology.mjs
+  + orchestration/lib/cap.mjs
+  + orchestration/lib/herdr.mjs
+  + orchestration/lib/ego.mjs
+  + orchestration/lib/handoff.mjs
+  + orchestration/lib/free-models.mjs
+  + orchestration/projects.json
+  + orchestration/state/.gitignore
+  + package.json  (ace key replaced; all other keys untouched)
+  + .acc/config/config.yaml
+  + .acc/config/templates/agents.md</p>
       </div>
       <button type="button" class="replay" id="session-replay">replay session</button>
+      <p class="fine">Nothing above was retyped: it is one run's output. The <code>apply</code> list is shown as far as it was captured — fourteen of its twenty-one lines; the remaining seven are <code>.acc-memory.md</code>, one memory file inside each project tree, the three ProAgents files and <code>STACK.md</code>. The <code>apply</code> step merges the <code>ace</code> key into <code>package.json</code> and touches no other key; the generated files that already exist and differ are left alone, and memory is seeded once and never overwritten. The run then verified itself — 14 checks passed, 2 reported as <em>not run</em> with their precondition (live tab creation needs a running Herdr session; one governor cycle needs live state) — and every install writes <code>STACK.md</code>, the map of what it just did.</p>
     </section>
 
-    <!-- package format -->
+    <!-- the six parts -->
+    <section id="parts" class="band">
+      <h2 class="cmd">$ ace parts</h2>
+      <p class="read">Six parts, and none of them is usable alone. Each one hands an exact name to the next, so the terminal, the browser, the disk and the governor's report all call a project the same thing.</p>
+      <div class="rows" id="parts-rows">
+        <div class="row"><code>herdr-spaces</code><span>one tab per project, plus a control-plane tab holding the governor and one supervisor per project. The number of tabs is always 1 + the number of projects.</span></div>
+        <div class="row"><code>ego-lite-spaces</code><span>one browser space per project, named after the project's own tree. A second space is never opened to escape a stuck page.</span></div>
+        <div class="row"><code>govern</code><span>one governor over a global worker budget: it checks liveness <em>and</em> evidence-backed progress, swaps an unusable model route for a validated one, and escalates what it cannot recover.</span></div>
+        <div class="row"><code>supervisors-workers</code><span>exactly one supervisor per project and its workers — and every task declares the dollar it can produce, or it is refused at dispatch.</span></div>
+        <div class="row"><code>acc</code><span>durable memory per tree: a control file and one <code>.acc-memory.md</code> beside each project, so a new session starts informed instead of re-learning the repo.</span></div>
+        <div class="row"><code>proagents</code><span>the layer on top: the money contract, the handoff convention every mission ends with, and the registry of tools the crew may use.</span></div>
+      </div>
+      <div class="code-block">
+        <div class="code-head">
+          <span>the rule, and the six lines setup prints under <code>linked</code></span>
+          <button type="button" class="copy" data-copy="code-links">copy</button>
+        </div>
+<pre id="code-links">project.id === its tab label === its browser space === basename(its tree)
+
+herdr-spaces        → ego-lite-spaces:     project.id
+ego-lite-spaces     → herdr-spaces:        browser_space
+govern              → supervisors-workers: cap
+supervisors-workers → proagents:           tasks[].money
+acc                 → govern:              memory
+proagents           → supervisors-workers: acceptance</pre>
+      </div>
+      <p class="fine">That first line is the whole boundary system. It is not a convention anyone has to remember: <code>ace setup</code> refuses a setup whose names would disagree — a project root that does not exist, two trees that collide on one id, an agent name the multiplexer cannot attach — and the installed <code>selftest.mjs</code> fails on a project whose space stops matching its id.</p>
+    </section>
+
+    <!-- the generated data -->
     <section id="spec" class="band">
-      <h2 class="cmd">$ cat package.json</h2>
+      <h2 class="cmd">$ cat orchestration/projects.json</h2>
+      <p class="note">the data the crew runs on — written from your answers, then edited like any other file</p>
       <dl class="label-grid" id="spec-grid">
-        <div class="row"><dt>spec</dt><dd>ace/v1</dd></div>
-        <div class="row"><dt>orchestrator</dt><dd>opencode</dd></div>
-        <div class="row"><dt>workers</dt><dd>architect · frontend · backend · tester · reviewer</dd></div>
-        <div class="row"><dt>tools</dt><dd>git · github · filesystem · terminal</dd></div>
-        <div class="row"><dt>network</dt><dd>restricted</dd></div>
-        <div class="row"><dt>filesystem</dt><dd>workspace</dd></div>
-        <div class="row"><dt>memory</dt><dd>persistent</dd></div>
-        <div class="row"><dt>policy</dt><dd>require_review_before_merge</dd></div>
-        <div class="row"><dt>lifecycle</dt><dd>autonomous · restart_on_failure</dd></div>
-        <div class="row"><dt>lockfile</dt><dd>ace-lock.json · sha256 integrity</dd></div>
+        <div class="row"><dt>topology</dt><dd>control-plane + one tab per project (1 + N)</dd></div>
+        <div class="row"><dt>budget</dt><dd>4 workers · global across every project · the control plane is never counted</dd></div>
+        <div class="row"><dt>harness</dt><dd>opencode</dd></div>
+        <div class="row"><dt>model policy</dt><dd>free models only — a name containing <code>-free</code> is not evidence; with nothing verified, dispatch is refused</dd></div>
+        <div class="row"><dt>handoff</dt><dd>mission · project · owner · status · evidence · a final <code>HANDOFF:</code> line</dd></div>
+        <div class="row"><dt>verification</dt><dd>npm run test · npm run build</dd></div>
+        <div class="row"><dt>project</dt><dd>alpha-api — space <code>alpha-api</code> — money: the $19/mo plan</dd></div>
       </dl>
       <div class="code-block">
         <div class="code-head">
-          <span>the ace key: environment specification</span>
-          <button type="button" class="copy" data-copy="code-ace-key">copy</button>
+          <span>orchestration/projects.json — one project, trimmed</span>
+          <button type="button" class="copy" data-copy="code-projects">copy</button>
         </div>
-<pre id="code-ace-key">"ace": {
-  "spec": "ace/v1",
-  "orchestrator": { "runtime": "opencode" },
-  "agents": {
-    "strategy": "dynamic",
-    "workers": [
-      { "role": "architect" },
-      { "role": "frontend" },
-      { "role": "backend" },
-      { "role": "tester" },
-      { "role": "reviewer" }
-    ]
+<pre id="code-projects">{
+  "version": 3,
+  "generated_by": "ace setup",
+  "cap": {
+    "max_active_workers": 4,
+    "scope": "EVERY project tab combined … the governor and the
+              supervisors are the command surface, so they are never
+              counted and never trimmed.",
+    "settings": {
+      "read": "node orchestration/tabs.mjs cap",
+      "change": "node orchestration/tabs.mjs cap --set 5"
+    }
   },
-  "network":  { "mode": "restricted" },
-  "policies": { "require_review_before_merge": true },
-  "lifecycle": { "autonomous": true, "restart_on_failure": true },
-  "entry": {
-    "manifest": "package.json",
-    "main": "ace.mjs",
-    "lockfile": "ace-lock.json"
-  }
+  "harness": {
+    "default_harness": "opencode",
+    "model_policy": {
+      "free_only": true,
+      "on_no_verified_free_model": "refuse to dispatch and report the
+        blocker. Never fall back to a paid model silently."
+    }
+  },
+  "projects": [
+    {
+      "id": "alpha-api",
+      "root": "experiments/alpha-api",
+      "browser_space": "alpha-api",
+      "owned_paths": ["experiments/alpha-api",
+                      "orchestration/state/alpha-api"],
+      "forbidden_paths": ["experiments/beta-web",
+                          "orchestration/state/beta-web"],
+      "money": "the $19/mo plan",
+      "agents": [
+        { "role": "supervisor", "name": "alpha-api-supervisor" },
+        { "role": "worker", "name": "alpha-api-worker" }
+      ],
+      "tasks": []
+    }
+  ]
 }</pre>
       </div>
-      <p class="fine">Package files are public (<code>package.json</code>, its <code>ace</code> key, <code>README.md</code>). Runtime state under <code>.ace/</code> is private and never published.</p>
+      <p class="fine">Every field is data: adding a project, a worker or a task is an edit to this file, never a branch in the orchestrator. An empty <code>tasks</code> list is allowed; an unpriced task is not — the money line is what the supervisor reads before it dispatches, and the governor ranks the next dollar across the whole portfolio.</p>
     </section>
 
-    <!-- cli -->
+    <!-- commands -->
     <section id="cli" class="band">
       <h2 class="cmd">$ ace --help</h2>
       <div class="rows" id="cli-rows">
-        <div class="row"><code>ace init [--name &lt;n&gt;]</code><span>scaffold a package</span></div>
-        <div class="row"><code>ace install [&lt;pkg&gt;]</code><span>install from local registry, or a git ref</span></div>
-        <div class="row"><code>ace list</code><span>installed packages</span></div>
-        <div class="row"><code>ace search &lt;q&gt;</code><span>search the local registry</span></div>
-        <div class="row"><code>ace run</code><span>start the runtime</span></div>
-        <div class="row"><code>ace status</code><span>human overview</span></div>
-        <div class="row"><code>ace context [--json]</code><span>environment context</span></div>
-        <div class="row"><code>ace agents</code><span>list agents</span></div>
-        <div class="row"><code>ace events [--limit N]</code><span>event stream</span></div>
-        <div class="row"><code>ace snapshot / restore &lt;id&gt;</code><span>snapshot and roll back the environment</span></div>
-        <div class="row"><code>ace stop</code><span>graceful stop</span></div>
-        <div class="row"><code>ace config [--resolve]</code><span>effective configuration, its layer, the security floor</span></div>
-        <div class="row"><code>ace crew</code><span>the roster and the live agent budget</span></div>
-        <div class="row"><code>ace govern [--dry-run]</code><span>one governor cycle: liveness, progress, failover, escalation</span></div>
-        <div class="row"><code>ace supervise [--dry-run]</code><span>one supervisor cycle: assign, monitor, verify, integrate</span></div>
-        <div class="row"><code>ace task / handoff</code><span>durable tasks (single owner) and structured handoffs</span></div>
-        <div class="row"><code>ace route show|set &lt;agent&gt;</code><span>an agent's model and provider route</span></div>
-        <div class="row"><code>ace watchdog [status|cycle]</code><span>independent recovery for a failed governor</span></div>
-        <div class="row"><code>ace adapters [health|audit]</code><span>the swap points, their providers and their health</span></div>
-        <div class="row"><code>ace bots [status]</code><span>experimental management bots — off by default</span></div>
+        <div class="row"><code>ace setup</code><span>install the crew: interrogate, inspect, plan, apply, verify</span></div>
+        <div class="row"><code>ace parts [&lt;id&gt;]</code><span>the six parts, why they are linked, and the questions an agent answers</span></div>
+        <div class="row"><code>node orchestration/tabs.mjs plan</code><span>the roster: the control plane plus one tab per project, and the budget with its source</span></div>
+        <div class="row"><code>… up [--dry-run]</code><span>create the tabs and start the agents that fit — a dry run creates nothing</span></div>
+        <div class="row"><code>… status</code><span>topology, cap, control plane, missions, model pool, circuits</span></div>
+        <div class="row"><code>… cap [--set N]</code><span>the effective worker cap <em>and where it came from</em>; a change is logged</span></div>
+        <div class="row"><code>… govern</code><span>the governor's brief across every project</span></div>
+        <div class="row"><code>… brief · dispatch</code><span>one mission's self-contained prompt, and its delivery to the owner</span></div>
+        <div class="row"><code>… verify · cycle</code><span>validate handoffs against evidence · recovery recheck, verify, next task</span></div>
+        <div class="row"><code>node orchestration/selftest.mjs</code><span>the installed setup's own proof, offline</span></div>
+        <div class="row"><code>ace config · crew · route</code><span>the same stack, seen by ACE's runtime: effective config, roster, model routes</span></div>
+        <div class="row"><code>ace task · handoff</code><span>durable tasks with a single owner, and structured handoffs</span></div>
+        <div class="row"><code>ace watchdog [status|cycle]</code><span>an independent control plane for a failed governor</span></div>
+        <div class="row"><code>ace adapters [health|audit]</code><span>11 swap points, 34 providers, deterministic fakes for tests</span></div>
+        <div class="row"><code>ace init · install · run</code><span>the runtime's package layer: scaffold a workspace, resolve deps, start it</span></div>
+        <div class="row"><code>ace status · snapshot · restore</code><span>human overview, and roll the environment back to a snapshot</span></div>
       </div>
-      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>1</code> means an operator must act, <code>2</code> a usage or configuration error. These ship in the repository now (<code>v0.1.3</code>); the npm release still serves <code>v0.1.2</code>, which predates the governance layer.</p>
+      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>0</code> installed and verified · <code>1</code> a check failed, or an operator must act · <code>2</code> a usage, intake or plan error — nothing written. With no answers and no terminal, <code>ace setup</code> refuses with <code>INTAKE_INVALID</code> and names every missing field instead of guessing. <code>ace setup</code> and <code>ace parts</code> are committed on this checkout's <code>main</code> and not pushed; <code>origin/main</code> and the <code>v0.1.3</code> tag carry the runtime alone, and npm serves <code>0.1.2</code>, which predates the installer.</p>
     </section>
 
-    <!-- git-native install -->
+    <!-- install -->
     <section id="git" class="band">
-      <h2 class="cmd">$ ace install github:&lt;owner&gt;/&lt;repo&gt;</h2>
-      <div class="transcript" id="git-block">
-        <p class="t-line">ace install github:EnzoVezzaro/fullstack-team</p>
-        <p class="out">cloned · resolved spec · wrote ace-lock.json</p>
-        <p class="t-line">ace install github:EnzoVezzaro/fullstack-team#v1.2.0</p>
-        <p class="out">pinned to ref v1.2.0 · integrity recorded</p>
+      <h2 class="cmd">$ ace --help &amp;&amp; ls</h2>
+      <div class="rows" id="git-rows">
+        <div class="row"><code>git clone https://github.com/EnzoVezzaro/ace-proagents</code><span>what is published today: the runtime at <code>origin/main</code> (tag <code>v0.1.3</code>) and npm's <code>0.1.2</code>. Zero runtime dependencies; nothing to build</span></div>
+        <div class="row"><code>node ace-proagents/ace.mjs --help</code><span>the command surface a clone gives you today</span></div>
+        <div class="row"><code>node ace-proagents/ace.mjs setup</code><span>the installer — committed on <code>main</code>, not pushed: it asks, or you answer with <code>--intake &lt;file.json&gt;</code> or flags</span></div>
+        <div class="row"><code>node orchestration/tabs.mjs up</code><span>inside Herdr: create the tabs and start the agents that fit</span></div>
+        <div class="row"><code>ace install github:&lt;owner&gt;/&lt;repo&gt;</code><span>the runtime's package layer — resolve a specification, lock it by hash</span></div>
       </div>
-      <p class="fine">Git-native install works without a registry. Git remains the source of truth; the registry only indexes specifications.</p>
       <div class="code-block">
         <div class="code-head">
-          <span>the target UX (README, “the killer experience”)</span>
-          <button type="button" class="copy" data-copy="code-killer">copy</button>
+          <span>what the install wrote — every path outside the two project trees</span>
+          <button type="button" class="copy" data-copy="code-tree">copy</button>
         </div>
-<pre id="code-killer">npm install -g ace
-ace install @ace/fullstack
-ace run
-ace status</pre>
+<pre id="code-tree">.acc/config/config.yaml
+.acc/config/templates/agents.md
+orchestration/lib/cap.mjs
+orchestration/lib/ego.mjs
+orchestration/lib/free-models.mjs
+orchestration/lib/handoff.mjs
+orchestration/lib/herdr.mjs
+orchestration/lib/topology.mjs
+orchestration/projects.json
+orchestration/README.md
+orchestration/selftest.mjs
+orchestration/state/.gitignore
+orchestration/tabs.mjs
+proagents/knowledge/CREW-PROTOCOL.md
+proagents/MONEY-CONTRACT.md
+proagents/registry/experts.json
+.acc-memory.md
+STACK.md</pre>
       </div>
-      <p class="fine">On npm today: <code>npm i ace-proagents</code> — free, v0.1.2. The global <code>ace</code> UX above is the target; the quick start is what runs today.</p>
+      <p class="fine">Twenty-one paths were written in that run: the eighteen above, the <code>ace</code> key merged into <code>package.json</code>, and one <code>.acc-memory.md</code> inside each project tree. The modules under <code>orchestration/lib/</code> and <code>tabs.mjs</code> are copied verbatim from the package's <code>assets/stack/</code> — the generic copy the installer ships, which is a sibling of this lab's own <code>orchestration/</code> rather than the same file (the shipped <code>free-models</code> and <code>cap</code> carry their own sources): <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">docs/STACK.md</a> maps which is which. Everything else is generated from your answers: <code>projects.json</code>, the <code>ace</code> key, the ACC files, the ProAgents layer and <code>STACK.md</code>. The install starts no agent, creates no tab, opens no browser space and invents no model route; it writes nothing outside your repository, and it never publishes or pushes.</p>
     </section>
 
     <!-- runtime state -->
     <section id="state" class="band">
-      <h2 class="cmd">$ ls .ace/</h2>
+      <h2 class="cmd">$ ls orchestration/state</h2>
       <div class="code-block">
         <div class="code-head">
-          <span>runtime state: private, never published</span>
-          <button type="button" class="copy" data-copy="code-tree">copy</button>
+          <span>runtime state — per project, and the cross-project view</span>
+          <button type="button" class="copy" data-copy="code-state">copy</button>
         </div>
-<pre id="code-tree">.ace/
-├── state.json           # status, active agent, agents[], tasks[]
-├── events.jsonl         # append-only event stream
-├── agents/&lt;id&gt;.json
-├── tasks/&lt;id&gt;.json
-├── context/context.json
-└── snapshots/&lt;id&gt;.json</pre>
+<pre id="code-state">orchestration/state/&lt;project&gt;/
+├── missions.json               # owner, scope, acceptance, model, state, retries
+├── missions/&lt;id&gt;.brief.md      # the exact prompt that was delivered
+├── handoffs/&lt;id&gt;-&lt;STATE&gt;.md    # the artifact, with evidence
+├── handoff-ledger.jsonl        # every transition, with its reason
+├── dispatch.jsonl              # who got what, on which pane, on which model
+└── cap.jsonl                   # refused spawns, with the reason
+
+orchestration/state/_global/
+├── assignments.json            # which pane holds which agent, in which tab
+├── providers.json              # per-model health: failures, cooldown, circuit
+├── failover.jsonl              # switches, and recoveries with their probe
+├── cap-settings.jsonl          # every worker-cap change, before → after
+└── governor-brief.md           # the last governor brief</pre>
       </div>
-      <div class="transcript" id="events-block">
-        <p class="out">{ "type": "task.start", "agent": "frontend", "seq": 1 }</p>
-        <p class="out">{ "type": "task.done", "agent": "backend", "seq": 2 }</p>
-        <p class="out">{ "type": "review.request", "policy": "require_review_before_merge", "seq": 3 }</p>
-      </div>
-      <p class="note">example event shapes, structure from the ace/v1 event stream</p>
+      <p class="fine">A worker's claim is not a result: a handoff that says <code>DONE</code> without a command, a file path or a measurement is recorded <code>unverified</code>, and an artifact written outside the mission's own project directory is an isolation violation that closes nothing. Every refusal is written down with its reason, the same way the cap records the spawn it declined.</p>
     </section>
 
-    <!-- governance -->
+    <!-- governor -->
     <section id="govern" class="band">
-      <h2 class="cmd">$ ace govern --dry-run</h2>
-      <p class="note">verbatim output: a fresh workspace, one heartbeat and one task in</p>
+      <h2 class="cmd">$ node orchestration/tabs.mjs govern</h2>
+      <p class="note">verbatim output: the same repo, after the install, read by the governor</p>
       <div class="transcript" id="govern-block">
-        <p class="out">governor cycle at 13:58:56Z — scope environment</p>
-        <p class="out">goal: (none declared) — no goal declared — set goal.statement in the ace key (0 done, 1 open)</p>
-        <p class="out">budget: 1/4 active</p>
-        <p class="out">  primary-supervisor [primary] alive — heartbeat 0s; route opencode:fledge-alpha-free ok; progress: yes (1 events, 1 task updates)</p>
-        <p class="out">detections: none</p>
-        <p class="out">not run:</p>
-        <p class="out">  · provider quota and usage APIs (no quota endpoint is integrated in this build)</p>
+        <p class="t-line">node orchestration/tabs.mjs plan</p>
+        <p class="out">topology: control-plane + alpha-api + beta-web   tabs live: 1/3
+cap: 4 active workers (source: projects.json:cap.max_active_workers); workers occupied 0
+  control   alpha-api-supervisor  (supervisor, tab control-plane)  alpha-api
+  control   beta-web-supervisor  (supervisor, tab control-plane)  beta-web
+  worker    alpha-api-worker  (alpha-api, pool project, tab alpha-api)
+  worker    beta-web-worker  (beta-web, pool project, tab beta-web)
+control plane live: 1/3 — missing alpha-api-supervisor, beta-web-supervisor</p>
+        <p class="t-line">node orchestration/tabs.mjs govern</p>
+        <p class="out">GOVERNOR BRIEF — 2026-10-13T16:39:16.335Z
+cap: 4 workers (projects.json:cap.max_active_workers); occupied 0; free 4
+CONTROL PLANE INCOMPLETE: alpha-api-supervisor, beta-web-supervisor — a supervisor that is not running cannot be reporting.
+
+PROJECT alpha-api (space alpha-api)
+  supervisor alpha-api-supervisor (NOT RUNNING)
+  money: the $19/mo plan
+  workers: alpha-api-worker (not running)[project]
+  queue pending: EMPTY — mint one task with a money line
+
+PROJECT beta-web (space beta-web)</p>
       </div>
-      <p class="fine">A heartbeat is not proof of progress. The same cycle with no heartbeat, or with a heartbeat but no movement in the window, reports <code>SUPERVISOR_ABSENT</code> or a stalled supervisor, plans recovery, and escalates to the operator when it cannot deliver one — the report says <code>delivered: false</code> rather than claiming a restart that did not happen.</p>
+      <p class="fine">Both lines above are the honest kind: the plan says which tabs exist (<code>1/3</code>) and names the two supervisors it has not started yet; the brief reports an incomplete control plane instead of a roster that looks staffed. The governor does not dispatch to workers — it authorises and ranks, and a supervisor turns that into a mission for its own project.</p>
       <dl class="label-grid" id="govern-grid">
-        <div class="row"><dt>hierarchy</dt><dd>governor → supervisor → worker</dd></div>
-        <div class="row"><dt>active agents</dt><dd>4 per project by default · raisable, not a ceiling · one budget across runtimes</dd></div>
-        <div class="row"><dt>boundary</dt><dd>the governor never messages a worker — refused in policy, not by prompt</dd></div>
-        <div class="row"><dt>failover</dt><dd>validated fallback routes · bounded restarts · backoff · escalation</dd></div>
+        <div class="row"><dt>hierarchy</dt><dd>governor → supervisors → workers · a governor → worker message is refused in code</dd></div>
+        <div class="row"><dt>budget</dt><dd>one global worker budget across every project tab · the control plane is never counted against it</dd></div>
+        <div class="row"><dt>money</dt><dd>every task names the dollar it can produce · the governor ranks the next dollar across the portfolio</dd></div>
+        <div class="row"><dt>models</dt><dd>free models only, with provenance · no verified free model means the dispatch is refused, not billed</dd></div>
+        <div class="row"><dt>handoffs</dt><dd>verified against evidence · a DONE claim with nothing behind it is <code>unverified</code></dd></div>
+        <div class="row"><dt>failover</dt><dd>validated fallback routes · bounded retries · cooldown · a circuit that clears only on a passing probe</dd></div>
         <div class="row"><dt>watchdog</dt><dd>a control plane outside the governor, so a dead governor is still recovered</dd></div>
         <div class="row"><dt>adapters</dt><dd>11 swap points · 34 providers, including deterministic fakes for tests</dd></div>
-        <div class="row"><dt>isolation</dt><dd>worktrees · bounded write scopes · one owner per task</dd></div>
-        <div class="row"><dt>management bots</dt><dd>experimental · off by default · intake cannot bypass the budget</dd></div>
         <div class="row"><dt>interface</dt><dd>the CLI and its <code>--json</code> documents · no HTTP API yet</dd></div>
       </dl>
-      <p class="fine">Each line above is a command in this package: <code>ace crew</code>, <code>ace govern --json</code>, <code>ace watchdog status</code>, <code>ace task list --json</code>, <code>ace adapters audit</code>, <code>ace bots status</code>. What is <em>not</em> implemented is listed as plainly: no HTTP API, no live management-bot transport, no provider quota check — see <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">docs/APP-INTEGRATION.md</a>.</p>
+      <p class="fine">Each line above is a command in the installed repo: <code>tabs.mjs plan</code>, <code>cap</code>, <code>govern</code>, <code>verify</code>, and ACE's own <code>crew</code>, <code>watchdog status</code>, <code>adapters audit</code>. The installed stack dispatches through Herdr — that is what the six parts are for — while ACE's own runtime records the request and reports <code>delivered: false</code> rather than claiming it started an agent. What is genuinely absent is listed as plainly: no HTTP API, no live management-bot transport, no provider quota check — see <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">docs/APP-INTEGRATION.md</a>.</p>
+      <div class="transcript" id="events-block">
+        <p class="out">the tab contract — one control plane plus one tab per project</p>
+        <p class="out">  ok    every declared agent resolves to a tab that allows its role</p>
+        <p class="out">  ok    a project with two supervisors is refused</p>
+        <p class="out">  ...</p>
+        <p class="out">selftest: 62 ok, 0 failures (611ms)</p>
+        <p class="out">note: healthCheck() was not exercised — it needs a real model probe, and this run is offline</p>
+      </div>
+      <p class="note">node orchestration/selftest.mjs — the installed setup's own proof, offline</p>
     </section>
 
     <!-- close -->
     <section id="end" class="band">
       <h2 class="cmd">$ ace status</h2>
-      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. The environment you just watched is the environment you get: orchestrator, workers, tools, models, policies, memory, lifecycle, described in one manifest, locked by hash, restored anywhere.</p>
+      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the money line. 141 tests pass on Node 20 and Node 22; a fresh install verifies itself in 14 checks, and the code it wrote into your repository proves itself offline in 62 assertions. It is not published yet: npm serves <code>0.1.2</code> and <code>origin/main</code> carries the runtime alone, so the installer comes from a checkout that has it.</p>
       <div class="receipt">
         <p class="r-head">pricing · what ACE costs today</p>
         <div class="r-row"><span>ACE core · spec draft ace/v1</span><b>$0.00</b></div>
         <div class="r-row"><span>runtime dependencies</span><b>0</b></div>
-        <div class="r-row"><span>git-native install</span><b>$0.00</b></div>
+        <div class="r-row"><span>the six parts</span><b>$0.00</b></div>
         <div class="r-row"><span>ACE Pro · optional support sub</span><b>$9.00/mo</b></div>
         <div class="r-row total"><span>total to install ACE</span><b>$0.00</b></div>
       </div>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
-        <code id="q-quick">cd my-workspace &amp;&amp; node ace.mjs run</code>
+        <code id="q-quick">node ace-proagents/ace.mjs --help</code>
         <button type="button" class="copy" data-copy="q-quick">copy</button>
       </div>
       <a class="sponsor" id="checkout-btn" data-checkout hidden>Sponsor / ACE Pro — $9.00/mo</a>
@@ -249,15 +389,15 @@ ace status</pre>
       <div class="cards">
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">
           <span class="c-t">quick start</span>
-          <span class="c-d">init, install, run — copy-paste commands, zero dependencies.</span>
+          <span class="c-d">install the crew, then watch it work: the real plan, apply and verify output.</span>
         </a>
-        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PLAN.md" target="_blank" rel="noopener">
-          <span class="c-t">the plan</span>
-          <span class="c-d">scope, order of work, what ships when, and what is still open.</span>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">
+          <span class="c-t">the six parts</span>
+          <span class="c-d">what each part installs, what it requires, and the exact name it hands on.</span>
         </a>
-        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PRODUCT.md" target="_blank" rel="noopener">
-          <span class="c-t">product spec</span>
-          <span class="c-d">what ACE is: manifest, agents, policies, lifecycle.</span>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/AGENTS.md" target="_blank" rel="noopener">
+          <span class="c-t">the repo contract</span>
+          <span class="c-d">the invariants an agent must not break, and the rule for changing a configuration field.</span>
         </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">
           <span class="c-t">source</span>
@@ -269,20 +409,21 @@ ace status</pre>
           <div class="foot-col">
             <h4>transcript</h4>
             <ul>
-              <li><a href="#session">ace run</a></li>
-              <li><a href="#spec">package.json</a></li>
-              <li><a href="#cli">ace --help</a></li>
+              <li><a href="#session">ace setup</a></li>
+              <li><a href="#parts">the six parts</a></li>
+              <li><a href="#spec">projects.json</a></li>
+              <li><a href="#cli">commands</a></li>
               <li><a href="#git">install</a></li>
-              <li><a href="#state">.ace/</a></li>
-              <li><a href="#govern">ace govern</a></li>
+              <li><a href="#state">state</a></li>
+              <li><a href="#govern">govern</a></li>
             </ul>
           </div>
           <div class="foot-col">
             <h4>docs</h4>
             <ul>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">quick start</a></li>
-              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PLAN.md" target="_blank" rel="noopener">the plan</a></li>
-              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PRODUCT.md" target="_blank" rel="noopener">product spec</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">the six parts</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">app integration</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/DESIGN.md" target="_blank" rel="noopener">design system</a></li>
             </ul>
           </div>

@@ -1,7 +1,7 @@
 {
   "name": "ace-proagents",
   "version": "0.1.3",
-  "description": "ACE — Agentic Compute Environment. npm for agentic coding environments.",
+  "description": "ACE — install a crew of coding agents into any repository: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that price every task, ACC memory, and the ProAgents money contract. One skill, one CLI.",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -10,9 +10,14 @@
   "keywords": [
     "agentic",
     "coding",
-    "environment",
+    "orchestration",
     "orchestrator",
-    "package-manager"
+    "multi-agent",
+    "herdr",
+    "governance",
+    "crew",
+    "skill",
+    "cli"
   ],
   "engines": {
     "node": ">=20"
@@ -20,12 +25,12 @@
   "dependencies": {},
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "check": "node --check ace.mjs && for f in lib/*.mjs lib/adapters/*.mjs site/app.js; do node --check \"$f\" || exit 1; done"
+    "check": "node --check ace.mjs && for f in lib/*.mjs lib/adapters/*.mjs assets/stack/orchestration/*.mjs assets/stack/orchestration/lib/*.mjs site/app.js; do node --check \"$f\" || exit 1; done"
   },
   "ace": {
     "spec": "ace/v1",
     "name": "ace",
-    "description": "ACE — Agentic Compute Environment. The package manager and registry for reproducible orchestrator-driven agentic coding environments.",
+    "description": "ACE — install a crew of coding agents into a repository, then govern it: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that price every task, ACC memory and the ProAgents money contract.",
     "goal": {
       "statement": "Ship an orchestrator-first Agentic Compute Environment whose governor keeps per-project supervisors and workers moving toward each goal inside a central agent budget, with isolated workspaces, durable state, bounded failover and an independent watchdog — reporting only what it can evidence."
     },
@@ -101,6 +106,7 @@
   "files": [
     "ace.mjs",
     "lib/",
+    "assets/",
     "schemas/",
     "README.md",
     "package.json"

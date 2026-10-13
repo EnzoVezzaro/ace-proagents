@@ -1,22 +1,40 @@
 # ACE
 
-ACE — Agentic Compute Environment. The CLI for reproducible orchestrator-driven agentic coding environments.
+**A skill and one CLI that installs a crew of coding agents into a repository.**
+`ace setup` asks what the work is, reads what the repository already says about
+itself, and writes the whole arrangement — the terminal spaces, one browser space
+per project, a governor over a global worker budget, one supervisor and its
+workers per project, durable memory, and a money line on every task.
 
-**Zero runtime dependencies.** Node ESM only (`ace.mjs`). Spec `ace/v1`. MIT.
+**Zero runtime dependencies.** Node ESM only (`ace.mjs`), Node 20+. Spec `ace/v1`. MIT.
+
+## The problem it removes
+
+A crew of agents working several areas at once is usually held together by hand:
+a terminal tab here, a browser profile there, a note about which agent owns which
+tree, a budget nobody enforces. ACE asks a few questions and writes that
+arrangement down as data, under one name you can follow wherever you look:
+
+```text
+project.id === its tab label === its browser space === basename(its tree)
+```
+
+The terminal tab, the browser space, the state directory and the governor's
+report all call a project the same thing, so there is one place to look for what
+it touched and one place to look for what it did in a browser. Adding a project
+is adding data to `orchestration/projects.json` — never editing the installer or
+a tab list.
+
+## Design rules
 
 **Git stays the source of truth.** An ACE package describes the *environment* — orchestrator, workers, tools, models, policies, memory, lifecycle — not application source. The local registry indexes specifications; it is optional.
 
-**Specification is not state.** `package.json` (the `ace` key) + `ace-lock.json` describe what should exist. Runtime state under `.ace/` describes what does exist.
+**Specification is not state.** `package.json` (the `ace` key) + `ace-lock.json` describe what should exist, and `orchestration/projects.json` is the data the installed crew reads. What actually exists — missions, handoffs, dispatch and cap logs, heartbeats, leases, routes — lives under `orchestration/state/` and `.ace/`, and neither is published.
 
 ## Install
 
-Install from npm (published, free):
-
-```bash
-npm i ace-proagents
-```
-
-Or clone this repository and run it with Node (18+):
+Clone it and run it with Node 20+. There is nothing to build and nothing to
+install — the package has no dependencies:
 
 ```bash
 git clone https://github.com/EnzoVezzaro/ace-proagents.git
@@ -24,9 +42,130 @@ cd ace-proagents
 node ace.mjs --help
 ```
 
-`package.json` declares `"bin": { "ace": "./ace.mjs" }`, the npm package installs the `ace` command (or run `node ace.mjs` from a clone).
+`package.json` declares `"bin": { "ace": "./ace.mjs" }`, so `npm i ace-proagents`
+also installs an `ace` command. **What is published predates the installer:** npm
+serves `0.1.2`, and `origin/main` (tag `v0.1.3`) carries the `ace/v1` package, the
+CLI and the governance runtime. The installer — `lib/stack.mjs`,
+`lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`,
+`test/stack.test.mjs` — is committed on this checkout's `main` and **not pushed
+yet**, so a clone of `origin/main` answers "unknown command: setup".
 
-## Quickstart
+Run `ace setup` from a checkout that has the installer, with the **target
+repository** as the working directory:
+
+```bash
+cd /path/to/your-repo
+node /path/to/ace-proagents/ace.mjs setup
+```
+
+`ace init` copies the CLI and `lib/`, but `assets/stack/` only travels with
+`ace setup`. A workspace scaffolded by `init` alone therefore has no bundle to
+install, and `setup` refuses (`PLAN_INVALID`, exit 2) rather than writing half an
+arrangement.
+
+The other half of the product is the skill an agent loads before running any of
+this: `.agents/skills/ace/SKILL.md`. It lives with the workspace that uses ACE
+rather than inside this package, and it is the manual for the interrogation, the
+six parts, and the rules for driving what was installed.
+
+## Install the crew
+
+```bash
+# on a terminal: it asks, and prints why each question matters
+node ace.mjs setup
+
+# or answer in one line — how an agent does it, with no terminal to prompt on
+node ace.mjs setup \
+  --goal "ship the paid API" \
+  --money "the $19/mo plan" \
+  --projects experiments/alpha-api,experiments/beta-web
+
+node ace.mjs setup --dry-run --json    # the plan alone; writes nothing
+node ace.mjs parts --questions         # the intake schema, with defaults and reasons
+```
+
+Five stages — **interrogate → inspect → plan → apply → verify** — and it prints
+what it decided, what it wrote and what it checked:
+
+```text
+plan     — 6 part(s), 21 write(s)
+apply    — 21 written, 0 left alone
+verify   — 14 passed, 0 failed, 2 not run
+```
+
+The two checks reported as *not run* state their precondition instead of passing
+quietly: live tab creation needs a running Herdr session, and a governor cycle
+needs live state.
+
+With no answers and no terminal, `ace setup` refuses with `INTAKE_INVALID`, names
+every missing field and writes nothing. `--intake <file.json>` takes the answers
+as a file (the same keys as the flags; `ace parts --questions --json` is the
+schema), `--parts a,b` installs a subset (the parts it requires come with it),
+and `--force` overwrites generated files that differ. `--harness`, `--model
+provider/model`, `--cap`, `--browser`, `--verification`, `--first-task` and
+`--deadline` answer the rest of the interrogation.
+
+Exit codes: `0` installed and verified · `1` installed but a check failed, or an
+operator must act · `2` a usage, intake or plan error — nothing written.
+
+### The six parts
+
+| Part | What it installs |
+|---|---|
+| `herdr-spaces` | one Herdr tab per project plus a `control-plane` tab, and the orchestrator that maintains them |
+| `ego-lite-spaces` | one Ego Lite browser space per project, named after the project's own tree |
+| `govern` | one governor over a **global** worker budget, with free-model-only failover |
+| `supervisors-workers` | exactly one supervisor and its workers per project, every task carrying the money line it can produce |
+| `acc` | the ACC control file and one `.acc-memory.md` per tree, so a session starts informed |
+| `proagents` | the money contract, the handoff convention every mission ends with, and the tool registry |
+
+[docs/STACK.md](./docs/STACK.md) is their map: what each installs, what it
+requires, which exact name it hands to the next, and which files are copied
+verbatim rather than generated.
+
+### What lands in the repository
+
+```text
+orchestration/projects.json   the data: topology, budget, harness policy, projects, tasks
+orchestration/tabs.mjs        plan · up · status · cap · govern · brief · dispatch · verify · cycle
+orchestration/lib/            topology · cap · herdr · ego · handoff · free-models
+orchestration/state/          per-project missions, handoffs, dispatch and cap logs
+STACK.md                      the map of what was installed, and how to drive it
+.acc-memory.md                durable memory, and one beside each project tree
+proagents/                    the money contract, the handoff convention, the tool registry
+```
+
+Then, inside a Herdr session:
+
+```bash
+node orchestration/tabs.mjs plan        # the roster, and the budget with its source
+node orchestration/tabs.mjs up          # create the tabs and start the agents that fit
+node orchestration/tabs.mjs govern      # the governor's brief across every project
+node orchestration/selftest.mjs         # the installed setup's own proof
+```
+
+`orchestration/selftest.mjs` runs offline against the code that was just written
+into the repository and prints its own count — 62 assertions on a fresh install,
+exit 0, with no multiplexer, no network and no browser. It is the check that
+catches a bundle which was copied but cannot actually run.
+
+### What an install does not do
+
+- It starts no agent, creates no tab and opens no browser space. `tabs.mjs up`
+  does that, inside a running multiplexer.
+- It invents no model route. With no model supplied, none is written, and work is
+  refused rather than silently billed when no free model is verified.
+- It writes nothing outside the repository, and never publishes or pushes.
+- It never clobbers a generated file that already exists and differs: a repo that
+  already has a `projects.json` has decisions in it that an installer cannot
+  re-derive. Memory files are seeded once and never overwritten at all.
+- It does not claim a check passed when the check could not run.
+
+## The package workflow (`init` → `run`)
+
+The installer is one half of ACE; this is the other. A package declares its
+environment specification by hand, and the runtime governs whichever arrangement
+is in place — the installed one, or one written by hand:
 
 ```bash
 node ace.mjs init --name my-workspace
@@ -55,7 +194,16 @@ node ace.mjs install github:owner/repo#v1.2.0
 node ace.mjs install git+https://example.com/owner/repo.git
 ```
 
-## Commands
+## Command reference
+
+Installing the crew:
+
+| Command | Description |
+|---------|-------------|
+| `ace setup [--intake <file>] [--goal …] [--money …] [--projects a,b] [--dry-run] [--parts a,b] [--force] [--json]` | Install the crew stack into this repository: interrogate → inspect → plan → apply → verify |
+| `ace parts [<id>] [--questions] [--json]` | The six parts ACE installs, and the intake schema an agent can answer |
+
+Packages:
 
 | Command | Description |
 |---------|-------------|
@@ -87,7 +235,7 @@ node ace.mjs install git+https://example.com/owner/repo.git
 | `ace autopilot run [--max-cycles N] [--json]` | Run cycles in this terminal, then exit (non-zero if the last cycle failed) |
 | `ace autopilot off` | Stop exactly the recorded pid |
 
-Governance:
+Governance (the runtime that governs the installed stack):
 
 | Command | Description |
 |---------|-------------|
@@ -119,6 +267,9 @@ readable in a fixed shape:
 - **Loops:** `ace watchdog run --json` and `ace autopilot run --json` write one
   JSON document **per cycle** (a stream, not a single document).
 
+`ace setup` and `ace parts` follow the same discipline: one document on stdout,
+or one structured error on stderr with the affected fields named.
+
 Prose never shares a stream with a document, so `ace task claim <id> --agent <a>
 --json | jq .task.status` works, and a refusal is readable the same way.
 
@@ -127,6 +278,7 @@ Prose never shares a stream with a document, so `ace task claim <id> --agent <a>
 ### Workflow
 
 ```
+ace setup                      → install the crew: plan, apply, verify
 ace init --name my-workspace   → scaffold package + lockfile + self-contained CLI
 ace install                    → resolve lockfile / local registry, or clone a git ref
 ace run                        → init .ace/ state, set status running
@@ -137,7 +289,7 @@ ace verify                     → run configured verification scripts
 ace autopilot on               → 24/7 loop: verify + checkpoint every cycle
 ```
 
-### What Gets Generated
+### What `ace init` generates
 
 ```
 my-workspace/
@@ -145,7 +297,8 @@ my-workspace/
 ├── ace-lock.json     # resolved versions + integrity
 ├── ace.mjs           # copied CLI entry
 ├── lib/              # copied modules: pkg, runtime, registry, config, crew,
-│                     # governance, watchdog, bots, cli-governance, adapters/
+│                     # governance, watchdog, bots, cli-governance, adapters/,
+│                     # and the installer's own intake, stack and cli-stack
 ├── README.md
 └── .ace/             # runtime state (created on run; private, not published)
     ├── state.json
@@ -162,7 +315,10 @@ my-workspace/
     └── snapshots/
 ```
 
-Public package files (`package.json`, `ace-lock.json`, `README.md`) are publishable. Runtime state under `.ace/` is private and never published.
+`init` copies the CLI and `lib/` only — the crew bundle under `assets/stack/` is
+not copied here, because `ace setup` is what writes it into a repository.
+
+Public package files (`package.json`, `ace-lock.json`, `README.md`) are publishable. Runtime state under `.ace/` and `orchestration/state/` is private, and the installer ships an `orchestration/state/.gitignore` that keeps the directory while ignoring what agents write into it.
 
 ### Package format
 
@@ -190,7 +346,13 @@ MVP registry is file-backed at `.ace-registry/` (gitignored). `ace search` / `ac
 
 ## Configuration
 
-All environment shape lives in the `ace` key. Minimal example (fields match what `ace init` scaffolds):
+All environment shape lives in the `ace` key. From the answers it was given,
+`ace setup` writes a fuller one — `goal`, `roles.governor`,
+`roles.supervisors`, `roles.workers`, `concurrency`, `adapters`, `verification`,
+and an `orchestration` block that points at `orchestration/projects.json` — plus
+`models.default` when a model was pinned with `--model provider/id`. It merges
+that key into your manifest and leaves every other key alone. Minimal example
+(fields match what `ace init` scaffolds):
 
 ```json
 {
@@ -198,7 +360,7 @@ All environment shape lives in the `ace` key. Minimal example (fields match what
   "version": "0.1.0",
   "license": "MIT",
   "type": "module",
-  "engines": { "ace": ">=1.0.0" },
+  "engines": { "node": ">=20" },
   "dependencies": {},
   "ace": {
     "spec": "ace/v1",
@@ -225,26 +387,45 @@ All environment shape lives in the `ace` key. Minimal example (fields match what
 ## Architecture
 
 ```text
-ACE REGISTRY  →  package metadata / specifications / versions / integrity
+ACE SETUP     →  interrogate → inspect → plan → apply → verify      (six parts, one name)
+      │
+THE CREW      →  orchestration/projects.json   the data: topology, budget, projects, tasks
+      │          orchestration/tabs.mjs        plan · up · status · cap · govern · dispatch
+      │          orchestration/state/          missions, handoffs, dispatch, cap, governor brief
+      │          .acc-memory.md · proagents/    memory, the money contract, the handoff convention
+      │
+ACE RUNTIME   →  governor → supervisors → workers, over the same projects and the same budget
+      │          .ace/state.json, events.jsonl, agents/, tasks/, heartbeats/, leases/, routes/
       │
 ACE PACKAGE   →  package.json (manifest + ace spec) + ace-lock.json
       │
-ACE RUNTIME   →  orchestrator + workers + tools + state + events
-      │
-ACE STATE     →  .ace/state.json, events.jsonl, agents/, tasks/, context/
+ACE REGISTRY  →  package metadata / specifications / versions / integrity   (optional, file-backed)
 ```
 
-Status: working early release (spec draft `ace/v1`). The package format, the
-CLI, the registry, composition, the verify/autopilot loop and the governance
-layer (governor, supervisors, workers, central budget, failover, watchdog) are
-implemented and covered by `npm test`. [PLAN.md](./PLAN.md) holds module
-contracts and worker assignments, [PRODUCT.md](./PRODUCT.md) the product framing.
+Status: working early release (spec draft `ace/v1`). The stack installer, the
+package format, the CLI, the registry, composition, the verify/autopilot loop and
+the governance layer (governor, supervisors, workers, central budget, failover,
+watchdog) are implemented and covered by `npm test` — 141 tests, green on Node 20
+and Node 22, with `npm run check` clean.
+
+The strongest check is the end-to-end one: `ace setup` installs the bundle into a
+scratch repository, and then the code that was written there has to pass its own
+proof (`node orchestration/selftest.mjs`, 62 assertions, exit 0). The CI workflow
+runs exactly that; it was added on 2026-10-13 and has not yet been exercised on
+GitHub, because nothing has been pushed since.
+
+[PLAN.md](./PLAN.md) holds module contracts and worker assignments,
+[PRODUCT.md](./PRODUCT.md) the product framing, [docs/STACK.md](./docs/STACK.md)
+the map of what the installer writes, and
+[docs/APP-INTEGRATION.md](./docs/APP-INTEGRATION.md) the read-only `--json`
+surface a UI may consume.
 
 `engines` declares the Node.js floor the CLI needs (`>=20`); it is not a claim
 about an ACE runtime version. The spec version is `ace/v1`.
 
-## Governance (Governor → Supervisor → Worker)
+## Governing the crew (Governor → Supervisor → Worker)
 
+Installing the stack writes the arrangement; this is the runtime that governs it.
 ACE manages the environment in which a Governor, project Supervisors and worker
 agents operate. Three names matter:
 
@@ -427,11 +608,20 @@ so the adapter boundary is what ACE provides today.
 
 ### Runtime state
 
-`.ace/` holds private runtime state (never published): `state.json`,
-`events.jsonl`, `actions.jsonl`, `agents/`, `tasks/`, `heartbeats/`, `leases/`,
-`routes/`, `checkpoints/`, `handoffs/`, `snapshots/`, `session.json`, `bots/` and
-`secrets/`. Secrets are referenced by name (`secret:<name>`); their values are
-redacted from events, handoffs, action journal entries and generated artifacts.
+Two private trees, never published, because they describe different things:
+
+- **`orchestration/state/`** — the installed crew, written by the orchestrator:
+  `state/<project>/missions.json` and `missions/<id>.brief.md` (the exact prompt
+  that was delivered), `state/<project>/handoffs/<id>-<STATE>.md`,
+  `handoff-ledger.jsonl`, `dispatch.jsonl`, `cap.jsonl` (refused spawns, with
+  their reason), and `state/_global/` holding `assignments.json`,
+  `providers.json`, `failover.jsonl`, `cap-settings.jsonl` and
+  `governor-brief.md`.
+- **`.ace/`** — ACE's own runtime: `state.json`, `events.jsonl`, `actions.jsonl`,
+  `agents/`, `tasks/`, `heartbeats/`, `leases/`, `routes/`, `checkpoints/`,
+  `handoffs/`, `snapshots/`, `session.json`, `bots/` and `secrets/`. Secrets are
+  referenced by name (`secret:<name>`); their values are redacted from events,
+  handoffs, action journal entries and generated artifacts.
 
 ## ACE Pro (support subscription)
 
@@ -439,6 +629,7 @@ ACE is MIT-licensed and the CLI stays free. **ACE Pro** is a $9.00 USD/month sup
 
 - Landing: <https://ace-seven-blue.vercel.app>
 - Subscribe directly: <https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800>
+- Cancel any time in the Stripe customer portal: <https://billing.stripe.com/p/login/9B6dRaclLgbjbqx1bB28800>
 
 ## License
 

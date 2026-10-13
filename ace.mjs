@@ -1165,6 +1165,38 @@ async function cmdAutopilot(args) {
 // Governance surface — dispatched into lib/cli-governance.mjs
 // ---------------------------------------------------------------------------
 
+const STACK_COMMANDS = new Set(["setup", "parts"]);
+
+/**
+ * The stack installer lives in lib/cli-stack.mjs. It is not a governance
+ * command: governance refuses to act outside an initialized workspace, and
+ * `ace setup` is the command that initializes one.
+ */
+async function runStack(command, args) {
+  let mod;
+  try {
+    mod = await import(path.join(HERE, "lib", "cli-stack.mjs"));
+  } catch (err) {
+    writeStructuredError({
+      code: "STACK_UNAVAILABLE",
+      message: `ace setup needs lib/cli-stack.mjs: ${(err && err.message) || err}`,
+      recoverable: true,
+      suggestions: ["Reinstall the ace package so lib/ and assets/ are complete"],
+    });
+    process.exitCode = 1;
+    return;
+  }
+  await mod.run(command, args, {
+    workspaceInitialized,
+    notInitialized,
+    writeStructuredError,
+    printJson,
+    printTable,
+    runVerifyChecks,
+    gitInfo,
+  });
+}
+
 const GOVERNANCE_COMMANDS = new Set([
   "config",
   "crew",
@@ -1298,6 +1330,12 @@ async function main() {
 Usage: ace <command> [options]
 
 Commands:
+  setup                  Install the crew stack into this repository: interrogate,
+                         inspect, plan, apply, verify
+                         [--intake <file>] [--goal …] [--money …] [--projects a,b]
+                         [--harness …] [--cap N] [--browser] [--verification "cmd,cmd"]
+                         [--parts a,b] [--dry-run] [--force] [--json]
+  parts [<id>]           The six parts ACE installs, and why they are linked [--questions]
   init [--name <n>]      Scaffold package.json (with ace key) + ace-lock.json + README
   install [<pkg>]       Install from local registry, or git ref
   list                   List installed packages
@@ -1363,6 +1401,11 @@ Options:
 
 pro: ACE Pro $9.00/mo — https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800 (free core · MIT · cancel any time)
 `);
+    return;
+  }
+
+  if (STACK_COMMANDS.has(cmd)) {
+    await runStack(cmd, args.slice(1));
     return;
   }
 

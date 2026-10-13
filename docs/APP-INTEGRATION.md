@@ -5,17 +5,64 @@
 `https://ace-seven-blue.vercel.app` is deployed from a separate workspace. This
 repository contains the CLI package and the static landing under `site/`
 (`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`) — it
-does not contain the application's source. **No frontend change was made as part
-of the governance work, and nothing here should be read as having modified the
-deployed app.**
+does not contain the application's source.
 
-What this repository does provide is the read-only, machine-consumable surface
-such an application needs. Wiring it up is a separate piece of work.
+What this repository does provide is the machine-consumable surface such an
+application needs, in two layers:
 
-## The surface a UI should consume
+1. **`ace setup`** — the installer. It interrogates, inspects the target
+   repository, plans, applies and verifies, and every stage is available as one
+   JSON document. A UI can drive the whole installation without a terminal.
+2. **the runtime** — `ace govern` / `crew` / `task` / `handoff` / `watchdog` /
+   `adapters`, plus the orchestrator the installer writes into the target repo
+   (`orchestration/tabs.mjs`). Read-only surfaces for a status view.
 
-Every command below is implemented and covered by `test/`. All of them are
-read-only except where noted; none of them prints a credential.
+Both layers exist in this checkout. The installer is committed on `main` and
+**not pushed**, so it is not reachable from `origin/main` or from npm (`0.1.2`,
+which predates it); only a checkout that has the installer can offer `ace setup`
+to a UI.
+
+Every command below is implemented and covered by `test/`. All are read-only
+except where noted; none prints a credential.
+
+## The installer surface
+
+| Command | Returns |
+| --- | --- |
+| `ace setup --json` | One document: the answers used and where they came from, the inspected facts, the plan, what was written, and the per-part verification |
+| `ace setup --dry-run --json` | The plan alone (`dry_run: true`); nothing is written |
+| `ace parts --json` | The six installable parts: id, title, what each installs, what it requires, how it is verified |
+| `ace parts <id> --json` | One part in full |
+| `ace parts --questions --json` | The intake schema: for each question its id, prompt, kind, whether it is required, its default, the repo fact it can be detected from, and why it matters — the shape a UI renders as a form |
+
+The document from `ace setup --json` is the one a UI reads. Its fields:
+
+```text
+command        "setup"
+answers_from   "flags" | "file" | "terminal" | a combination
+facts          dir, is_git, branch, manifest (name, scripts, workspaces) or null,
+               has_ace_key, has_orchestration, has_acc_config, has_acc_memory,
+               has_agents_md, candidate_roots[],
+               detected_verification[{ name, command }], browser_work_suggested, node
+plan           at, dir, force, parts[{ id, title, requires, installs, verify }],
+               writes[{ path, kind, from?, part }], links[{ from, to, name, how }],
+               config{ name, goal, money, harness, model, cap, browser, verification, projects },
+               violations[]
+applied        written[{ path, kind, bytes?, note? }], skipped[{ path, reason }],
+               created_dirs[], at
+verify         ok, passed, failed, skipped,
+               checks[{ part, name, status, detail }]   status: "pass" | "fail" | "skip"
+```
+
+`plan.links` is the part-to-part contract as data: which exact name one part
+hands to the next (`project.id`, `browser_space`, `cap`, `tasks[].money`,
+`acceptance`). `plan.violations` is non-empty only when the answers would produce
+a setup the rules reject — a project root that does not exist, two trees that
+collide on one id, an agent name the multiplexer cannot attach. A UI should show
+`verify.checks` verbatim rather than summarising it: a `skip` is a check that did
+not run, and it always names its precondition.
+
+## The runtime surface
 
 | Command | Returns |
 | --- | --- |
@@ -29,35 +76,55 @@ read-only except where noted; none of them prints a credential.
 | `ace bots status --json` | Whether the experimental management-bot intake is enabled and ready, and what is missing |
 | `ace adapters health --json` | Per-capability provider health and compatibility |
 
-Every governance command accepts `--json`, including the mutating ones
-(`config set`, `task claim`, `route set`, `bots enable`, `handoff submit`), so a
-UI never has to scrape prose. The stream discipline is fixed:
+In an installed repository the orchestrator prints its own documents, and they
+are not uniform — check before parsing:
+
+| Command | Output |
+| --- | --- |
+| `node orchestration/tabs.mjs status` | one JSON document, always (topology, placement, cap with its source, per-project missions, free-model pool, circuits) |
+| `node orchestration/tabs.mjs cap` | one JSON document, always (the cap, **and where it came from**) |
+| `node orchestration/tabs.mjs plan --json` | the roster: control plane, workers, what the cap trimmed |
+| `node orchestration/tabs.mjs up` | one JSON document of what it started, refused, or would start under `--dry-run` |
+| `node orchestration/tabs.mjs dispatch --project <id> --task <id>` | one JSON document; writes nothing under `--dry-run` |
+| `node orchestration/tabs.mjs govern` | the governor's brief as **prose** (no `--json`), also written to `orchestration/state/_global/governor-brief.md` — read the file, do not scrape the prose |
+| `node orchestration/tabs.mjs brief --project <id> --task <id>` | the prompt text that would be delivered, verbatim |
+
+Every command accepts `--json`, including the mutating ones (`config set`, `task
+claim`, `route set`, `bots enable`, `handoff submit`), so a UI never has to
+scrape prose. The stream discipline is fixed:
 
 - **Success:** exactly one JSON document on **stdout**, stderr empty.
-- **Refusal / configuration error:** exactly one structured error document
+- **Refusal / error:** exactly one structured error document
   (`{ code, message, recoverable, suggestions }`) on **stderr**, stdout empty.
-- **Loops:** `ace watchdog run --json` writes one document **per cycle** (a
-  stream, not one document) for as long as the loop runs.
+- **Loops:** `ace watchdog run --json` and `ace autopilot run --json` write one
+  document **per cycle** (a stream, not one document) for as long as the loop
+  runs.
 
-Exit codes are meaningful for a UI: `0` success, `1` an operator action is
-required (an escalation, a rejected handoff, a failed post-merge check, an
-task transition that is not legal), `2` a usage or configuration error. The
-governance commands fail closed outside an initialized workspace
-(`PROJECT_NOT_INITIALIZED`, exit 1).
+Exit codes are meaningful for a UI: `0` success · `1` an operator action is
+required (an escalation, a rejected handoff, a failed post-merge check, a
+transition that is not legal) — and for `ace setup`, installed but a check
+failed · `2` a usage, intake or plan error, and for `ace setup` **nothing was
+written**. The governance commands fail closed outside an initialized workspace
+(`PROJECT_NOT_INITIALIZED`, exit 1); `ace setup` is the command that initializes
+one.
 
 ### What a UI must not do
 
 - Do not scrape the human-readable output: the `--json` documents are the
   contract. Prose changes; these fields do not.
-- Do not assume a long-running command returns once: start the loop a UI shows
-  as "watchdog" is `ace watchdog on` (detached), not `ace watchdog run`
-  (foreground, streams a document per cycle, needs `--max-cycles` to end).
-- Do not read `.ace/secrets/`, and do not echo a `secret_ref` value. Secrets are
-  referenced by name (`secret:<name>`) and redacted from events, handoffs and the
-  action journal.
 - Do not offer a control that bypasses a policy. Any control a UI exposes must
   call the same command the CLI offers, so the budget, the isolation checks, the
   verification requirement and the security floor all still apply.
+- Do not drive `ace setup` interactively on behalf of a user. Supply
+  `--intake` or flags: with no answers and no terminal it refuses
+  (`INTAKE_INVALID`) and names every missing field, and that refusal is the
+  contract, not a prompt to work around.
+- Do not assume a long-running command returns once: the loop a UI shows as
+  "watchdog" is `ace watchdog on` (detached), not `ace watchdog run` (foreground,
+  streams a document per cycle, needs `--max-cycles` to end).
+- Do not read `.ace/secrets/`, and do not echo a `secret_ref` value. Secrets are
+  referenced by name (`secret:<name>`) and redacted from events, handoffs and the
+  action journal.
 
 ## What is not implemented here
 
@@ -68,22 +135,33 @@ governance commands fail closed outside an initialized workspace
   OpenDots does not exist upstream as an ACE integration and is not implemented
   here. Deliveries are recorded and retried, and `ace bots status` says so
   rather than implying a connection exists.
-- **No live multiplexer delivery.** The adapter registry declares Herdr, but no
-  live agent dispatch is wired: governance records the request and reports
-  `delivered: false` instead of claiming an agent was started.
 - **No provider quota or usage API.** The governor reports it as a check it did
   not run, because no quota endpoint is integrated.
 
+Two layers, and they are not the same thing:
+
+- **ACE's own runtime** records a delivery request and reports `delivered:
+  false`; it does not start an agent.
+- **The installed stack** — the six parts, driven by `orchestration/tabs.mjs` —
+  really does create tabs, split panes and start agents, and it does that
+  through Herdr. What it will not do is *install* and *dispatch* in one step:
+  `ace setup` starts nothing, and `tabs.mjs up` is what does, inside a running
+  Herdr session.
+
 ## Minimal wiring sketch
 
-The smallest useful integration reads one document per refresh:
+The smallest useful integration reads two documents: one to install, one to
+watch.
 
 ```bash
-ace status --json        # goal, crew, budget, tasks, watchdog, bots, adapters
+ace setup --dry-run --json    # a plan the user approves before anything is written
+ace setup --json              # install; read applied.written and verify.checks
+ace status --json             # then poll: goal, crew, budget, tasks, watchdog
 ```
 
-and drives controls through the same commands an operator uses, for example
-`ace govern --json` for one cycle, `ace task claim <id> --agent <agent>` to take
-work, or `ace watchdog cycle --json` to ask the independent control plane to
-check the governor. Anything beyond that — a server, authentication, per-action
-authorization — is net-new work in the application's own repository.
+Controls go through the same commands an operator uses — `ace govern --json` for
+one cycle, `ace task claim <id> --agent <agent>` to take work, `ace watchdog
+cycle --json` to ask the independent control plane to check the governor.
+Anything beyond that — a server, authentication, per-action authorization, a
+form that renders `ace parts --questions` — is net-new work in the application's
+own repository.

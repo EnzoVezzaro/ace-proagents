@@ -1,0 +1,44 @@
+# ace-proagents — ACC configuration
+#
+# This repository ships these ACC files to other repositories — they are the
+# `acc` part of `ace setup` — so it follows the same convention itself.
+#
+# Optional. When absent, ACC uses sensible defaults and every command
+# still works. See the repository-structure spec.
+schema_version: 1
+
+# Templates — the system uses these to create and modify ACC files.
+# Edit the .md files in .acc/config/templates/ to customize output.
+# Uncomment to override a template path (relative to project root).
+# templates:
+#   agents_md: .acc/config/templates/agents.md
+
+# Engine (AI-powered, token-gated). The AI phase only runs when the
+# trigger fires — that is the token budget control. mode: commits |
+# changes | always. commits → count git commits since the last
+# triggered run; changes → content-hash snapshot of changed files.
+# Default: 3 commits.
+# engine:
+#   trigger:
+#     mode: commits
+#     threshold: 3
+#   supervisor:
+#     # Second AI pass that scores proposed changes against ACC rules
+#     # (0-100) before anything is written; iterates until compliant.
+#     enabled: false
+#     threshold: 85
+#     max_iterations: 3
+
+# AI configuration (optional, AI SDK v5). Core ACC stays offline and
+# deterministic — AI is explicit opt-in and never required. Uncomment
+# and edit to configure one or more providers. API keys are read from
+# the environment (api_key_env), never stored in the repository.
+# ai:
+#   enabled: false
+#   default: main
+#   providers:
+#     - id: main
+#       provider: openai            # openai | anthropic | google | <npm package>
+#       model: gpt-4o
+#       api_key_env: OPENAI_API_KEY
+#       base_url: null              # optional override (e.g. NVIDIA, OpenRouter)

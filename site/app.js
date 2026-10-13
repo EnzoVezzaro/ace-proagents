@@ -272,7 +272,7 @@ window.setInterval(() => {
     }
   }
 
-  document.querySelectorAll("#spec .code-block, #state .code-block, #git .code-block").forEach((el) => {
+  document.querySelectorAll("#spec .code-block, #state .code-block, #git .code-block, #parts .code-block").forEach((el) => {
     if (REDUCED) return;
     /* Only opacity pre-set here: a pre-applied clip-path zeroes the
      * element's intersection rect, so inView would never fire. The clip is
@@ -295,54 +295,25 @@ window.setInterval(() => {
 })();
 
 /* ------------------------------------------------------------------ */
-/* CLI rows: fast stagger, a table printing line by line               */
+/* Row tables: fast stagger, a table printing line by line             */
 /* ------------------------------------------------------------------ */
-(function cli() {
-  const rowsWrap = document.getElementById("cli-rows");
-  if (!rowsWrap || REDUCED) return;
-  const rows = [...rowsWrap.querySelectorAll(".row")];
-  setInitial(rows);
-  armReveal(rowsWrap, 0.1, () => {
-    rows.forEach((r, i) => printIn(r, { delay: i * 0.035, duration: 0.32 }));
-  });
+(function rowTables() {
+  if (REDUCED) return;
+  for (const id of ["cli-rows", "git-rows", "parts-rows"]) {
+    const rowsWrap = document.getElementById(id);
+    if (!rowsWrap) continue;
+    const rows = [...rowsWrap.querySelectorAll(".row")];
+    setInitial(rows);
+    armReveal(rowsWrap, 0.1, () => {
+      rows.forEach((r, i) => printIn(r, { delay: i * 0.035, duration: 0.32 }));
+    });
+  }
 })();
 
 /* ------------------------------------------------------------------ */
-/* Git-native: commands type, outputs and event rows print             */
+/* Event rows: the governor's own record, printing line by line         */
 /* ------------------------------------------------------------------ */
-(function gitAndState() {
-  const git = document.getElementById("git-block");
-  if (git && !REDUCED) {
-    const cmds = [...git.querySelectorAll(".t-line")];
-    const outs = [...git.querySelectorAll(".out")];
-    setInitial(outs);
-    cmds.forEach((c) => {
-      c.style.clipPath = "inset(0 100% 0 0)";
-    });
-    armReveal(git, 0.3, () => {
-      cmds.forEach((c) => {
-        animate(
-          c,
-          { clipPath: ["inset(0 100% 0 0)", "inset(0 0% 0 0)"] },
-          {
-            duration: Math.max(0.24, (c.textContent.length * 12) / 1000),
-            ease: "linear",
-            onComplete: () => {
-              c.style.clipPath = "none";
-            },
-          }
-        );
-      });
-      outs.forEach((o, i) => printIn(o, { delay: 0.5 + i * 0.28, onComplete: () => o.classList.add("printed") }));
-      window.setTimeout(() => {
-        outs.forEach((o) => (o.style.opacity = ""));
-        cmds.forEach((c) => {
-          c.style.clipPath = "none";
-        });
-      }, 3400);
-    });
-  }
-
+(function eventRows() {
   const events = document.getElementById("events-block");
   if (events && !REDUCED) {
     const rows = [...events.querySelectorAll(".out")];

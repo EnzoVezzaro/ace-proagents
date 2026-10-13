@@ -86,7 +86,7 @@ components:
 
 **Creative North Star: "Phosphor Terminal"**
 
-The page is not a website about a CLI tool; it *is* a terminal session. One monospaced voice types and prints down an 80-column field on curved glass, a fixed history rail on the left tracks where you are in the session, and every section is introduced by the command that would produce it (`$ ace init && ace run`, `$ cat package.json`). The aesthetic philosophy is total commitment to the metaphor: there is no marketing layer sitting on top of the terminal, because there is no "top." Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface.
+The page is not a website about a CLI tool; it *is* a terminal session. One monospaced voice types and prints down an 80-column field on curved glass, a fixed history rail on the left tracks where you are in the session, and every section is introduced by the command that would produce it (`$ ace setup`, `$ cat orchestration/projects.json`, `$ node orchestration/tabs.mjs plan`). The aesthetic philosophy is total commitment to the metaphor: there is no marketing layer sitting on top of the terminal, because there is no "top." Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface.
 
 Motion is deliberately machine-shaped rather than web-shaped: text arrives by typing or by clip-path reveal, printed lines shed a single phosphor afterimage, the block cursor blinks on a hard step, and scroll only repositions the session. One authored motion language, driven from JavaScript (Motion v14, vendored, durations in seconds), never decorative parallax.
 
@@ -181,6 +181,8 @@ Zero radius, everywhere, without exception: buttons, code blocks, action line, t
 ### Action Line (signature)
 The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 78ch. Left to right: a Phosphor Live `~/ace $` prompt, the Bloom White command in selectable horizontally-scrollable text, and a copy button. This is the page's primary CTA and it looks like input, not like marketing.
 
+The command in it is the one a visitor can run today — currently the clone plus `node ace-proagents/ace.mjs setup`, because the published package predates the installer. When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
+
 ### Cards / Containers (code blocks)
 - **Corner Style:** 0px. **Border:** 1px Armature Line. **Background:** Glass Deep.
 - **Header:** a ruled-off strip (`border-bottom: 1px`, `padding: 0.5rem 0.9rem`, 13px Phosphor Dim) holding a filename left and a copy button right.
@@ -217,4 +219,5 @@ Selection inverts to Phosphor Live on Glass Night, the caret is Phosphor Live, t
 - **Don't** use gradient text, hard offset shadows, border-radius, or glow on headings and chrome.
 - **Don't** put Phosphor Live behind large surfaces or on paragraphs; if it is everywhere, it means nothing.
 - **Don't** let animated elements carry pre-applied `clip-path` (it zeroes the intersection rect and starves reveal observers) or animate layout-affecting width in transcripts; reveal by clip-path instead.
-- **Don't** write copy that the product cannot back. The checkout gate stays honest: no fake pricing, no invented urgency.
+- **Don't** write copy that the product cannot back. The checkout gate stays honest: no fake pricing, no invented urgency, and no claim about the published package that the npm registry does not support.
+- **Don't** show a command in the action line or a transcript that a visitor could not actually run today. The hero line and the session block are real output; if a step is aspirational, it is labelled as the target rather than printed as though it happened.
