@@ -19,7 +19,7 @@
   },
   "dependencies": {},
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/*.test.mjs",
     "check": "node --check ace.mjs && for f in lib/*.mjs lib/adapters/*.mjs site/app.js; do node --check \"$f\" || exit 1; done"
   },
   "ace": {
