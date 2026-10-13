@@ -1,7 +1,7 @@
 {
   "name": "ace-proagents",
-  "version": "0.1.4",
-  "description": "ACE — install a crew of coding agents into any repository: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that name the outcome of every task, ACC memory, and the Charter task contract. One skill, one CLI.",
+  "version": "0.2.0",
+  "description": "ACE — the agent skill + CLI that builds workspaces for autonomous coding agents. One command installs a governed crew into any repository: terminal spaces, browser spaces, a governor over a global worker budget, one supervisor and its workers per project, durable memory, and the task contract every mission ends with. Works on Claude Code, OpenCode, Codex, Copilot and any AGENTS.md harness.",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -9,15 +9,20 @@
   },
   "keywords": [
     "agentic",
-    "coding",
-    "orchestration",
-    "orchestrator",
-    "multi-agent",
-    "herdr",
-    "governance",
-    "crew",
+    "agents",
+    "agent-skills",
     "skill",
-    "cli"
+    "cli",
+    "workspace",
+    "autonomous-agents",
+    "coding-agents",
+    "orchestration",
+    "multi-agent",
+    "claude-code",
+    "opencode",
+    "codex",
+    "copilot",
+    "agents-md"
   ],
   "engines": {
     "node": ">=20"
@@ -107,6 +112,7 @@
     "ace.mjs",
     "lib/",
     "assets/",
+    "skills/",
     "schemas/",
     "docs/",
     "README.md",

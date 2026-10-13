@@ -1,11 +1,16 @@
-# ACE — install the crew, then govern it
+# ACE — the agent skill + CLI that builds agent workspaces
 
 ## What this repository is
 
 Two things in one zero-dependency Node package:
 
+- **the skill** — `skills/ace/SKILL.md`, the manual an agent loads to build and
+  drive an ACE workspace. It ships at the repo root in the layout skill
+  managers (`npx skills add EnzoVezzaro/ace-proagents`) and Claude plugin
+  marketplaces (`.claude-plugin/`) discover, and `ace setup` copies it into a
+  target repo's `.agents/skills/`, `.claude/skills/` and `.opencode/skills/`.
 - **the installer** — `ace setup` interrogates the operator, inspects the target
-  repository, prints a plan, applies it and verifies it. It installs six linked
+  repository, prints a plan, applies it and verifies it. It installs seven linked
   parts (see `docs/STACK.md`), and it is what this repository is *for*.
 - **the runtime** — the governance layer (`ace govern` / `crew` / `task` /
   `handoff` / `watchdog` / `adapters`) that governs what the installer wrote, plus
@@ -18,11 +23,15 @@ The same `ace/v1` `ace` key is written by `ace setup` (from the answers) and by
 
 - `ace.mjs` — the CLI router and every package command. `node ace.mjs --help` is
   authoritative for the command surface.
-- `lib/stack.mjs` — the six parts (`PARTS`), the plan/apply/verify pipeline, and
+- `skills/ace/SKILL.md` — the shipped agent skill; the single source the
+  `agent-skill` part copies into every harness's skills directory.
+- `.claude-plugin/` — `plugin.json` + `marketplace.json`, so Claude Code can
+  install this repo directly (`claude plugin marketplace add EnzoVezzaro/ace-proagents`).
+- `lib/stack.mjs` — the seven parts (`PARTS`), the plan/apply/verify pipeline, and
   the generators for every file written into a target repo.
 - `lib/intake.mjs` — the questions, answer validation, repository inspection, and
   the context every part is built from (including the id/space/name rules).
-- `lib/cli-stack.mjs` — `ace setup` and `ace parts`.
+- `lib/cli-stack.mjs` — `ace setup`, `ace parts` and `ace inspect`.
 - `assets/stack/orchestration/**` — the bundle copied **verbatim** into a target
   repo: `tabs.mjs`, `selftest.mjs`, `README.md`, `lib/{topology,cap,herdr,ego,handoff,free-models}.mjs`.
 - `lib/pkg.mjs`, `lib/runtime.mjs`, `lib/registry.mjs` — manifest/lockfile,
@@ -44,8 +53,8 @@ The same `ace/v1` `ace` key is written by `ace setup` (from the answers) and by
   `PLAN.md` the historical build contracts · `SECURITY.md` the reporting policy.
 
 The installer files — `lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`,
-`assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs` — are on `origin/main`
-(pushed 2026-10-13). The `v0.1.3` tag predates them and carries the runtime only.
+`assets/stack/**`, `skills/**`, `docs/STACK.md`, `test/stack.test.mjs` — are on
+`origin/main`. The `v0.1.3` tag predates them and carries the runtime only.
 
 ## Commands
 
@@ -108,9 +117,10 @@ node orchestration/tabs.mjs cap        # reads the generated data; no multiplexe
 
 - **Zero dependencies.** Never add npm dependencies (runtime or dev); tests use
   the builtin `node:test` runner only.
-- **A shipped asset is fixed at its source.** The bundle in `assets/stack/` is
-  what other people install: change it there, then re-run `ace setup --force`
-  where the fix must land. Never patch only an installed copy.
+- **A shipped asset is fixed at its source.** The bundle in `assets/stack/` and
+  the skill in `skills/ace/` are what other people install: change them there,
+  then re-run `ace setup --force` where the fix must land. Never patch only an
+  installed copy.
 - **Never weaken a check, an assertion or a refusal to make something pass.**
   That includes the verifier in `lib/stack.mjs`, the installed `selftest.mjs`, the
   free-model refusal, and the budget. If a check is wrong, fix *why* it is wrong
@@ -138,10 +148,10 @@ node orchestration/tabs.mjs cap        # reads the generated data; no multiplexe
 - **Never report a check you did not run.** Reports carry `checksNotRun`, and a
   completion claim with no command that exited 0 is rejected.
 - **The npm release lags the repository until it is published deliberately.**
-  `origin/main` carries the installer and the runtime, and npm ships `0.1.4`, the
-  first release with the installer; `0.1.2` and the `v0.1.3` tag predate it.
-  State the registry version as it actually is. Bump the version, publish, push a
-  tag or deploy only when asked — and when you do, update this file, `README.md`,
+  `origin/main` carries the installer, the runtime and the skill, and npm ships
+  `0.2.0`, the first release that also ships the skill. State the registry
+  version as it actually is. Bump the version, publish, push a tag or deploy
+  only when asked — and when you do, update this file, `README.md`,
   `PRODUCT.md` and the landing page in the same change.
 
 ## Ownership

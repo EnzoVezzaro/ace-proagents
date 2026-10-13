@@ -668,7 +668,7 @@ test("ace parts describes the catalogue and the questions an agent must answer",
       gitInfo: () => ({ branch: null, commit: null }),
     };
     try {
-      assert.deepEqual([...cliStack.COMMANDS].sort(), ["parts", "setup"]);
+      assert.deepEqual([...cliStack.COMMANDS].sort(), ["inspect", "parts", "setup"]);
       await cliStack.run("parts", ["--questions", "--json"], ctx);
       assert.equal(errors.length, 0);
       const doc = printed.find((d) => d.command === "parts --questions");
@@ -683,7 +683,103 @@ test("ace parts describes the catalogue and the questions an agent must answer",
 });
 
 // ---------------------------------------------------------------------------
-// 9. the installed bundle runs
+// 9. the agent skill — one shipped source, every harness's skills directory
+// ---------------------------------------------------------------------------
+
+test("the install writes the skill into every harness's skills directory, byte-identical", async () => {
+  const dir = makeRepo();
+  try {
+    const { context, plan } = fullInstall(dir);
+    const copies = [".agents", ".claude", ".opencode"].map((loc) => join(dir, loc, "skills", "ace", "SKILL.md"));
+    for (const copy of copies) assert.ok(existsSync(copy), `missing skill copy: ${copy}`);
+    const bytes = copies.map((c) => readFileSync(c, "utf8"));
+    assert.ok(bytes.every((b) => b === bytes[0]), "the three copies must be byte-identical — one source, three locations");
+    assert.match(bytes[0], /^---\nname: ace\n/, "the skill declares its name in frontmatter");
+    assert.match(bytes[0], /ace setup/, "the skill names the command that builds the workspace");
+
+    const verdict = await stack.verifyStack(plan, context);
+    const skillChecks = verdict.checks.filter((c) => c.part === "agent-skill");
+    assert.ok(skillChecks.length >= 3, `the skill is verified like any other part: ${JSON.stringify(skillChecks)}`);
+    assert.ok(skillChecks.every((c) => c.status === "pass"), JSON.stringify(skillChecks));
+  } finally {
+    drop(dir);
+  }
+});
+
+test("a drifted skill copy is a failed check, and --force re-syncs it", async () => {
+  const dir = makeRepo();
+  try {
+    const { context, plan } = fullInstall(dir);
+    const claudeCopy = join(dir, ".claude", "skills", "ace", "SKILL.md");
+    writeFileSync(claudeCopy, `${readFileSync(claudeCopy, "utf8")}\nhand-edited\n`);
+
+    const verdict = await stack.verifyStack(plan, context);
+    const skillFail = verdict.checks.find((c) => c.part === "agent-skill" && c.name.startsWith("every harness copy"));
+    assert.ok(skillFail && skillFail.status === "fail", "a drifted copy must fail the equality check");
+    assert.equal(verdict.ok, false);
+
+    stack.applyStack(plan, context, { force: true });
+    assert.doesNotMatch(readFileSync(claudeCopy, "utf8"), /hand-edited/, "--force re-copies the shipped source");
+  } finally {
+    drop(dir);
+  }
+});
+
+test("an existing skill copy is kept, not clobbered, without --force", () => {
+  const dir = makeRepo();
+  try {
+    const { context, plan } = fullInstall(dir);
+    const skillCopy = join(dir, ".agents", "skills", "ace", "SKILL.md");
+    writeFileSync(skillCopy, `${readFileSync(skillCopy, "utf8")}\noperator note\n`);
+
+    const again = stack.applyStack(plan, context);
+    assert.ok(
+      again.skipped.some((s) => s.path === ".agents/skills/ace/SKILL.md"),
+      JSON.stringify(again.skipped)
+    );
+    assert.match(readFileSync(skillCopy, "utf8"), /operator note/, "the operator's copy is left alone");
+  } finally {
+    drop(dir);
+  }
+});
+
+test("ace inspect prints the facts an intake is answered from", () => {
+  const dir = makeRepo();
+  try {
+    const r = ace(["inspect", "--json"], dir);
+    assert.equal(r.status, 0, r.stderr);
+    const doc = JSON.parse(r.stdout);
+    assert.equal(doc.command, "inspect");
+    assert.ok(Array.isArray(doc.facts.candidate_roots), "candidate_roots is the list an agent answers projects from");
+    assert.ok(doc.facts.candidate_roots.includes("experiments/alpha-api"));
+    assert.ok(Array.isArray(doc.facts.detected_verification));
+    assert.equal(doc.facts.is_git, false, "the fixture is not a git repo — the fact is reported, not assumed");
+
+    const prose = ace(["inspect"], dir);
+    assert.equal(prose.status, 0);
+    assert.match(prose.stdout, /projects/);
+  } finally {
+    drop(dir);
+  }
+});
+
+test("a setup refusal names the fields and their fixes, so an agent can repair it", () => {
+  const dir = makeRepo();
+  try {
+    const r = ace(["setup", "--goal", "g", "--json"], dir);
+    assert.equal(r.status, 2);
+    const refusal = JSON.parse(r.stderr);
+    assert.equal(refusal.code, "INTAKE_INVALID");
+    const outcome = refusal.errors.find((e) => e.field === "outcome");
+    assert.ok(outcome, JSON.stringify(refusal.errors));
+    assert.ok(outcome.message && outcome.fix, "each error carries the field, the problem and the fix");
+  } finally {
+    drop(dir);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 10. the installed bundle runs
 // ---------------------------------------------------------------------------
 
 /**

@@ -1,10 +1,12 @@
 # The stack ACE installs
 
 `ace setup` turns a repository into one where a crew of coding agents can work
-several areas at once without a human holding it together. It installs six
+several areas at once without a human holding it together. It installs seven
 parts, and none of them is usable alone.
 
 ```
+agent-skill         the manual the workspace's own agent loads, in every
+                    harness's skills directory
 herdr-spaces        one tab per project, plus one control plane
 ego-lite-spaces     one browser space per project, named after the project
 govern              one governor over a global worker budget, with failover
@@ -27,6 +29,7 @@ adding a project is adding data — never editing the installer or a tab list.
 
 | Part | Installs | Requires | Verified by |
 |---|---|---|---|
+| `agent-skill` | `.agents/skills/ace/SKILL.md`, `.claude/skills/ace/SKILL.md`, `.opencode/skills/ace/SKILL.md` — three copies of one shipped source (`skills/ace/SKILL.md` in this package) | — | every copy exists, frontmatter declares `name: ace`, the skill names `ace setup`, and all three are byte-identical |
 | `herdr-spaces` | `orchestration/tabs.mjs`, `lib/herdr.mjs`, `lib/topology.mjs`, `lib/cap.mjs`, `orchestration/projects.json`, `orchestration/state/.gitignore`, `orchestration/README.md`, `orchestration/selftest.mjs` | — | every declared agent resolves to a tab that allows its role, and the tab count is 1 + projects |
 | `ego-lite-spaces` | `orchestration/lib/ego.mjs` | `herdr-spaces` | every project's space name equals its id and the basename of its tree |
 | `govern` | `orchestration/lib/free-models.mjs`, the `ace` key in `package.json` | `herdr-spaces`, `supervisors-workers` | the `ace` configuration validates, and its active-agent budget equals the stack's worker cap |
@@ -39,10 +42,11 @@ adding a project is adding data — never editing the installer or a tab list.
 ## How the parts link
 
 Each link hands one exact name to another part. That is what makes it a system
-rather than six adjacent tools:
+rather than seven adjacent tools:
 
 | From | To | Carries |
 |---|---|---|
+| `agent-skill` | `herdr-spaces` | the driver — the skill teaches the agent that runs `ace setup` and, later, `orchestration/tabs.mjs` |
 | `herdr-spaces` | `ego-lite-spaces` | `project.id` — the tab label and the browser space are the same string |
 | `ego-lite-spaces` | `herdr-spaces` | `browser_space` — the space name is the project id, which is also its tab label |
 | `govern` | `supervisors-workers` | `cap` — the budget a supervisor must respect when it starts a worker |

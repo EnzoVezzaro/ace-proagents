@@ -17,18 +17,23 @@ their behalf. They have a repository with more than one work area and want a cre
 working it without holding the arrangement together by hand — no tab list to keep
 straight, no browser profile per project, no budget nobody enforces.
 
-The second user is the agent itself: the installer is written so that an agent can
-complete it with no terminal to prompt on (`--intake <file>`, or flags, or
+The second user is the agent itself, and it is the customer the product is built
+around: they point their agent at this repository, the agent loads the `ace`
+skill (from `npx skills add`, the Claude plugin marketplace, or a copied
+`SKILL.md`), answers the intake from `ace inspect --json`, and runs
+`ace setup` with no terminal to prompt on (`--intake <file>`, or flags, or
 `ace parts --questions --json` as the schema). A tool that can only be installed
 by a human answering questions cannot be installed by the agents this is for.
 
 They judge a tool in seconds by reading its mechanism and its CLI surface.
 
 ## Product Purpose
-ACE installs a crew of coding agents into a repository, and then governs it.
+ACE builds workspaces for autonomous coding agents, and then governs the crew
+that works in them.
 
 `ace setup` interrogates the operator, reads what the repository already says
-about itself, and writes the arrangement as data: **six linked parts** — Herdr
+about itself, and writes the arrangement as data: **seven linked parts** — the
+agent skill (installed into every harness's skills directory), Herdr
 spaces (one tab per project plus a control plane), one Ego Lite browser space per
 project, a governor over one global worker budget, a supervisor and its workers
 per project with an outcome on every task, ACC memory per tree, and the Charter
@@ -36,12 +41,13 @@ task contract with the handoff convention. The parts are held together by one
 name: `project.id === its tab label === its browser space === basename(its tree)`.
 
 Success means a developer understands the mechanism in one screen, trusts the
-honesty of the page, and runs the one command.
+honesty of the page, and runs the one command — or points their agent at the
+repository and lets the skill do it.
 
 ## Positioning
-"Six parts, one name: a crew of agents for your repository." Every part is
-useless alone, and each hands one exact name to the next, so installing them
-separately is the bug the product exists to remove.
+"One skill, one CLI, seven parts: a crew of agents for your repository." Every
+part is useless alone, and each hands one exact name to the next, so installing
+them separately is the bug the product exists to remove.
 
 The mechanism a neighbouring tool cannot copy:
 
@@ -60,9 +66,10 @@ The mechanism a neighbouring tool cannot copy:
 - **It verifies what it wrote**, by importing the installed modules and running
   ACE's own configuration validation over the generated `ace` key.
 
-Status: the installer and the governance runtime are on `origin/main` and in the
-published package — **npm `0.1.4`**, the first release with the installer;
-npm's `0.1.2` and the `v0.1.3` tag predate it.
+Status: the installer, the skill and the governance runtime are on `origin/main`
+and in the published package — **npm `0.2.0`**, the first release that ships the
+skill; `0.1.4` was the first with the installer, and `0.1.2` / the `v0.1.3` tag
+predate both.
 
 ## Capabilities
 Installer first:
@@ -71,7 +78,9 @@ Installer first:
   `--intake <file.json>`, or from flags; `--dry-run` prints the plan and writes
   nothing; `--parts a,b` installs a subset (requirements come with it); `--force`
   overwrites differing generated files; `--json` emits one document.
-- `ace parts [<id>] [--questions]` — the catalogue of the six parts and the intake
+- `ace inspect [--json]` — the repository facts an intake is answered from:
+  candidate work areas, detected verification scripts, browser suggestion, git state.
+- `ace parts [<id>] [--questions]` — the catalogue of the seven parts and the intake
   schema an agent answers.
 
 Runtime second (what governs the installed stack):

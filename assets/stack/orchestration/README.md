@@ -1,7 +1,7 @@
 # orchestration — one control plane, one tab per project
 
 This directory is the crew's control surface. It was installed by `ace setup`;
-the six parts it belongs to and how they link are described in `STACK.md` at the
+the seven parts it belongs to and how they link are described in `STACK.md` at the
 repository root.
 
 ```

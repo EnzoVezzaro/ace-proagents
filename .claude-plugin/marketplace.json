@@ -1,0 +1,13 @@
+{
+  "name": "ace-proagents",
+  "description": "ACE — the agent skill + CLI that builds workspaces for autonomous coding agents. Install the ace skill, point your agent at a repository, and it instantiates a governed crew workspace with one command.",
+  "owner": { "name": "Enzo Vezzaro" },
+  "plugins": [
+    {
+      "name": "ace",
+      "description": "Agent skill + CLI: build and drive a governed workspace of coding agents in any repository.",
+      "source": "./",
+      "category": "orchestration"
+    }
+  ]
+}

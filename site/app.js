@@ -252,7 +252,7 @@ window.setInterval(() => {
     }
   }
 
-  document.querySelectorAll("#spec .code-block, #state .code-block, #git .code-block, #parts .code-block").forEach((el) => {
+  document.querySelectorAll("#spec .code-block, #state .code-block, #git .code-block, #parts .code-block, #skill .code-block").forEach((el) => {
     if (REDUCED) return;
     /* Only opacity pre-set here: a pre-applied clip-path zeroes the
      * element's intersection rect, so inView would never fire. The clip is
@@ -275,11 +275,32 @@ window.setInterval(() => {
 })();
 
 /* ------------------------------------------------------------------ */
+/* Routes and loop steps: the ways in, and the agent's path, printing  */
+/* ------------------------------------------------------------------ */
+(function routesAndLoop() {
+  if (REDUCED) return;
+  const groups = [
+    { wrap: document.getElementById("routes-grid"), sel: ".route" },
+    { wrap: document.getElementById("loop-steps"), sel: ".step" },
+  ];
+  for (const { wrap, sel } of groups) {
+    if (!wrap) continue;
+    const nodes = [...wrap.querySelectorAll(sel)];
+    setInitial(nodes);
+    armReveal(wrap, 0.12, () => {
+      nodes.forEach((n, i) => printIn(n, { delay: i * 0.07, duration: 0.36 }));
+    });
+    /* safety: nothing stays hidden */
+    window.setTimeout(() => nodes.forEach((n) => (n.style.opacity = "")), 12000);
+  }
+})();
+
+/* ------------------------------------------------------------------ */
 /* Row tables: fast stagger, a table printing line by line             */
 /* ------------------------------------------------------------------ */
 (function rowTables() {
   if (REDUCED) return;
-  for (const id of ["cli-rows", "git-rows", "parts-rows"]) {
+  for (const id of ["cli-rows", "git-rows", "parts-rows", "skill-rows"]) {
     const rowsWrap = document.getElementById(id);
     if (!rowsWrap) continue;
     const rows = [...rowsWrap.querySelectorAll(".row")];

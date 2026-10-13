@@ -1,9 +1,9 @@
 /* ACE landing — Phosphor Terminal world
- * Direction contract: .impeccable/surfaces/experiments-exp-007-ace-site-index-html.md
- * One monospaced voice in an 80-column field on curved glass. Bright phosphor
- * is reserved for live and actionable elements; dim phosphor reads; hairline
- * green rules are the visible armature. Motion is driven from app.js (Motion
- * v14, vendored) — CSS never transitions transform/opacity on animated nodes.
+ * Direction contract: DESIGN.md — an all-monospace command-line world on curved
+ * glass where brightness equals liveness. Bright phosphor is reserved for live
+ * and actionable elements; dim phosphor reads; hairline green rules are the
+ * visible armature. Motion is driven from app.js (Motion v14, vendored) — CSS
+ * never transitions transform/opacity on animated nodes.
  */
 
 :root {
@@ -15,8 +15,8 @@
   --line: #1c4432;        /* hairline armature, never text */
   --hot: #d9ffe6;         /* bloom-white of the live line */
   --scan: rgba(0, 0, 0, 0.24);
-  --sheet: 84ch;
-  --rail-w: 15ch;
+  --sheet: 96ch;
+  --rail-w: 17ch;
 }
 
 * { box-sizing: border-box; }
@@ -118,7 +118,7 @@ code, pre { font: inherit; }
 .claim {
   margin: 0 0 1.6rem;
   color: var(--ink);
-  font-size: clamp(1.05rem, 5.3vw, 5rem);   /* longest line is 14ch — fits the 80-col sheet at every width */
+  font-size: clamp(1.05rem, 5.3vw, 5rem);   /* longest line is 18ch — fits the 96-col sheet at every width */
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: -0.03em;
@@ -128,18 +128,19 @@ code, pre { font: inherit; }
 .claim .c-line { display: block; width: max-content; white-space: nowrap; overflow: hidden; }
 
 .lead {
-  max-width: 72ch;
+  max-width: 76ch;
   margin: 0 0 2.6rem;
   color: var(--read);
 }
 .lead em { font-style: normal; color: var(--ink); }
+.lead code { color: var(--ink); }
 
 .action-line {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
   flex-wrap: wrap;
-  max-width: 78ch;
+  max-width: 88ch;
   padding: 0.9rem 1rem;
   border: 1px solid var(--line);
   background: var(--bg-deep);
@@ -154,18 +155,21 @@ code, pre { font: inherit; }
   white-space: nowrap;
 }
 
+.action-note { color: var(--dim); font-size: 13px; white-space: nowrap; }
+
 .status-print {
   margin: 0;
   color: var(--dim);
   font-size: 13px;
 }
+.status-print code { color: var(--read); }
 
 /* trust chips — bracketed status tokens under the claim */
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  max-width: 78ch;
+  max-width: 88ch;
   margin: 1.8rem 0 0.8rem;
 }
 
@@ -203,6 +207,15 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
   border-top: 1px solid var(--line);
 }
 
+.band::before {
+  content: attr(data-idx);
+  display: block;
+  color: var(--dim);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.9rem;
+}
+
 .band > .cmd {
   margin: 0 0 2.4rem;    /* heading sits close to its content, far from what precedes it */
   color: var(--ink);
@@ -213,14 +226,16 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
   white-space: nowrap;
 }
 
-.read, .fine, .note { max-width: 72ch; }
+.read, .fine, .note { max-width: 76ch; }
 .read { color: var(--read); margin: 0 0 2rem; }
+.read code { color: var(--ink); }
 .fine { color: var(--dim); font-size: 14px; margin: 1.4rem 0 0; }
 .fine code { color: var(--read); }
 .note { color: var(--dim); font-size: 12.5px; margin: 0 0 1rem; }
+.note code { color: var(--read); }
 
-/* transcript blocks */
-.transcript { max-width: 80ch; margin: 0 0 1.4rem; }
+/* transcript blocks — raw scrollback, no chrome */
+.transcript { max-width: 92ch; margin: 0 0 1.4rem; }
 
 .transcript p {
   margin: 0;
@@ -254,9 +269,69 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
 }
 .replay:hover { color: var(--bg); background: var(--ink); border-color: var(--ink); }
 
+/* ---------- routes: the three ways in ---------- */
+.routes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30ch, 1fr));
+  gap: 0.9rem;
+  max-width: 92ch;
+  margin: 0 0 2.6rem;
+}
+
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.route:hover, .route:focus-within { border-color: var(--ink); }
+
+.route .r-label { margin: 0; color: var(--ink); font-size: 13.5px; }
+
+.route .action-line { padding: 0.55rem 0.7rem; max-width: none; }
+.route .action-line code { font-size: 13.5px; }
+
+.route .r-fine { margin: 0; color: var(--dim); font-size: 13px; line-height: 1.5; }
+.route .r-fine code { color: var(--read); }
+
+/* ---------- the agent loop: numbered steps, one command each ---------- */
+.loop {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26ch, 1fr));
+  gap: 0.9rem;
+  max-width: 92ch;
+  margin: 0 0 2.6rem;
+  padding: 0;
+  counter-reset: step;
+}
+
+.loop .step {
+  counter-increment: step;
+  position: relative;
+  padding: 0.8rem 0.9rem 0.8rem 3.4rem;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.loop .step::before {
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  left: 0.9rem;
+  top: 0.8rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.loop .step code { display: block; color: var(--hot); }
+.loop .step span { display: block; color: var(--dim); font-size: 13px; line-height: 1.5; margin-top: 0.15rem; }
+
 /* label grid — spec rows ruled like a stock label */
 .label-grid {
-  max-width: 78ch;
+  max-width: 88ch;
   margin: 0 0 2.6rem;
   border-top: 1px solid var(--line);
 }
@@ -271,10 +346,11 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
 
 .label-grid dt { color: var(--dim); margin: 0; }
 .label-grid dd { color: var(--read); margin: 0; overflow-wrap: anywhere; }
+.label-grid dd code { color: var(--ink); }
 
 /* code blocks */
 .code-block {
-  max-width: 80ch;
+  max-width: 92ch;
   margin: 0;
   border: 1px solid var(--line);
   background: var(--bg-deep);
@@ -316,18 +392,20 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
 .copy[data-state="copied"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
 /* cli rows */
-.rows { max-width: 80ch; border-top: 1px solid var(--line); }
+.rows { max-width: 92ch; border-top: 1px solid var(--line); }
 
 .rows .row {
   display: grid;
-  grid-template-columns: minmax(24ch, 34ch) 1fr;
+  grid-template-columns: minmax(24ch, 36ch) 1fr;
   gap: 1.5ch;
   padding: 0.55rem 0;
   border-bottom: 1px solid var(--line);
 }
 
 .rows .row code { color: var(--hot); }
-.rows .row span { color: var(--dim); }
+.rows .row span { color: var(--dim); overflow-wrap: anywhere; }
+.rows .row span code { color: var(--read); }
+.rows .row:hover { background: rgba(51, 255, 102, 0.045); }
 
 /* the spec receipt — what ACE is stated as numbers, nothing invented */
 .receipt {
@@ -363,7 +441,7 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(26ch, 1fr));
   gap: 0.9rem;
-  max-width: 84ch;
+  max-width: 92ch;
   margin: 2.2rem 0 0;
 }
 
@@ -383,7 +461,7 @@ footer .foot-cols {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18ch, 1fr));
   gap: 1.6rem 2rem;
-  max-width: 84ch;
+  max-width: 92ch;
   margin: 0 0 1.8rem;
 }
 
@@ -434,6 +512,8 @@ footer .cursor { width: 0.55em; height: 1em; }
   .band { padding-top: 4rem; }
   .label-grid .row { grid-template-columns: 1fr; gap: 0.1rem; }
   .rows .row { grid-template-columns: 1fr; gap: 0.15rem; }
+  .loop { grid-template-columns: 1fr; }
+  .action-note { display: none; }
 }
 
 /* ---------- reduced motion: everything is already final ---------- */

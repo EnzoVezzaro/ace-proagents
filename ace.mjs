@@ -1164,7 +1164,7 @@ async function cmdAutopilot(args) {
 // Governance surface — dispatched into lib/cli-governance.mjs
 // ---------------------------------------------------------------------------
 
-const STACK_COMMANDS = new Set(["setup", "parts"]);
+const STACK_COMMANDS = new Set(["setup", "parts", "inspect"]);
 
 /**
  * The stack installer lives in lib/cli-stack.mjs. It is not a governance
@@ -1334,7 +1334,9 @@ Commands:
                          [--intake <file>] [--goal …] [--outcome …] [--projects a,b]
                          [--harness …] [--cap N] [--browser] [--verification "cmd,cmd"]
                          [--parts a,b] [--dry-run] [--force] [--json]
-  parts [<id>]           The six parts ACE installs, and why they are linked [--questions]
+  inspect [--json]       The repository's facts — candidate work areas, detected
+                         verification, git state — to answer the setup intake from
+  parts [<id>]           The seven parts ACE installs, and why they are linked [--questions]
   init [--name <n>]      Scaffold package.json (with ace key) + ace-lock.json + README
   install [<pkg>]       Install from local registry, or git ref
   list                   List installed packages

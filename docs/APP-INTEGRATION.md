@@ -48,7 +48,8 @@ except where noted; none prints a credential.
 | --- | --- |
 | `ace setup --json` | One document: the answers used and where they came from, the inspected facts, the plan, what was written, and the per-part verification |
 | `ace setup --dry-run --json` | The plan alone (`dry_run: true`); nothing is written |
-| `ace parts --json` | The six installable parts: id, title, what each installs, what it requires, how it is verified |
+| `ace parts --json` | The seven installable parts: id, title, what each installs, what it requires, how it is verified |
+| `ace inspect --json` | The repository facts an intake is answered from: candidate work-area roots, detected verification scripts, browser suggestion, git state, node version |
 | `ace parts <id> --json` | One part in full |
 | `ace parts --questions --json` | The intake schema: for each question its id, prompt, kind, whether it is required, its default, the repo fact it can be detected from, and why it matters — the shape a UI renders as a form |
 
@@ -159,7 +160,7 @@ Two layers, and they are not the same thing:
 
 - **ACE's own runtime** records a delivery request and reports `delivered:
   false`; it does not start an agent.
-- **The installed stack** — the six parts, driven by `orchestration/tabs.mjs` —
+- **The installed stack** — the seven parts, driven by `orchestration/tabs.mjs` —
   really does create tabs, split panes and start agents, and it does that
   through Herdr. What it will not do is *install* and *dispatch* in one step:
   `ace setup` starts nothing, and `tabs.mjs up` is what does, inside a running

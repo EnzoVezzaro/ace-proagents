@@ -86,7 +86,7 @@ components:
 
 **Creative North Star: "Phosphor Terminal"**
 
-The page is not a website about a CLI tool; it *is* a terminal session. One monospaced voice types and prints down an 80-column field on curved glass, a fixed history rail on the left tracks where you are in the session, and every section is introduced by the command that would produce it (`$ ace setup`, `$ cat orchestration/projects.json`, `$ node orchestration/tabs.mjs plan`). The aesthetic philosophy is total commitment to the metaphor: there is no marketing layer sitting on top of the terminal, because there is no "top." Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface.
+The page is not a website about a CLI tool; it *is* a terminal session. One monospaced voice types and prints down a 96-column field on curved glass, a fixed history rail on the left tracks where you are in the session, every section is numbered like scrollback (`01`–`10` in dim phosphor above each command), and every section is introduced by the command that would produce it (`$ ace setup`, `$ cat skills/ace/SKILL.md`, `$ node orchestration/tabs.mjs govern`). The aesthetic philosophy is total commitment to the metaphor: there is no marketing layer sitting on top of the terminal, because there is no "top." Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface.
 
 Motion is deliberately machine-shaped rather than web-shaped: text arrives by typing or by clip-path reveal, printed lines shed a single phosphor afterimage, the block cursor blinks on a hard step, and scroll only repositions the session. One authored motion language, driven from JavaScript (Motion v14, vendored, durations in seconds), never decorative parallax.
 
@@ -95,7 +95,7 @@ Motion is deliberately machine-shaped rather than web-shaped: text arrives by ty
 - Brightness encodes liveness: `#33ff66` live, `#6ccf95` read, `#4aab73` secondary
 - Structure drawn with 1px `#1c4432` hairlines, zero corner radius anywhere
 - CRT scanline and vignette overlay as world material, fixed above the sheet
-- Fixed left history rail (`15ch`) with a `> ` prompt marker on the active section
+- Fixed left history rail (`17ch`) with a `> ` prompt marker on the active section
 - Browser surfaces themed to the world: selection, caret, scrollbar, focus ring
 - No marketing CTA: the session itself is the page
 
@@ -145,11 +145,11 @@ The palette is a single phosphor green family on near-black glass, with brightne
 
 ## Layout
 
-A fixed left history rail of `15ch` runs full height on desktop, ruled off by a single hairline. Everything else lives in a sheet offset by the rail, capped at `84ch` and padded `4.5rem` at top with `clamp(1rem, 4vw, 3.5rem)` horizontal padding. Reading copy is narrower still at 72ch; transcripts and code blocks breathe to 80ch; tables rule off at 78ch.
+A fixed left history rail of `17ch` runs full height on desktop, ruled off by a single hairline. Everything else lives in a sheet offset by the rail, capped at `96ch` and padded `4.5rem` at top with `clamp(1rem, 4vw, 3.5rem)` horizontal padding. Reading copy is narrower still at 76ch; transcripts and code blocks breathe to 92ch; tables rule off at 88ch.
 
-Vertical rhythm is bands: each section opens with `border-top: 1px solid #1c4432` and `padding-top: 5.5rem`, so the hairline itself is the spacing device. The heading sits close to its content (2.4rem below) and far from what precedes it. The hero is a full-viewport (`100svh`) flex column that centers the session vertically.
+Vertical rhythm is bands: each section opens with `border-top: 1px solid #1c4432` and `padding-top: 5.5rem`, so the hairline itself is the spacing device, and each band prints its scrollback index (`data-idx`, `01`–`10`) in 12.5px Phosphor Dim above its command heading. The heading sits close to its content (2.4rem below) and far from what precedes it. The hero is a full-viewport (`100svh`) flex column that centers the session vertically.
 
-Row grids: spec tables use `14ch 1fr`; CLI rows use `minmax(24ch, 34ch) 1fr`; both collapse to a single column on narrow screens. Spacing steps are 8px / 16px / 32px with the 88px band step.
+Row grids: spec tables use `14ch 1fr`; CLI rows use `minmax(24ch, 36ch) 1fr`; both collapse to a single column on narrow screens. The routes grid flows `repeat(auto-fit, minmax(30ch, 1fr))` and the loop steps `repeat(auto-fit, minmax(26ch, 1fr))` — both single-column on narrow screens. Spacing steps are 8px / 16px / 32px with the 88px band step.
 
 Responsive: at **900px** the rail stops being a sidebar and becomes a sticky, horizontally scrollable history bar under a hairline; the sheet loses its left offset; the hero relaxes from full-viewport to `auto` with 3rem padding.
 
@@ -179,9 +179,18 @@ Zero radius, everywhere, without exception: buttons, code blocks, action line, t
 - **Focus:** `2px solid #33ff66` outline at `2px` offset on every `:focus-visible`, on every control.
 
 ### Action Line (signature)
-The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 78ch. Left to right: a Phosphor Live `~/ace $` prompt, the Bloom White command in selectable horizontally-scrollable text, and a copy button. This is the page's primary CTA and it looks like input, not like marketing.
+The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 88ch. Left to right: a Phosphor Live prompt, the Bloom White command in selectable horizontally-scrollable text, a copy button, and — on the hero only — a Phosphor Dim `action-note` naming the next step ("→ then tell your agent: “build an ACE workspace here”"). This is the page's primary CTA and it looks like input, not like marketing.
 
-The command in it is the one a visitor can run today — the clone plus `node ace-proagents/ace.mjs setup` (or `npx ace-proagents setup`, now that the published `0.1.4` ships the installer). When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
+The command in it is the one a visitor can run today — `npx skills add EnzoVezzaro/ace-proagents` (the cross-harness skill installer), with the Claude plugin and `npx ace-proagents@latest` routes in the section below. When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
+
+### Routes (the three ways in)
+A three-card grid (`repeat(auto-fit, minmax(30ch, 1fr))`, Glass Deep fill, 1px Armature Line border, zero radius). Each card: a Phosphor Live label line, an embedded Action Line with its own copy button, and a Phosphor Dim explanation. Hover and `:focus-within` raise the border to Phosphor Live. The cards are: the cross-harness installer, the Claude Code plugin, and the no-install `npx` route.
+
+### Loop (the agent's path)
+A numbered step grid (`repeat(auto-fit, minmax(26ch, 1fr))`): six steps, each a Glass Deep box with a Phosphor Live leading-zero counter (`01`–`06`) at the left, a Bloom White command, and a Phosphor Dim caption. It is the skill's own table of contents, printed as steps.
+
+### Section Index
+Every band prints `attr(data-idx)` — `01` through `10` — above its `$` command: 12.5px Phosphor Dim, letter-spaced. It reads as scrollback numbering and gives the history rail a visible counterpart.
 
 ### Cards / Containers (code blocks)
 - **Corner Style:** 0px. **Border:** 1px Armature Line. **Background:** Glass Deep.
@@ -196,7 +205,7 @@ Ruled like stock labels: `border-top: 1px` with a hairline under every row and `
 The world's storytelling component: prompt lines in Bloom White with a Phosphor Live `$ ` prefix, output lines in Phosphor Dim with a 1.6ch hanging indent, `white-space: pre-wrap` and `overflow-wrap: anywhere` so typed text can never reflow the layout. Each finished output line plays the afterimage sweep once. A ghost `replay session` button sits below.
 
 ### Navigation (history rail)
-- **Style:** fixed 15ch column, Glass Deep fill, hairline right edge, 13px entries.
+- **Style:** fixed 17ch column, Glass Deep fill, hairline right edge, 13px entries.
 - **States:** inactive = Phosphor Dim; hover = Bloom White; active = Phosphor Live with a `> ` prompt marker prepended. Entries truncate with ellipsis rather than wrap.
 - **Mobile (≤900px):** becomes a sticky top bar, hairline bottom, horizontally scrollable, same state colors.
 
@@ -209,7 +218,7 @@ Selection inverts to Phosphor Live on Glass Night, the caret is Phosphor Live, t
 - **Do** reserve `#33ff66` for live and actionable elements; read with `#6ccf95`, label with `#4aab73`, rule with `#1c4432`.
 - **Do** theme the browser surfaces: selection, caret, scrollbar, and `:focus-visible` all belong to the world.
 - **Do** draw structure with 1px `#1c4432` hairlines and 0px corners; let the band border be the vertical rhythm.
-- **Do** cap reading measure at 72ch, transcripts and code at 80ch, and the sheet at 84ch.
+- **Do** cap reading measure at 76ch, transcripts and code at 92ch, and the sheet at 96ch.
 - **Do** keep display type at or below 6rem with tracking no tighter than -0.04em (the claim uses -0.03em).
 - **Do** author motion in one place, in seconds, and make reduced-motion render every element in its final state instantly.
 - **Do** treat the CRT scanlines and vignette as world material: fixed, non-interactive, subtle enough that body text still passes contrast comfortably (worst measured pair 6.78:1).

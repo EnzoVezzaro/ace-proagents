@@ -11,7 +11,7 @@ runtime that governs what it installed.
 ## Responsibilities
 
 - `lib/intake.mjs` — the questions and the inspection of the target repository.
-- `lib/stack.mjs` — the six parts, and the plan / apply / verify pipeline.
+- `lib/stack.mjs` — the seven parts, and the plan / apply / verify pipeline.
 - `lib/cli-stack.mjs` — `ace setup` and `ace parts`.
 - `lib/{config,crew,governance,watchdog,bots,runtime,pkg,registry,adapters}.mjs`
   — the governance runtime.

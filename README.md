@@ -1,12 +1,43 @@
 # ACE
 
-**A skill and one CLI that installs a crew of coding agents into a repository.**
-`ace setup` asks what the work is, reads what the repository already says about
-itself, and writes the whole arrangement — the terminal spaces, one browser space
-per project, a governor over a global worker budget, one supervisor and its
-workers per project, durable memory, and an outcome line on every task.
+**The agent skill + CLI that builds workspaces for autonomous coding agents.**
+Point your agent at this repository and it can instantiate a governed crew
+workspace in any repo: terminal spaces, one browser space per project, a
+governor over a global worker budget, one supervisor and its workers per
+project, durable memory, and an outcome line on every task — all through one
+CLI, with no terminal prompts. Works on Claude Code, OpenCode, Codex, Copilot,
+Cursor and any harness that reads `AGENTS.md`.
 
 **Zero runtime dependencies.** Node ESM only (`ace.mjs`), Node 20+. Spec `ace/v1`. MIT.
+
+## Point your agent at it
+
+One of these installs the `ace` skill into whatever harness your agent runs on:
+
+```bash
+# any harness — the cross-harness skills installer (20+ agents)
+npx skills add EnzoVezzaro/ace-proagents
+
+# Claude Code — native plugin
+claude plugin marketplace add EnzoVezzaro/ace-proagents
+claude plugin install ace@ace-proagents
+```
+
+No install at all also works — the CLI is one `npx` away, and the skill teaches
+the agent the rest:
+
+```bash
+cd /path/to/your-repo
+npx ace-proagents@latest inspect --json        # the facts to answer from
+npx ace-proagents@latest setup \
+  --goal "ship the reporting API" \
+  --outcome "the report page renders under 200ms" \
+  --projects experiments/alpha-api,experiments/beta-web --json
+```
+
+The agent loop, in full: **load the skill → `ace inspect --json` → answer the
+intake from evidence → `ace setup --dry-run` → `ace setup` → drive the installed
+crew** (`orchestration/tabs.mjs`, `ace govern`, `ace task`, `ace handoff`).
 
 ## The problem it removes
 
@@ -43,11 +74,11 @@ node ace.mjs --help
 ```
 
 `package.json` declares `"bin": { "ace": "./ace.mjs" }`, so `npm i ace-proagents`
-also installs an `ace` command. **The published package is `0.1.4`**, the first
-release that ships the installer — `lib/stack.mjs`, `lib/intake.mjs`,
-`lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs`
-— alongside the governance runtime. Both are on `origin/main` as well (pushed
-2026-10-13); npm's `0.1.2` and the `v0.1.3` tag predate the installer.
+also installs an `ace` command. **The published package is `0.2.0`** — the
+installer (`lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`,
+`assets/stack/**`), the skill (`skills/ace/SKILL.md`) and the governance runtime,
+on `origin/main` and in the registry. `0.1.4` was the first release with the
+installer; npm's `0.1.2` and the `v0.1.3` tag predate it.
 
 Run `ace setup` from a checkout that has the installer, with the **target
 repository** as the working directory:
@@ -57,15 +88,16 @@ cd /path/to/your-repo
 node /path/to/ace-proagents/ace.mjs setup
 ```
 
-`ace init` copies the CLI and `lib/`, but `assets/stack/` only travels with
-`ace setup`. A workspace scaffolded by `init` alone therefore has no bundle to
-install, and `setup` refuses (`PLAN_INVALID`, exit 2) rather than writing half an
-arrangement.
+`ace init` copies the CLI and `lib/`, but `assets/stack/` and `skills/` only
+travel with `ace setup`. A workspace scaffolded by `init` alone therefore has no
+bundle to install, and `setup` refuses (`PLAN_INVALID`, exit 2) rather than
+writing half an arrangement.
 
-The other half of the product is the skill an agent loads before running any of
-this: `.agents/skills/ace/SKILL.md`. It lives with the workspace that uses ACE
-rather than inside this package, and it is the manual for the interrogation, the
-six parts, and the rules for driving what was installed.
+The other half of the product is the skill the workspace's own agent loads:
+`.agents/skills/ace/SKILL.md` (with identical copies where Claude Code and
+OpenCode look). It ships inside this package and the `agent-skill` part installs
+it — the manual for the interrogation, the seven parts, and the rules for
+driving what was installed.
 
 ## Install the crew
 
@@ -79,20 +111,21 @@ node ace.mjs setup \
   --outcome "the report page renders under 200ms" \
   --projects experiments/alpha-api,experiments/beta-web
 
-node ace.mjs setup --dry-run --json    # the plan alone; writes nothing
-node ace.mjs parts --questions         # the intake schema, with defaults and reasons
+node ace.mjs inspect --json           # the repo's facts, to answer the intake from
+node ace.mjs setup --dry-run --json   # the plan alone; writes nothing
+node ace.mjs parts --questions        # the intake schema, with defaults and reasons
 ```
 
 Five stages — **interrogate → inspect → plan → apply → verify** — and it prints
 what it decided, what it wrote and what it checked:
 
 ```text
-plan     — 6 part(s), 21 write(s)
-apply    — 21 written, 0 left alone
-verify   — 14 passed, 0 failed, 2 not run
+plan     — 7 part(s), 24 write(s)
+apply    — 24 written, 0 left alone
+verify   — 17 passed, 0 failed, 2 not run
 ```
 
-The two checks reported as *not run* state their precondition instead of passing
+The checks reported as *not run* state their precondition instead of passing
 quietly: live tab creation needs a running Herdr session, and a governor cycle
 needs live state.
 
@@ -107,10 +140,11 @@ provider/model`, `--cap`, `--browser`, `--verification`, `--first-task` and
 Exit codes: `0` installed and verified · `1` installed but a check failed, or an
 operator must act · `2` a usage, intake or plan error — nothing written.
 
-### The six parts
+### The seven parts
 
 | Part | What it installs |
 |---|---|
+| `agent-skill` | the `ace` skill into every harness's skills directory — `.agents/skills/`, `.claude/skills/`, `.opencode/skills/` — three copies of one shipped source, verified identical |
 | `herdr-spaces` | one Herdr tab per project plus a `control-plane` tab, and the orchestrator that maintains them |
 | `ego-lite-spaces` | one Ego Lite browser space per project, named after the project's own tree |
 | `govern` | one governor over a **global** worker budget, with free-model-only failover |
@@ -129,6 +163,7 @@ orchestration/projects.json   the data: topology, budget, harness policy, projec
 orchestration/tabs.mjs        plan · up · status · cap · govern · brief · dispatch · verify · cycle
 orchestration/lib/            topology · cap · herdr · ego · handoff · free-models
 orchestration/state/          per-project missions, handoffs, dispatch and cap logs
+.agents/skills/ace/SKILL.md   the skill the workspace's agent loads (+ .claude, .opencode copies)
 STACK.md                      the map of what was installed, and how to drive it
 .acc-memory.md                durable memory, and one beside each project tree
 charter/                    the task contract, the handoff convention, the tool registry
@@ -200,7 +235,8 @@ Installing the crew:
 | Command | Description |
 |---------|-------------|
 | `ace setup [--intake <file>] [--goal …] [--outcome …] [--projects a,b] [--dry-run] [--parts a,b] [--force] [--json]` | Install the crew stack into this repository: interrogate → inspect → plan → apply → verify |
-| `ace parts [<id>] [--questions] [--json]` | The six parts ACE installs, and the intake schema an agent can answer |
+| `ace inspect [--json]` | The repository's facts — candidate work areas, detected verification, git state — to answer the intake from |
+| `ace parts [<id>] [--questions] [--json]` | The seven parts ACE installs, and the intake schema an agent can answer |
 
 Packages:
 
@@ -402,18 +438,16 @@ ACE REGISTRY  →  package metadata / specifications / versions / integrity   (o
 ```
 
 Status: working early release (spec draft `ace/v1`). The stack installer, the
-package format, the CLI, the registry, composition, the verify/autopilot loop and
-the governance layer (governor, supervisors, workers, central budget, failover,
-watchdog) are implemented and covered by `npm test` — 141 tests, green on Node 20
-and Node 22, with `npm run check` clean.
+agent skill, the package format, the CLI, the registry, composition, the
+verify/autopilot loop and the governance layer (governor, supervisors, workers,
+central budget, failover, watchdog) are implemented and covered by `npm test` —
+146 tests, green on Node 20 and Node 22, with `npm run check` clean.
 
 The strongest check is the end-to-end one: `ace setup` installs the bundle into a
 scratch repository, and then the code that was written there has to pass its own
 proof (`node orchestration/selftest.mjs`, 62 assertions, exit 0 for the
-two-project install above — 61 with one project). CI runs exactly that: on the
-push that shipped the installer (2026-10-13) the `Crew stack smoke test` step
-passed on Node 20 and Node 22, next to the syntax check, the scaffold smoke run
-and the 141 tests.
+two-project install above — 61 with one project). CI runs exactly that on Node 20
+and Node 22, next to the syntax check, the scaffold smoke run and the 146 tests.
 
 [PLAN.md](./PLAN.md) holds module contracts and worker assignments,
 [PRODUCT.md](./PRODUCT.md) the product framing, [docs/STACK.md](./docs/STACK.md)
