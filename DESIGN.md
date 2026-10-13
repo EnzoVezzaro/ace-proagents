@@ -86,7 +86,9 @@ components:
 
 **Creative North Star: "Phosphor Terminal"**
 
-The page is not a website about a CLI tool; it *is* a terminal session. One monospaced voice types and prints down a 96-column field on curved glass, a fixed history rail on the left tracks where you are in the session, every section is numbered like scrollback (`01`–`10` in dim phosphor above each command), and every section is introduced by the command that would produce it (`$ ace setup`, `$ cat skills/ace/SKILL.md`, `$ node orchestration/tabs.mjs govern`). The aesthetic philosophy is total commitment to the metaphor: there is no marketing layer sitting on top of the terminal, because there is no "top." Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface.
+The page is not a website about a CLI tool; it *is* a terminal session — and since the 0.2.0 landing rebuild it is also a conversion page that follows a fixed seven-beat spine: **hero → receipts (social proof) → problem → the fix → the proof → drive it → objections → final CTA**. One monospaced voice types and prints down a 96-column field on curved glass, a fixed history rail on the left tracks where you are in the session, every section is numbered like scrollback (`01`–`07` in dim phosphor above each command), and every section is introduced by the command that would produce it (`$ receipts, not promises`, `$ the fix — seven parts, one name`, `$ the proof — one real run, verbatim`). Brightness is the only hierarchy mechanism. The brightest phosphor (`#33ff66`) means *live or actionable* right now; dimmer phosphor means *reading*; hairline green (`#1c4432`) is the visible armature that rules every table, block, and band. Confirmed rejections: no kickers or eyebrows, no emoji or glyph icons, no gradient text, no hard offset shadows, no second typeface, **no invented proof** — the page quotes no customers and no numbers it cannot re-run.
+
+The conversion doctrine, and its honesty constraint: the page has exactly one primary CTA (install the skill), one social-proof beat placed early, one objection-handling section, and one final CTA that repeats the first. Because this product has no customer logos to show, its social proof is *receipts* — verifiable counters (tests, dependencies, npm version, self-assertions) — plus verbatim output. A landing for this product that quoted a testimonial or a usage stat it cannot source would break both the design world and the repo's honesty gates.
 
 Motion is deliberately machine-shaped rather than web-shaped: text arrives by typing or by clip-path reveal, printed lines shed a single phosphor afterimage, the block cursor blinks on a hard step, and scroll only repositions the session. One authored motion language, driven from JavaScript (Motion v14, vendored, durations in seconds), never decorative parallax.
 
@@ -97,7 +99,7 @@ Motion is deliberately machine-shaped rather than web-shaped: text arrives by ty
 - CRT scanline and vignette overlay as world material, fixed above the sheet
 - Fixed left history rail (`17ch`) with a `> ` prompt marker on the active section
 - Browser surfaces themed to the world: selection, caret, scrollbar, focus ring
-- No marketing CTA: the session itself is the page
+- One primary CTA, in the terminal's own voice: the install command as a live shell line, with a filled copy button — marketing never speaks a second language here
 
 ## Colors
 
@@ -179,7 +181,7 @@ Zero radius, everywhere, without exception: buttons, code blocks, action line, t
 - **Focus:** `2px solid #33ff66` outline at `2px` offset on every `:focus-visible`, on every control.
 
 ### Action Line (signature)
-The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 88ch. Left to right: a Phosphor Live prompt, the Bloom White command in selectable horizontally-scrollable text, a copy button, and — on the hero only — a Phosphor Dim `action-note` naming the next step ("→ then tell your agent: “build an ACE workspace here”"). This is the page's primary CTA and it looks like input, not like marketing.
+The hero's install command presented as a live shell line: Glass Deep fill, 1px Armature Line border, `padding: 0.9rem 1rem`, max 88ch. Left to right: a Phosphor Live prompt, the Bloom White command in selectable horizontally-scrollable text, and the copy button — on the hero and the final CTA it is the **primary** variant (filled Phosphor Live, weight 700, label `copy install command`); everywhere else it is the ghost treatment. A Phosphor Dim `cta-cue` line under the hero names the next step ("then tell your agent: build an ACE workspace here"). This is the page's primary CTA and it looks like input, not like marketing.
 
 The command in it is the one a visitor can run today — `npx skills add EnzoVezzaro/ace-proagents` (the cross-harness skill installer), with the Claude plugin and `npx ace-proagents@latest` routes in the section below. When the hero command changes, it changes here and the transcript below it follows, so the page never shows a command that would fail.
 
@@ -198,8 +200,11 @@ Every band prints `attr(data-idx)` — `01` through `10` — above its `$` comma
 - **Body:** `padding: 1rem 0.9rem`, 14px line-height 1.6 Phosphor Read, horizontal overflow allowed.
 - **Shadow Strategy:** none; recessed tone is the elevation.
 
-### Tables (label grid and CLI rows)
-Ruled like stock labels: `border-top: 1px` with a hairline under every row and `padding: 0.5rem 0`. Keys and descriptions are Phosphor Dim; values are Phosphor Read; commands inside rows are Bloom White. Tabular numerals keep columns honest.
+### Tables (CLI rows and FAQ)
+Ruled like stock labels: `border-top: 1px` with a hairline under every row and `padding: 0.5rem 0`. Keys and descriptions are Phosphor Dim; values are Phosphor Read; commands inside rows are Bloom White. Tabular numerals keep columns honest. The FAQ reuses the same row grid — question as command, answer as description — so objection handling never looks like a different document.
+
+### Receipts (social proof)
+A stat grid (`repeat(auto-fit, minmax(24ch, 1fr))`, Glass Deep fill, 1px Armature Line border): a large Phosphor Live tabular counter over a Phosphor Dim caption. It replaces the logo wall this product cannot honestly have — every counter is a check the visitor can re-run.
 
 ### Transcript (signature)
 The world's storytelling component: prompt lines in Bloom White with a Phosphor Live `$ ` prefix, output lines in Phosphor Dim with a 1.6ch hanging indent, `white-space: pre-wrap` and `overflow-wrap: anywhere` so typed text can never reflow the layout. Each finished output line plays the afterimage sweep once. A ghost `replay session` button sits below.

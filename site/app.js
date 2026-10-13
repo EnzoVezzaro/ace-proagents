@@ -238,21 +238,26 @@ window.setInterval(() => {
 })();
 
 /* ------------------------------------------------------------------ */
-/* Spec: label rows stagger, the ace-key block wipes in like a printout */
+/* Receipts: the trust numbers print in like a boot readout            */
 /* ------------------------------------------------------------------ */
-(function spec() {
-  const grid = document.getElementById("spec-grid");
-  if (grid) {
-    const rows = [...grid.querySelectorAll(".row")];
-    if (!REDUCED) {
-      setInitial(rows);
-      armReveal(grid, 0.15, () => {
-        rows.forEach((r, i) => printIn(r, { delay: i * 0.045 }));
-      });
-    }
+(function receipts() {
+  const grid = document.getElementById("receipt-grid");
+  if (!grid) return;
+  const stats = [...grid.querySelectorAll(".stat")];
+  if (!REDUCED) {
+    setInitial(stats);
+    armReveal(grid, 0.15, () => {
+      stats.forEach((s, i) => printIn(s, { delay: i * 0.05 }));
+    });
+    window.setTimeout(() => stats.forEach((s) => (s.style.opacity = "")), 12000);
   }
+})();
 
-  document.querySelectorAll("#spec .code-block, #state .code-block, #git .code-block, #parts .code-block, #skill .code-block").forEach((el) => {
+/* ------------------------------------------------------------------ */
+/* Code blocks wipe in like a printout                                 */
+/* ------------------------------------------------------------------ */
+(function codeBlocks() {
+  document.querySelectorAll("#fix .code-block, #drive .code-block, #get .code-block").forEach((el) => {
     if (REDUCED) return;
     /* Only opacity pre-set here: a pre-applied clip-path zeroes the
      * element's intersection rect, so inView would never fire. The clip is
@@ -300,7 +305,7 @@ window.setInterval(() => {
 /* ------------------------------------------------------------------ */
 (function rowTables() {
   if (REDUCED) return;
-  for (const id of ["cli-rows", "git-rows", "parts-rows", "skill-rows"]) {
+  for (const id of ["cli-rows", "faq-rows", "fix-rows"]) {
     const rowsWrap = document.getElementById(id);
     if (!rowsWrap) continue;
     const rows = [...rowsWrap.querySelectorAll(".row")];
@@ -329,7 +334,7 @@ window.setInterval(() => {
 /* Close settles like the end of a session                             */
 /* ------------------------------------------------------------------ */
 (function closing() {
-  const end = document.getElementById("end");
+  const end = document.getElementById("get");
   if (!end || REDUCED) return;
   const parts = [...end.querySelectorAll(".read, .receipt, .action-line, .cards, .fine")];
   setInitial(parts);

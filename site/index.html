@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ACE — the agent skill + CLI that builds agent workspaces</title>
-  <meta name="description" content="ACE is one skill and one CLI that builds workspaces for autonomous coding agents: point your agent at the repository and it runs ace setup — a Herdr tab per project plus a control plane, one browser space per project, a governor over a global worker budget, one supervisor and its workers per project with an outcome on every task, durable memory, and the handoff convention every mission ends with. Zero runtime dependencies, MIT.">
+  <title>ACE — stop holding your agent crew together by hand</title>
+  <meta name="description" content="You run coding agents across several work areas, and you are the one holding the arrangement together. ACE is one skill + one CLI: your agent runs ace setup and your repo gets terminal spaces, browser spaces, a governor, supervisors, workers, memory and a task contract. Zero dependencies, MIT.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ACE — the agent skill + CLI that builds agent workspaces">
-  <meta property="og:description" content="Point your agent at the repository. It loads the skill, inspects your repo, and runs ace setup: a governed crew of coding agents in any repository. MIT, zero runtime dependencies.">
+  <meta property="og:title" content="ACE — stop holding your agent crew together by hand">
+  <meta property="og:description" content="One skill, one CLI. Your agent runs ace setup; your repo gets a governed crew: spaces, budget, supervisors, workers, memory, evidence-backed handoffs. MIT, zero dependencies.">
   <meta property="og:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
@@ -18,100 +18,105 @@
 <body>
   <div class="crt" aria-hidden="true"></div>
 
-  <nav class="rail" aria-label="Transcript sections">
+  <nav class="rail" aria-label="Page sections">
     <a href="#hero" class="active">~</a>
-    <a href="#agents">your agent</a>
-    <a href="#session">ace setup</a>
-    <a href="#skill">the skill</a>
-    <a href="#parts">7 parts</a>
-    <a href="#spec">projects.json</a>
-    <a href="#cli">commands</a>
-    <a href="#git">install</a>
-    <a href="#state">state</a>
-    <a href="#govern">govern</a>
-    <a href="#end">ace status</a>
+    <a href="#receipts">receipts</a>
+    <a href="#problem">the problem</a>
+    <a href="#fix">the fix</a>
+    <a href="#proof">the proof</a>
+    <a href="#drive">drive it</a>
+    <a href="#faq">faq</a>
+    <a href="#get">get it</a>
   </nav>
 
   <main class="sheet">
 
-    <!-- boot / first viewport -->
+    <!-- 1. hero -->
     <header id="hero">
-      <p class="boot"><span class="prompt">~/your-repo $</span> ace/v1 · point your agent at it · ok</p>
-      <h1 class="claim"><span class="c-line">One skill, one CLI:</span>
-        <span class="c-line">a crew of agents</span>
-        <span class="c-line">for your repository.</span></h1>
-      <p class="lead">ACE builds workspaces for autonomous coding agents. You point your agent at this repository; it loads the <code>ace</code> skill, reads what your repo already says about itself, and runs <code>ace setup</code> — one command writes the whole arrangement: a Herdr tab per project plus a control plane, one Ego Lite browser space per project, a governor over a <em>global</em> worker budget, one supervisor and its workers per project with the outcome on every task, durable memory per tree, and the handoff convention every mission ends with. One name holds it together — <code>project.id === its tab label === its browser space === basename(its tree)</code>.</p>
+      <p class="boot"><span class="prompt">~/your-repo $</span> ace/v1 · ready when your agent is</p>
+      <h1 class="claim"><span class="c-line">Stop holding your</span>
+        <span class="c-line">agent crew together</span>
+        <span class="c-line">by hand.</span></h1>
+      <p class="lead">You already run coding agents. ACE builds the workspace they live in: <strong>one command, run by your agent</strong>, writes the whole arrangement — a terminal tab per project plus a control plane, one browser space per project, a governor over a global worker budget, one supervisor and its workers per project, durable memory per tree, and the rule that every mission ends in <em>evidence, not vibes</em>.</p>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
         <code id="q-start">npx skills add EnzoVezzaro/ace-proagents</code>
-        <button type="button" class="copy" data-copy="q-start">copy</button>
-        <span class="action-note">→ then tell your agent: “build an ACE workspace here”</span>
+        <button type="button" class="copy primary" data-copy="q-start">copy install command</button>
       </div>
+      <p class="cta-cue">then tell your agent: <code>"build an ACE workspace here"</code> — it reads the skill and runs the rest</p>
       <div class="chips" aria-label="what ace is">
         <a class="chip live" href="https://www.producthunt.com/products/ace-14" target="_blank" rel="noopener">★ on product hunt</a>
         <span class="chip">MIT licensed</span>
         <span class="chip">zero runtime deps</span>
-        <span class="chip">spec ace/v1</span>
-        <span class="chip">7 linked parts</span>
-        <span class="chip">works on claude code · opencode · codex · copilot</span>
         <span class="chip">node 20+</span>
+        <span class="chip">claude code · opencode · codex · copilot · cursor</span>
       </div>
-      <p class="status-print">spec ace/v1 · npm ships <code>0.2.0</code> — the skill, the installer and the runtime are in it, and on <code>origin/main</code></p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
-    <!-- point your agent at it -->
-    <section id="agents" class="band" data-idx="01">
-      <h2 class="cmd">$ point your agent at it</h2>
-      <p class="read">Any agentic coding harness can install and drive ACE, because the product is a skill and a CLI — not a hosted service. Install the skill the way your harness prefers, then tell the agent what to build. Every ACE command answers in one JSON document with <code>--json</code>, and every refusal names the field it needs — so an agent repairs its own intake and retries, with no human on the terminal.</p>
-
-      <div class="routes" id="routes-grid">
-        <div class="route">
-          <p class="r-label">any harness · the cross-harness installer</p>
-          <div class="action-line">
-            <span class="prompt" aria-hidden="true">$</span>
-            <code id="q-skills">npx skills add EnzoVezzaro/ace-proagents</code>
-            <button type="button" class="copy" data-copy="q-skills">copy</button>
-          </div>
-          <p class="r-fine">skills.sh installs the <code>ace</code> skill into 20+ agents — Claude Code, Cursor, Codex, Copilot, Windsurf, Gemini, Cline, OpenCode and the rest.</p>
-        </div>
-        <div class="route">
-          <p class="r-label">claude code · native plugin</p>
-          <div class="action-line">
-            <span class="prompt" aria-hidden="true">$</span>
-            <code id="q-plugin">claude plugin marketplace add EnzoVezzaro/ace-proagents && claude plugin install ace@ace-proagents</code>
-            <button type="button" class="copy" data-copy="q-plugin">copy</button>
-          </div>
-          <p class="r-fine">this repository is its own plugin marketplace — <code>.claude-plugin/marketplace.json</code> — and the skill rides in the plugin.</p>
-        </div>
-        <div class="route">
-          <p class="r-label">no install at all · one npx</p>
-          <div class="action-line">
-            <span class="prompt" aria-hidden="true">$</span>
-            <code id="q-npx">npx ace-proagents@latest setup --goal "…" --outcome "…" --projects a,b --json</code>
-            <button type="button" class="copy" data-copy="q-npx">copy</button>
-          </div>
-          <p class="r-fine">the CLI is the whole product; the skill is its manual. An agent that reads the repo's <code>AGENTS.md</code> can drive it with nothing installed.</p>
-        </div>
+    <!-- 2. social proof, early — receipts, not logos -->
+    <section id="receipts" class="band" data-idx="01">
+      <h2 class="cmd">$ receipts, not promises</h2>
+      <p class="read">No customers are quoted on this page, because none are claimed. The proof here is different: every number is a check you can re-run yourself, and the code that lands in your repo carries its own test.</p>
+      <div class="receipt-grid" id="receipt-grid">
+        <div class="stat"><b>0</b><span>runtime dependencies — node builtins only, nothing to install</span></div>
+        <div class="stat"><b>146</b><span>tests, green on node 20 and node 22, run on every push</span></div>
+        <div class="stat"><b>62</b><span>assertions the installed crew runs on itself, offline, every time</span></div>
+        <div class="stat"><b>7</b><span>linked parts, each verified by the installer that wrote it</span></div>
+        <div class="stat"><b>0</b><span>tokens spent by an install — it starts no agent, opens no tab</span></div>
+        <div class="stat"><b><a href="https://www.npmjs.com/package/ace-proagents" target="_blank" rel="noopener">0.2.0</a></b><span>on npm today — the skill, the installer and the runtime in one package</span></div>
       </div>
-
-      <p class="note">the agent loop the skill teaches — every step a command an agent can run and read</p>
-      <ol class="loop" id="loop-steps">
-        <li class="step"><code>load the skill</code><span>SKILL.md — frontmatter description is the trigger</span></li>
-        <li class="step"><code>ace inspect --json</code><span>the repo's facts: work areas, verification, git</span></li>
-        <li class="step"><code>answer from evidence</code><span>the intake, never invented — <code>--intake file.json</code> or flags</span></li>
-        <li class="step"><code>ace setup --dry-run</code><span>read the plan: every write, and which part causes it</span></li>
-        <li class="step"><code>ace setup</code><span>apply, then read the verify verdict — including its skips</span></li>
-        <li class="step"><code>drive the crew</code><span>tabs.mjs plan · up · govern · verify — and ace task · handoff</span></li>
-      </ol>
-
-      <p class="fine">The skill is installed <em>into the target repository</em> by <code>ace setup</code> itself, in the location each harness already reads: <code>.agents/skills/ace/SKILL.md</code> (the cross-harness location OpenCode reads natively), <code>.claude/skills/ace/SKILL.md</code> and <code>.opencode/skills/ace/SKILL.md</code> — three copies of one shipped source, verified byte-identical on every install. Harnesses that read <code>AGENTS.md</code> (Codex, Copilot, Cursor, Gemini CLI) point at the same file. Nothing outside your repository is written, and nothing is started: the install writes the arrangement; you or your agent start it.</p>
+      <p class="fine">The last host of proof is the strongest: CI installs ACE into a scratch repository and the code it <em>wrote there</em> has to pass its own 62-assertion proof before the push ships.</p>
     </section>
 
-    <!-- the installer -->
-    <section id="session" class="band" data-idx="02">
-      <h2 class="cmd">$ ace setup</h2>
-      <p class="note">verbatim output, from the checkout that has the installer — a repo with two work areas, nothing installed yet</p>
+    <!-- 3. problem / promise -->
+    <section id="problem" class="band" data-idx="02">
+      <h2 class="cmd">$ the problem you already have</h2>
+      <p class="read">Three agents, maybe five, across two or three work areas. The thing holding them together is <em>you</em>: a terminal tab per project that you rename when one dies, a browser profile you hope is the right one, a note about which agent owns which tree, a worker budget nobody enforces.</p>
+      <p class="read">A supervisor stalls on Tuesday; you notice on Thursday. A worker reports done; the integrated build is red. A model silently falls back to a paid tier; the invoice explains it a week later. A new session spends its first twenty minutes re-learning what the last one already knew.</p>
+      <p class="read">None of that is a discipline problem. It is an <em>arrangement</em> problem — and an arrangement can be written down, enforced in code, and verified before anything claims to be done.</p>
+    </section>
+
+    <!-- 4. solution / mechanism -->
+    <section id="fix" class="band" data-idx="03">
+      <h2 class="cmd">$ the fix — seven parts, one name</h2>
+      <div class="code-block">
+        <div class="code-head">
+          <span>the invariant every part reads — enforced in code, not by prompt</span>
+          <button type="button" class="copy" data-copy="code-invariant">copy</button>
+        </div>
+<pre id="code-invariant">project.id === its tab label === its browser space === basename(its tree)</pre>
+      </div>
+      <p class="read">A project is one name in the terminal, in the browser, on disk and in the governor's report — so there is exactly one place to look for what it touched. The seven parts that make that real, each framed as what it buys you:</p>
+      <div class="rows" id="fix-rows">
+        <div class="row"><code>agent-skill</code><span>the workspace teaches its own operator. The manual installs beside the crew — into <code>.agents/skills/</code>, <code>.claude/skills/</code>, <code>.opencode/skills/</code> — so the next agent starts competent, not curious.</span></div>
+        <div class="row"><code>herdr-spaces</code><span>an office, not a tab list. One tab per project plus a control plane — always 1 + N, derived from data. Adding a project adds one tab; nobody re-edits a config by hand at midnight.</span></div>
+        <div class="row"><code>ego-lite-spaces</code><span>browser work stays in its lane. One space per project, named after the project. A stuck page never pushes a worker into someone else's session.</span></div>
+        <div class="row"><code>govern</code><span>a stalled supervisor is noticed in minutes, not Thursday. One governor over a global budget checks liveness <em>and</em> evidence-backed progress, swaps dead model routes, and escalates what it cannot fix.</span></div>
+        <div class="row"><code>supervisors-workers</code><span>no task without an outcome. Every task names the outcome it produces before it is dispatched; one owner per task, lease-backed. A crew that cannot say what "done" means does not start.</span></div>
+        <div class="row"><code>acc</code><span>the next session starts informed. Durable memory per tree — gotchas, decisions, lessons — seeded once, never overwritten. Twenty minutes of re-learning becomes thirty seconds of reading.</span></div>
+        <div class="row"><code>charter</code><span>DONE means evidence. The handoff convention every mission ends with: files changed, commands run, results, failures, what was <em>not</em> tested. A claim with nothing behind it is recorded <code>unverified</code> — by the machine, not by your mood.</span></div>
+      </div>
+      <div class="code-block">
+        <div class="code-head">
+          <span>how the parts hand off — each link carries one exact name</span>
+          <button type="button" class="copy" data-copy="code-links">copy</button>
+        </div>
+<pre id="code-links">agent-skill         → herdr-spaces:        the driver
+herdr-spaces        → ego-lite-spaces:     project.id
+ego-lite-spaces     → herdr-spaces:        browser_space
+govern              → supervisors-workers: cap
+supervisors-workers → charter:             tasks[].outcome
+acc                 → govern:              memory
+charter             → supervisors-workers: acceptance</pre>
+      </div>
+      <p class="fine">This is why "just write some scripts" loses: scripts arrange, they don't refuse. Here a setup whose names would disagree is refused at install time, an agent named for a project it doesn't own cannot be spawned, and a handoff that lies fails a check — the invariants are code with tests, not conventions with intentions.</p>
+    </section>
+
+    <!-- 5. proof and detail — verbatim -->
+    <section id="proof" class="band" data-idx="04">
+      <h2 class="cmd">$ the proof — one real run, verbatim</h2>
+      <p class="note">a repo with two work areas, nothing installed yet. node v26.8.2. trimmed only where marked ⋯ — every line kept is unedited output</p>
       <div class="transcript" id="session-block">
         <p class="t-line">npx ace-proagents@latest inspect</p>
         <p class="out">ACE inspect — demo-repo
@@ -146,62 +151,19 @@ plan — 7 part(s), 24 write(s)
   herdr-spaces
       Herdr spaces — one tab per project, one control plane
       → orchestration/tabs.mjs
-      → orchestration/selftest.mjs
-      → orchestration/README.md
-      → orchestration/lib/topology.mjs
-      → orchestration/lib/cap.mjs
-      → orchestration/lib/herdr.mjs
       → orchestration/projects.json
-      → orchestration/state/.gitignore
-  ego-lite-spaces
-      Ego Lite spaces — one browser space per project
-      → orchestration/lib/ego.mjs
-  govern
-      Govern — one governor over a global worker budget
-      → orchestration/lib/free-models.mjs
-  supervisors-workers
-      Supervisors and workers — one owner per project, tasks that name an outcome
-      → orchestration/lib/handoff.mjs
-      → package.json
-  acc
-      ACC — durable memory per tree
-      → .acc/config/config.yaml
-      → .acc/config/templates/agents.md
-      → .acc-memory.md
-      → experiments/alpha-api/.acc-memory.md
-      → experiments/beta-web/.acc-memory.md
-  charter
-      Charter — the task contract, the handoff convention and the tool registry
-      → charter/TASK-CONTRACT.md
-      → charter/CREW-PROTOCOL.md
-      → charter/registry/experts.json
-      → STACK.md
+      ⋯  6 more under orchestration/
+  ego-lite-spaces · govern · supervisors-workers · acc · charter
+      ⋯  13 more writes: the browser space, the governor, the handoff
+         convention, the ace key, memory per tree, the charter layer, STACK.md
 
 apply — 24 written, 0 left alone
   + .agents/skills/ace/SKILL.md
   + .claude/skills/ace/SKILL.md
   + .opencode/skills/ace/SKILL.md
-  + orchestration/tabs.mjs
-  + orchestration/selftest.mjs
-  + orchestration/README.md
-  + orchestration/lib/topology.mjs
-  + orchestration/lib/cap.mjs
-  + orchestration/lib/herdr.mjs
-  + orchestration/lib/ego.mjs
-  + orchestration/lib/handoff.mjs
-  + orchestration/lib/free-models.mjs
-  + orchestration/projects.json
-  + orchestration/state/.gitignore
-  + package.json  (ace key replaced; all other keys untouched)
-  + .acc/config/config.yaml
-  + .acc/config/templates/agents.md
-  + .acc-memory.md
-  + experiments/alpha-api/.acc-memory.md
-  + experiments/beta-web/.acc-memory.md
-  + charter/TASK-CONTRACT.md
-  + charter/CREW-PROTOCOL.md
-  + charter/registry/experts.json
-  + STACK.md
+  ⋯  21 more: the orchestration stack, the ace key (merged, nothing else
+     touched), the ACC control file, one .acc-memory.md per tree, the
+     charter files, STACK.md
 
 verify — 18 passed, 0 failed, 2 not run
   ok    herdr-spaces         every declared agent resolves to a tab that allows its role
@@ -243,99 +205,40 @@ verify — 18 passed, 0 failed, 2 not run
   ok    agent-skill          the skill teaches inspect-before-answering
         ace inspect --json
   ok    agent-skill          every harness copy is byte-identical to the shipped source
-        .claude/skills + .opencode/skills match .agents/skills
-
-next
-  node orchestration/tabs.mjs plan        # the roster, and the budget with its source
-  node orchestration/tabs.mjs up          # inside Herdr: create the tabs and start what fits
-  node orchestration/tabs.mjs govern      # the governor's brief across every project
-  node orchestration/selftest.mjs         # this repo's own proof of the topology
-  ace config check && ace crew            # the same projects, from ACE's runtime</p>
+        .claude/skills + .opencode/skills match .agents/skills</p>
       </div>
       <button type="button" class="replay" id="session-replay">replay session</button>
-      <p class="fine">Nothing above was retyped: it is one run's output, <code>node v26.8.2</code>, two work areas, no multiplexer. The install starts no agent, creates no tab and opens no browser space. The two checks reported as <em>not run</em> state their precondition instead of passing quietly. The <code>apply</code> step merges the <code>ace</code> key into <code>package.json</code> and touches no other key; a generated file that already exists and differs is left alone unless <code>--force</code> is explicit, and memory is seeded once and never overwritten. With no answers and no terminal, <code>ace setup</code> refuses with <code>INTAKE_INVALID</code> and names every missing field with its fix — the error an agent repairs and retries.</p>
+      <p class="fine">Two things to notice. The two <code>skip</code>s: a check that cannot run is reported as <em>not run</em> with its reason — never as a pass, never silently dropped. And what the install did <em>not</em> do: it started no agent, created no tab, opened no browser space, invented no model route, and wrote nothing outside your repository. It wrote an arrangement; starting it is a separate, deliberate step.</p>
+      <div class="transcript" id="events-block">
+        <p class="out">the tab contract — one control plane plus one tab per project</p>
+        <p class="out">  ok    every declared agent resolves to a tab that allows its role</p>
+        <p class="out">  ok    a project with two supervisors is refused</p>
+        <p class="out">  ...</p>
+        <p class="out">selftest: 62 ok, 0 failures (703ms)</p>
+        <p class="out">note: healthCheck() was not exercised — it needs a real model probe, and this run is offline</p>
+      </div>
+      <p class="note">node orchestration/selftest.mjs — the code that was just written, proving itself, offline</p>
     </section>
 
-    <!-- the shipped skill -->
-    <section id="skill" class="band" data-idx="03">
-      <h2 class="cmd">$ cat skills/ace/SKILL.md</h2>
-      <p class="read">The other half of the product. The skill is the manual an agent loads before running any of this — it ships at this repository's root, in the layout skill managers and plugin marketplaces discover, and the <code>agent-skill</code> part copies it into the workspace it builds.</p>
-      <div class="code-block">
-        <div class="code-head">
-          <span>skills/ace/SKILL.md — the frontmatter (description trimmed; full in the repo)</span>
-          <button type="button" class="copy" data-copy="code-skill">copy</button>
-        </div>
-<pre id="code-skill">---
-name: ace
-description: Build and drive an agent workspace with ACE — the CLI that installs
-  a governed crew of coding agents into a repository … (the trigger words:
-  ace setup, agent workspace, crew, governor, supervisor, worker, orchestration)
-license: MIT
-metadata:
-  opencode/slash: "true"
----
-
-# ACE — build the workspace, then drive it</pre>
-      </div>
-      <div class="rows" id="skill-rows">
-        <div class="row"><code>§1 inspect before answering</code><span><code>ace inspect --json</code> first; the intake is answered from evidence, never invention. No candidate roots → create the trees first.</span></div>
-        <div class="row"><code>§2 answer the intake</code><span><code>ace parts --questions --json</code> is the schema; <code>--intake file.json</code> or flags are the answer formats.</span></div>
-        <div class="row"><code>§3 plan, then apply</code><span><code>--dry-run</code> first; read the verify verdict — a <code>skip</code> is a check that could not run, never a pass.</span></div>
-        <div class="row"><code>§4 what was installed</code><span>read the workspace's own <code>STACK.md</code> and <code>projects.json</code> — its actual decisions, not defaults.</span></div>
-        <div class="row"><code>§5 drive the crew</code><span><code>tabs.mjs</code> plan · up · status · cap · govern · brief · dispatch · verify · cycle; <code>ace crew · govern · task · handoff</code>.</span></div>
-        <div class="row"><code>§6 the rules</code><span>one name per project · 1 + N tabs · one global budget · free models only · evidence or silence · memory seeded once.</span></div>
-        <div class="row"><code>§7 when something refuses</code><span>refusals name the fix: repair the named thing and re-run — never weaken a check.</span></div>
-      </div>
-      <p class="fine">Where it lands in the workspace: <code>.agents/skills/ace/SKILL.md</code>, <code>.claude/skills/ace/SKILL.md</code>, <code>.opencode/skills/ace/SKILL.md</code> — written from one source in one apply, and the installer fails if any copy drifts. On Claude Code it is available as <code>/ace</code> too (the plugin); on OpenCode the frontmatter <code>metadata.opencode/slash</code> exposes the same.</p>
-    </section>
-
-    <!-- the seven parts -->
-    <section id="parts" class="band" data-idx="04">
-      <h2 class="cmd">$ ace parts</h2>
-      <p class="read">Seven parts, and none of them is usable alone. Each one hands an exact name to the next, so the terminal, the browser, the disk and the governor's report all call a project the same thing.</p>
-      <div class="rows" id="parts-rows">
-        <div class="row"><code>agent-skill</code><span>the manual the workspace's own agent loads, copied into every harness's skills directory. Three copies of one shipped source — verified identical.</span></div>
-        <div class="row"><code>herdr-spaces</code><span>one tab per project, plus a control-plane tab holding the governor and one supervisor per project. The number of tabs is always 1 + the number of projects.</span></div>
-        <div class="row"><code>ego-lite-spaces</code><span>one browser space per project, named after the project's own tree. A second space is never opened to escape a stuck page.</span></div>
-        <div class="row"><code>govern</code><span>one governor over a global worker budget: it checks liveness <em>and</em> evidence-backed progress, swaps an unusable model route for a validated one, and escalates what it cannot recover.</span></div>
-        <div class="row"><code>supervisors-workers</code><span>exactly one supervisor per project and its workers — and every task declares the outcome it produces, or it is refused at dispatch.</span></div>
-        <div class="row"><code>acc</code><span>durable memory per tree: a control file and one <code>.acc-memory.md</code> beside each project, so a new session starts informed instead of re-learning the repo.</span></div>
-        <div class="row"><code>charter</code><span>the layer on top: the task contract, the handoff convention every mission ends with, and the registry of tools the crew may use.</span></div>
+    <!-- 6. how it runs day to day -->
+    <section id="drive" class="band" data-idx="05">
+      <h2 class="cmd">$ drive it</h2>
+      <p class="read">After the install, the crew is data and commands — the same words your agent already knows how to run. Nothing here needs a dashboard.</p>
+      <div class="rows" id="cli-rows">
+        <div class="row"><code>ace inspect --json</code><span>the repo's facts — work areas, verification scripts, git state — before anything is answered</span></div>
+        <div class="row"><code>ace setup --dry-run</code><span>the whole plan, writing nothing. You read it before your repo changes</span></div>
+        <div class="row"><code>ace setup --json</code><span>install and verify. One JSON document out; structured refusals that name the fix</span></div>
+        <div class="row"><code>tabs.mjs plan</code><span>the roster and the budget <em>with its source</em> — who runs, where, and why that number</span></div>
+        <div class="row"><code>tabs.mjs up</code><span>inside the multiplexer: create the tabs, start the agents that fit the cap</span></div>
+        <div class="row"><code>tabs.mjs govern</code><span>the governor's brief across every project — liveness, evidence, what's next</span></div>
+        <div class="row"><code>tabs.mjs verify · cycle</code><span>handoffs checked against evidence; recovery recheck; the next task, or an honest "none"</span></div>
+        <div class="row"><code>ace task add "…" --outcome "…"</code><span>a task with no outcome line is refused at the door</span></div>
+        <div class="row"><code>ace handoff verify <task></code><span>a DONE claim with no command that exited 0 does not pass</span></div>
+        <div class="row"><code>ace watchdog cycle</code><span>an independent control plane recovers a dead governor — the governor is not a single point of failure</span></div>
       </div>
       <div class="code-block">
         <div class="code-head">
-          <span>the rule, and the seven lines setup prints under <code>linked</code></span>
-          <button type="button" class="copy" data-copy="code-links">copy</button>
-        </div>
-<pre id="code-links">project.id === its tab label === its browser space === basename(its tree)
-
-agent-skill         → herdr-spaces:        the driver
-herdr-spaces        → ego-lite-spaces:     project.id
-ego-lite-spaces     → herdr-spaces:        browser_space
-govern              → supervisors-workers: cap
-supervisors-workers → charter:             tasks[].outcome
-acc                 → govern:              memory
-charter             → supervisors-workers: acceptance</pre>
-      </div>
-      <p class="fine">That first line is the whole boundary system. It is not a convention anyone has to remember: <code>ace setup</code> refuses a setup whose names would disagree — a project root that does not exist, two trees that collide on one id, an agent name the multiplexer cannot attach — and the installed <code>selftest.mjs</code> fails on a project whose space stops matching its id.</p>
-    </section>
-
-    <!-- the generated data -->
-    <section id="spec" class="band" data-idx="05">
-      <h2 class="cmd">$ cat orchestration/projects.json</h2>
-      <p class="note">the data the crew runs on — written from your answers, then edited like any other file</p>
-      <dl class="label-grid" id="spec-grid">
-        <div class="row"><dt>topology</dt><dd>control-plane + one tab per project (1 + N)</dd></div>
-        <div class="row"><dt>budget</dt><dd>4 workers · global across every project · the control plane is never counted</dd></div>
-        <div class="row"><dt>harness</dt><dd>opencode</dd></div>
-        <div class="row"><dt>model policy</dt><dd>free models only — a name containing <code>-free</code> is not evidence; with nothing verified, dispatch is refused</dd></div>
-        <div class="row"><dt>handoff</dt><dd>mission · project · owner · status · evidence · a final <code>HANDOFF:</code> line</dd></div>
-        <div class="row"><dt>verification</dt><dd>npm run test · npm run build</dd></div>
-        <div class="row"><dt>project</dt><dd>alpha-api — space <code>alpha-api</code> — outcome: the report page renders under 200ms</dd></div>
-      </dl>
-      <div class="code-block">
-        <div class="code-head">
-          <span>orchestration/projects.json — one project, trimmed</span>
+          <span>orchestration/projects.json — the crew is data, not code (one project, trimmed)</span>
           <button type="button" class="copy" data-copy="code-projects">copy</button>
         </div>
 <pre id="code-projects">{
@@ -343,13 +246,7 @@ charter             → supervisors-workers: acceptance</pre>
   "generated_by": "ace setup",
   "cap": {
     "max_active_workers": 4,
-    "scope": "EVERY project tab combined … the governor and the
-              supervisors are the command surface, so they are never
-              counted and never trimmed.",
-    "settings": {
-      "read": "node orchestration/tabs.mjs cap",
-      "change": "node orchestration/tabs.mjs cap --set 5"
-    }
+    "scope": "EVERY project tab combined … the control plane is never counted."
   },
   "harness": {
     "default_harness": "opencode",
@@ -364,10 +261,8 @@ charter             → supervisors-workers: acceptance</pre>
       "id": "alpha-api",
       "root": "experiments/alpha-api",
       "browser_space": "alpha-api",
-      "owned_paths": ["experiments/alpha-api",
-                      "orchestration/state/alpha-api"],
-      "forbidden_paths": ["experiments/beta-web",
-                          "orchestration/state/beta-web"],
+      "owned_paths": ["experiments/alpha-api", "orchestration/state/alpha-api"],
+      "forbidden_paths": ["experiments/beta-web", "orchestration/state/beta-web"],
       "outcome": "the report page renders under 200ms",
       "agents": [
         { "role": "supervisor", "name": "alpha-api-supervisor" },
@@ -378,216 +273,126 @@ charter             → supervisors-workers: acceptance</pre>
   ]
 }</pre>
       </div>
-      <p class="fine">Every field is data: adding a project, a worker or a task is an edit to this file, never a branch in the orchestrator. An empty <code>tasks</code> list is allowed; a task without an outcome is not — the outcome line is what the supervisor reads before it dispatches, and the governor ranks the next outcome across the whole portfolio.</p>
+      <p class="fine">Adding a project, a worker or a task is an edit to this file — never a branch in the orchestrator. The boundaries are visible right here: <code>owned_paths</code> is where a project's agent may write, <code>forbidden_paths</code> is everything else. When a spawn exceeds the cap, the refusal is logged with its reason — the budget you set is the budget that holds.</p>
     </section>
 
-    <!-- commands -->
-    <section id="cli" class="band" data-idx="06">
-      <h2 class="cmd">$ ace --help</h2>
-      <div class="rows" id="cli-rows">
-        <div class="row"><code>ace setup</code><span>install the crew: interrogate, inspect, plan, apply, verify</span></div>
-        <div class="row"><code>ace inspect [--json]</code><span>the repo's facts — candidate work areas, detected verification, git state — to answer the intake from</span></div>
-        <div class="row"><code>ace parts [<id>]</code><span>the seven parts, why they are linked, and the questions an agent answers</span></div>
-        <div class="row"><code>node orchestration/tabs.mjs plan</code><span>the roster: the control plane plus one tab per project, and the budget with its source</span></div>
-        <div class="row"><code>… up [--dry-run]</code><span>create the tabs and start the agents that fit — a dry run creates nothing</span></div>
-        <div class="row"><code>… status</code><span>topology, cap, control plane, missions, model pool, circuits</span></div>
-        <div class="row"><code>… cap [--set N]</code><span>the effective worker cap <em>and where it came from</em>; a change is logged</span></div>
-        <div class="row"><code>… govern</code><span>the governor's brief across every project</span></div>
-        <div class="row"><code>… brief · dispatch</code><span>one mission's self-contained prompt, and its delivery to the owner</span></div>
-        <div class="row"><code>… verify · cycle</code><span>validate handoffs against evidence · recovery recheck, verify, next task</span></div>
-        <div class="row"><code>node orchestration/selftest.mjs</code><span>the installed setup's own proof, offline</span></div>
-        <div class="row"><code>ace config · crew · route</code><span>the same stack, seen by ACE's runtime: effective config, roster, model routes</span></div>
-        <div class="row"><code>ace task · handoff</code><span>durable tasks with a single owner, and structured handoffs</span></div>
-        <div class="row"><code>ace watchdog [status|cycle]</code><span>an independent control plane for a failed governor</span></div>
-        <div class="row"><code>ace adapters [health|audit]</code><span>11 swap points, 34 providers, deterministic fakes for tests</span></div>
-        <div class="row"><code>ace init · install · run</code><span>the runtime's package layer: scaffold a workspace, resolve deps, start it</span></div>
-        <div class="row"><code>ace status · snapshot · restore</code><span>human overview, and roll the environment back to a snapshot</span></div>
+    <!-- 7. objection handling -->
+    <section id="faq" class="band" data-idx="06">
+      <h2 class="cmd">$ the objections, answered</h2>
+      <div class="rows" id="faq-rows">
+        <div class="row"><code>will this burn tokens?</code><span>no. The install starts nothing, sends nothing, opens nothing. When the crew runs, work is dispatched only to models whose freeness is <em>verified this run</em> — a name containing <code>-free</code> is not evidence. With nothing verified, the dispatch is refused, not billed.</span></div>
+        <div class="row"><code>does it work with my harness?</code><span>the skill installs into <code>.agents/skills/</code> (the cross-harness location), <code>.claude/skills/</code> and <code>.opencode/skills/</code> — one source, three copies, verified identical. Codex, Copilot, Cursor and Gemini CLI read <code>AGENTS.md</code>: point them at the same file. The agents themselves run on opencode, claude, codex, gemini or freebuff panes.</span></div>
+        <div class="row"><code>do I need the Herdr multiplexer?</code><span>to install, plan, verify and read state: no — all offline. To create tabs and start agents: yes, <code>tabs.mjs up</code> runs inside a Herdr session, and the install says so plainly rather than pretending.</span></div>
+        <div class="row"><code>what happens to my files?</code><span>writes stay inside your repository: the orchestration stack, generated data, memory files, charter, one merged <code>ace</code> key. A file that already exists and differs is left alone unless you pass <code>--force</code>. Memory is seeded once and never overwritten — not even with <code>--force</code>. Nothing is published, pushed or deployed, ever.</span></div>
+        <div class="row"><code>am I locked into a model or vendor?</code><span>no route is written unless you pin one. The model, the multiplexer, the memory layer — every third-party capability is an adapter with a contract, and deterministic fakes ship in the box so the tests need no credentials.</span></div>
+        <div class="row"><code>what if it breaks mid-run?</code><span>recovery is bounded and audited: checkpoint first, hold the lease, respect the restart budget, journal every action to <code>.ace/actions.jsonl</code>. A heartbeat alone never proves progress, and nothing reports a restart it did not deliver. When the chain is exhausted, it escalates to you instead of pretending.</span></div>
+        <div class="row"><code>why not just write my own scripts?</code><span>you would re-derive seven linked parts, each with a verifier — and your scripts will not refuse a lying handoff at 2am. Every check here exists because a crew without it failed quietly: the refusals are the feature.</span></div>
       </div>
-      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>0</code> installed and verified · <code>1</code> a check failed, or an operator must act · <code>2</code> a usage, intake or plan error — nothing written. With no answers and no terminal, <code>ace setup</code> refuses with <code>INTAKE_INVALID</code>, names every missing field and carries its fix. CI is green on Node 20 and Node 22, including the step that installs into a scratch repo, checks the three skill copies are identical, and runs the proof it wrote there.</p>
+      <p class="fine">What is genuinely absent, stated plainly: no HTTP API yet (the CLI's <code>--json</code> surface is the machine interface), no live provider quota check, no hosted service. See <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">docs/APP-INTEGRATION.md</a> for exactly what a UI could consume today.</p>
     </section>
 
-    <!-- install -->
-    <section id="git" class="band" data-idx="07">
-      <h2 class="cmd">$ ace --help && ls</h2>
-      <div class="rows" id="git-rows">
-        <div class="row"><code>npx ace-proagents@latest inspect</code><span>the facts, from npm <code>0.2.0</code> — the skill, the installer and the runtime ship together</span></div>
-        <div class="row"><code>npx ace-proagents@latest setup</code><span>it asks, or you answer with <code>--intake <file.json></code> or flags — no terminal prompt needed</span></div>
-        <div class="row"><code>npx skills add EnzoVezzaro/ace-proagents</code><span>or install the skill into any harness from this repository</span></div>
-        <div class="row"><code>node orchestration/tabs.mjs up</code><span>inside Herdr: create the tabs and start the agents that fit</span></div>
-        <div class="row"><code>ace install github:<owner>/<repo></code><span>the runtime's package layer — resolve a specification, lock it by hash</span></div>
-      </div>
-      <div class="code-block">
-        <div class="code-head">
-          <span>what the install wrote — every path outside the two project trees</span>
-          <button type="button" class="copy" data-copy="code-tree">copy</button>
+    <!-- 8. final CTA -->
+    <section id="get" class="band" data-idx="07">
+      <h2 class="cmd">$ get it</h2>
+      <p class="read">Install the skill the way your harness prefers, then tell your agent what to build. Every route lands the same manual; the loop it teaches is six commands, all readable, all reversible by <code>git</code>.</p>
+
+      <div class="routes" id="routes-grid">
+        <div class="route">
+          <p class="r-label">any harness · one command</p>
+          <div class="action-line">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code id="q-skills">npx skills add EnzoVezzaro/ace-proagents</code>
+            <button type="button" class="copy" data-copy="q-skills">copy</button>
+          </div>
+          <p class="r-fine">the cross-harness installer — claude code, cursor, codex, copilot, windsurf, gemini, cline, opencode and more.</p>
         </div>
-<pre id="code-tree">.agents/skills/ace/SKILL.md
-.claude/skills/ace/SKILL.md
-.opencode/skills/ace/SKILL.md
-.acc/config/config.yaml
-.acc/config/templates/agents.md
-orchestration/lib/cap.mjs
-orchestration/lib/ego.mjs
-orchestration/lib/free-models.mjs
-orchestration/lib/handoff.mjs
-orchestration/lib/herdr.mjs
-orchestration/lib/topology.mjs
-orchestration/projects.json
-orchestration/README.md
-orchestration/selftest.mjs
-orchestration/state/.gitignore
-orchestration/tabs.mjs
-charter/CREW-PROTOCOL.md
-charter/TASK-CONTRACT.md
-charter/registry/experts.json
-.acc-memory.md
-STACK.md</pre>
-      </div>
-      <p class="fine">Twenty-four paths were written in that run: the twenty-one above, the <code>ace</code> key merged into <code>package.json</code>, and one <code>.acc-memory.md</code> inside each project tree. The three skill copies are byte-identical by construction and by verification. The modules under <code>orchestration/lib/</code> and <code>tabs.mjs</code> are copied verbatim from the package's <code>assets/stack/</code>; the skill is copied verbatim from <code>skills/ace/</code> — <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">docs/STACK.md</a> maps which is which. Everything else is generated from your answers. The install writes nothing outside your repository, and it never publishes or pushes.</p>
-    </section>
-
-    <!-- runtime state -->
-    <section id="state" class="band" data-idx="08">
-      <h2 class="cmd">$ ls orchestration/state</h2>
-      <div class="code-block">
-        <div class="code-head">
-          <span>runtime state — per project, and the cross-project view</span>
-          <button type="button" class="copy" data-copy="code-state">copy</button>
+        <div class="route">
+          <p class="r-label">claude code · native plugin</p>
+          <div class="action-line">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code id="q-plugin">claude plugin marketplace add EnzoVezzaro/ace-proagents && claude plugin install ace@ace-proagents</code>
+            <button type="button" class="copy" data-copy="q-plugin">copy</button>
+          </div>
+          <p class="r-fine">this repository is its own plugin marketplace — the skill rides in the plugin.</p>
         </div>
-<pre id="code-state">orchestration/state/<project>/
-├── missions.json               # owner, scope, acceptance, model, state, retries
-├── missions/<id>.brief.md      # the exact prompt that was delivered
-├── handoffs/<id>-<STATE>.md    # the artifact, with evidence
-├── handoff-ledger.jsonl        # every transition, with its reason
-├── dispatch.jsonl              # who got what, on which pane, on which model
-└── cap.jsonl                   # refused spawns, with the reason
-
-orchestration/state/_global/
-├── assignments.json            # which pane holds which agent, in which tab
-├── providers.json              # per-model health: failures, cooldown, circuit
-├── failover.jsonl              # switches, and recoveries with their probe
-├── cap-settings.jsonl          # every worker-cap change, before → after
-└── governor-brief.md           # the last governor brief</pre>
+        <div class="route">
+          <p class="r-label">no install at all</p>
+          <div class="action-line">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code id="q-npx">npx ace-proagents@latest setup --goal "…" --outcome "…" --projects a,b --json</code>
+            <button type="button" class="copy" data-copy="q-npx">copy</button>
+          </div>
+          <p class="r-fine">the CLI is the whole product, from npm <code>0.2.0</code>. The skill is its manual — your agent reads it in the repo it builds.</p>
+        </div>
       </div>
-      <p class="fine">A worker's claim is not a result: a handoff that says <code>DONE</code> without a command, a file path or a measurement is recorded <code>unverified</code>, and an artifact written outside the mission's own project directory is an isolation violation that closes nothing. Every refusal is written down with its reason, the same way the cap records the spawn it declined.</p>
-    </section>
 
-    <!-- governor -->
-    <section id="govern" class="band" data-idx="09">
-      <h2 class="cmd">$ node orchestration/tabs.mjs govern</h2>
-      <p class="note">verbatim output: the same repo, after the install, read by the governor</p>
-      <div class="transcript" id="govern-block">
-        <p class="t-line">node orchestration/tabs.mjs plan</p>
-        <p class="out">topology: control-plane + alpha-api + beta-web   tabs live: 1/3
-cap: 4 active workers (source: projects.json:cap.max_active_workers); workers occupied 0
-  control   alpha-api-supervisor  (supervisor, tab control-plane)  alpha-api
-  control   beta-web-supervisor  (supervisor, tab control-plane)  beta-web
-  worker    alpha-api-worker  (alpha-api, pool project, tab alpha-api)
-  worker    beta-web-worker  (beta-web, pool project, tab beta-web)
-control plane live: 1/3 — missing alpha-api-supervisor, beta-web-supervisor</p>
-        <p class="t-line">node orchestration/tabs.mjs govern</p>
-        <p class="out">GOVERNOR BRIEF — 2026-10-13T19:31:12.933Z
-cap: 4 workers (projects.json:cap.max_active_workers); occupied 0; free 4
-CONTROL PLANE INCOMPLETE: alpha-api-supervisor, beta-web-supervisor — a supervisor that is not running cannot be reporting.
+      <p class="note">the loop the skill teaches — every step a command your agent runs and reads</p>
+      <ol class="loop" id="loop-steps">
+        <li class="step"><code>load the skill</code><span>SKILL.md — installed into the workspace it builds</span></li>
+        <li class="step"><code>ace inspect --json</code><span>the repo's facts, before anything is answered</span></li>
+        <li class="step"><code>answer from evidence</code><span>the intake — never invented, or the install refuses</span></li>
+        <li class="step"><code>ace setup --dry-run</code><span>read the plan; your repo is untouched until you say go</span></li>
+        <li class="step"><code>ace setup</code><span>24 writes, 18 checks, 2 honest skips — the arrangement lands</span></li>
+        <li class="step"><code>drive the crew</code><span>tabs.mjs plan · up · govern · verify — evidence or silence</span></li>
+      </ol>
 
-PROJECT alpha-api (space alpha-api)
-  supervisor alpha-api-supervisor (NOT RUNNING)
-  outcome: the report page renders under 200ms
-  workers: alpha-api-worker (not running)[project]
-  queue pending: EMPTY — mint one task with an outcome line
-
-PROJECT beta-web (space beta-web)
-  supervisor beta-web-supervisor (NOT RUNNING)
-  outcome: the report page renders under 200ms
-  workers: beta-web-worker (not running)[project]
-  queue pending: EMPTY — mint one task with an outcome line
-
-NEXT: for every project with an empty queue, mint exactly one task with an outcome line; for every unverified claim, re-prompt the owner for evidence before accepting it</p>
+      <div class="action-line">
+        <span class="prompt" aria-hidden="true">$</span>
+        <code id="q-final">npx skills add EnzoVezzaro/ace-proagents && cd /path/to/your-repo && ace inspect --json</code>
+        <button type="button" class="copy primary" data-copy="q-final">copy install command</button>
       </div>
-      <p class="fine">Both lines above are the honest kind: the plan says which tabs exist (<code>1/3</code>) and names the two supervisors it has not started yet; the brief reports an incomplete control plane instead of a roster that looks staffed. The governor does not dispatch to workers — it authorises and ranks, and a supervisor turns that into a mission for its own project.</p>
-      <dl class="label-grid" id="govern-grid">
-        <div class="row"><dt>hierarchy</dt><dd>governor → supervisors → workers · a governor → worker message is refused in code</dd></div>
-        <div class="row"><dt>budget</dt><dd>one global worker budget across every project tab · the control plane is never counted against it</dd></div>
-        <div class="row"><dt>outcome</dt><dd>every task names the outcome it produces · the governor ranks the next outcome across the portfolio</dd></div>
-        <div class="row"><dt>models</dt><dd>free models only, with provenance · no verified free model means the dispatch is refused, not billed</dd></div>
-        <div class="row"><dt>handoffs</dt><dd>verified against evidence · a DONE claim with nothing behind it is <code>unverified</code></dd></div>
-        <div class="row"><dt>failover</dt><dd>validated fallback routes · bounded retries · cooldown · a circuit that clears only on a passing probe</dd></div>
-        <div class="row"><dt>watchdog</dt><dd>a control plane outside the governor, so a dead governor is still recovered</dd></div>
-        <div class="row"><dt>adapters</dt><dd>11 swap points · 34 providers, including deterministic fakes for tests</dd></div>
-        <div class="row"><dt>interface</dt><dd>the CLI and its <code>--json</code> documents · no HTTP API yet</dd></div>
-      </dl>
-      <p class="fine">Each line above is a command in the installed repo: <code>tabs.mjs plan</code>, <code>cap</code>, <code>govern</code>, <code>verify</code>, and ACE's own <code>crew</code>, <code>watchdog status</code>, <code>adapters audit</code>. The installed stack dispatches through Herdr — that is what the seven parts are for — while ACE's own runtime records the request and reports <code>delivered: false</code> rather than claiming it started an agent. What is genuinely absent is listed as plainly: no HTTP API, no live management-bot transport, no provider quota check — see <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">docs/APP-INTEGRATION.md</a>.</p>
-      <div class="transcript" id="events-block">
-        <p class="out">the tab contract — one control plane plus one tab per project</p>
-        <p class="out">  ok    every declared agent resolves to a tab that allows its role</p>
-        <p class="out">  ok    a project with two supervisors is refused</p>
-        <p class="out">  ...</p>
-        <p class="out">selftest: 62 ok, 0 failures (703ms)</p>
-        <p class="out">note: healthCheck() was not exercised — it needs a real model probe, and this run is offline</p>
-      </div>
-      <p class="note">node orchestration/selftest.mjs — the installed setup's own proof, offline</p>
-    </section>
+      <p class="cta-cue">MIT · zero dependencies · nothing written outside your repo · undo with <code>git</code></p>
 
-    <!-- close -->
-    <section id="end" class="band" data-idx="10">
-      <h2 class="cmd">$ ace status</h2>
-      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the outcome line — and the skill that teaches the next agent how to drive it. 146 tests pass on Node 20 and Node 22; the two-project install on this page verifies itself in 18 checks, and the code it wrote into the repository proves itself offline in 62 assertions (one project reports 17 and 61). It is on <code>origin/main</code> and published as <code>0.2.0</code> — the first release that ships the skill.</p>
       <div class="receipt">
         <p class="r-head">ace/v1 · what ACE is today</p>
         <div class="r-row"><span>license</span><b>MIT</b></div>
         <div class="r-row"><span>runtime dependencies</span><b>0</b></div>
         <div class="r-row"><span>linked parts</span><b>7</b></div>
-        <div class="r-row"><span>harness skill locations</span><b>.agents · .claude · .opencode</b></div>
         <div class="r-row"><span>tests on node 20 + 22</span><b>146</b></div>
+        <div class="r-row"><span>on npm</span><b>0.2.0</b></div>
         <div class="r-row total"><span>spec</span><b>ace/v1</b></div>
       </div>
-      <div class="action-line">
-        <span class="prompt" aria-hidden="true">$</span>
-        <code id="q-quick">npx ace-proagents@latest inspect --json</code>
-        <button type="button" class="copy" data-copy="q-quick">copy</button>
-      </div>
+
       <div class="cards">
-        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">
-          <span class="c-t">quick start</span>
-          <span class="c-d">point your agent at it, or run it yourself: the real inspect, plan, apply and verify output.</span>
-        </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/skills/ace/SKILL.md" target="_blank" rel="noopener">
           <span class="c-t">the agent skill</span>
-          <span class="c-d">the manual your agent loads: inspect, answer, plan, apply, drive — and the honesty rules.</span>
+          <span class="c-d">read the manual your agent loads — before you install anything.</span>
+        </a>
+        <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">
+          <span class="c-t">the readme</span>
+          <span class="c-d">the full command reference, the package workflow, the configuration layers.</span>
         </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">
           <span class="c-t">the seven parts</span>
-          <span class="c-d">what each part installs, what it requires, and the exact name it hands on.</span>
+          <span class="c-d">what each installs, what it requires, the exact name it hands on.</span>
         </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">
           <span class="c-t">source</span>
           <span class="c-d">MIT on GitHub — issues and PRs open.</span>
         </a>
       </div>
+
       <footer>
         <div class="foot-cols">
           <div class="foot-col">
-            <h4>transcript</h4>
+            <h4>sections</h4>
             <ul>
-              <li><a href="#agents">your agent</a></li>
-              <li><a href="#session">ace setup</a></li>
-              <li><a href="#skill">the skill</a></li>
-              <li><a href="#parts">the seven parts</a></li>
-              <li><a href="#spec">projects.json</a></li>
-              <li><a href="#cli">commands</a></li>
-              <li><a href="#git">install</a></li>
-              <li><a href="#state">state</a></li>
-              <li><a href="#govern">govern</a></li>
+              <li><a href="#receipts">receipts</a></li>
+              <li><a href="#problem">the problem</a></li>
+              <li><a href="#fix">the fix</a></li>
+              <li><a href="#proof">the proof</a></li>
+              <li><a href="#drive">drive it</a></li>
+              <li><a href="#faq">faq</a></li>
+              <li><a href="#get">get it</a></li>
             </ul>
           </div>
           <div class="foot-col">
             <h4>docs</h4>
             <ul>
-              <li><a href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">quick start</a></li>
+              <li><a href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">readme</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/skills/ace/SKILL.md" target="_blank" rel="noopener">the agent skill</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">the seven parts</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">app integration</a></li>
-              <li><a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/DESIGN.md" target="_blank" rel="noopener">design system</a></li>
             </ul>
           </div>
           <div class="foot-col">
@@ -595,6 +400,7 @@ NEXT: for every project with an empty queue, mint exactly one task with an outco
             <ul>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">github</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/issues" target="_blank" rel="noopener">issues</a></li>
+              <li><a href="https://www.npmjs.com/package/ace-proagents" target="_blank" rel="noopener">npm</a></li>
               <li><a href="https://www.producthunt.com/products/ace-14" target="_blank" rel="noopener">product hunt</a></li>
             </ul>
           </div>

@@ -64,29 +64,30 @@ a tab list.
 
 ## Install
 
-Clone it and run it with Node 20+. There is nothing to build and nothing to
-install — the package has no dependencies:
+npm is the primary path — nothing to clone, nothing to build, zero dependencies:
 
 ```bash
-git clone https://github.com/EnzoVezzaro/ace-proagents.git
-cd ace-proagents
-node ace.mjs --help
+npx ace-proagents@latest --help          # run it, nothing installed
+npm i -g ace-proagents                   # or install the `ace` command
 ```
 
-`package.json` declares `"bin": { "ace": "./ace.mjs" }`, so `npm i ace-proagents`
-also installs an `ace` command. **The published package is `0.2.0`** — the
-installer (`lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`,
-`assets/stack/**`), the skill (`skills/ace/SKILL.md`) and the governance runtime,
-on `origin/main` and in the registry. `0.1.4` was the first release with the
-installer; npm's `0.1.2` and the `v0.1.3` tag predate it.
+**The published package is `0.2.0`** — the installer (`lib/stack.mjs`,
+`lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`), the skill
+(`skills/ace/SKILL.md`) and the governance runtime, on `origin/main` and in the
+registry. `0.1.4` was the first release with the installer; npm's `0.1.2` and
+the `v0.1.3` tag predate it.
 
-Run `ace setup` from a checkout that has the installer, with the **target
-repository** as the working directory:
+Run it in the **target repository** — the working directory is where the
+workspace is built:
 
 ```bash
 cd /path/to/your-repo
-node /path/to/ace-proagents/ace.mjs setup
+npx ace-proagents@latest setup
 ```
+
+A checkout works identically if you prefer it (`node /path/to/ace-proagents/ace.mjs setup`);
+`package.json` declares `"bin": { "ace": "./ace.mjs" }`. What matters is the
+working directory, not where the package lives.
 
 `ace init` copies the CLI and `lib/`, but `assets/stack/` and `skills/` only
 travel with `ace setup`. A workspace scaffolded by `init` alone therefore has no
@@ -103,17 +104,17 @@ driving what was installed.
 
 ```bash
 # on a terminal: it asks, and prints why each question matters
-node ace.mjs setup
+npx ace-proagents@latest setup
 
 # or answer in one line — how an agent does it, with no terminal to prompt on
-node ace.mjs setup \
+npx ace-proagents@latest setup \
   --goal "ship the reporting API" \
   --outcome "the report page renders under 200ms" \
   --projects experiments/alpha-api,experiments/beta-web
 
-node ace.mjs inspect --json           # the repo's facts, to answer the intake from
-node ace.mjs setup --dry-run --json   # the plan alone; writes nothing
-node ace.mjs parts --questions        # the intake schema, with defaults and reasons
+npx ace-proagents@latest inspect --json           # the repo's facts, to answer the intake from
+npx ace-proagents@latest setup --dry-run --json   # the plan alone; writes nothing
+npx ace-proagents@latest parts --questions        # the intake schema, with defaults and reasons
 ```
 
 Five stages — **interrogate → inspect → plan → apply → verify** — and it prints
@@ -202,7 +203,7 @@ environment specification by hand, and the runtime governs whichever arrangement
 is in place — the installed one, or one written by hand:
 
 ```bash
-node ace.mjs init --name my-workspace
+npx ace-proagents@latest init --name my-workspace
 cd my-workspace
 node ace.mjs install
 node ace.mjs run
@@ -211,7 +212,7 @@ node ace.mjs context --json
 node ace.mjs stop
 ```
 
-`init` copies `ace.mjs` and `lib/` into the workspace, so after `cd my-workspace` you can invoke `node ace.mjs` directly.
+`init` copies `ace.mjs` and `lib/` into the workspace, so after `cd my-workspace` you can invoke `node ace.mjs` directly (or keep using `npx ace-proagents@latest` for anything outside it).
 
 During `ace init`, the CLI will:
 
@@ -223,9 +224,9 @@ During `ace init`, the CLI will:
 Git-native install (local registry optional):
 
 ```bash
-node ace.mjs install github:owner/repo
-node ace.mjs install github:owner/repo#v1.2.0
-node ace.mjs install git+https://example.com/owner/repo.git
+npx ace-proagents@latest install github:owner/repo
+npx ace-proagents@latest install github:owner/repo#v1.2.0
+npx ace-proagents@latest install git+https://example.com/owner/repo.git
 ```
 
 ## Command reference

@@ -133,6 +133,7 @@ code, pre { font: inherit; }
   color: var(--read);
 }
 .lead em { font-style: normal; color: var(--ink); }
+.lead strong { color: var(--ink); font-weight: 700; }
 .lead code { color: var(--ink); }
 
 .action-line {
@@ -154,6 +155,28 @@ code, pre { font: inherit; }
   overflow-x: auto;
   white-space: nowrap;
 }
+
+/* the primary CTA: the one filled control in the resting state */
+.copy.primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  font-weight: 700;
+  padding: 0.45rem 1rem;
+}
+.copy.primary:hover, .copy.primary[data-state="copied"] {
+  background: var(--hot);
+  color: var(--bg);
+  border-color: var(--hot);
+}
+
+/* supporting cue under a CTA — the promise kept small */
+.cta-cue {
+  margin: 0.8rem 0 0;
+  color: var(--dim);
+  font-size: 13px;
+}
+.cta-cue code { color: var(--read); }
 
 .action-note { color: var(--dim); font-size: 13px; white-space: nowrap; }
 
@@ -329,24 +352,41 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
 .loop .step code { display: block; color: var(--hot); }
 .loop .step span { display: block; color: var(--dim); font-size: 13px; line-height: 1.5; margin-top: 0.15rem; }
 
-/* label grid — spec rows ruled like a stock label */
-.label-grid {
-  max-width: 88ch;
-  margin: 0 0 2.6rem;
-  border-top: 1px solid var(--line);
-}
-
-.label-grid .row {
+/* receipts — the trust numbers, early. Stats over logos: nothing invented */
+.receipt-grid {
   display: grid;
-  grid-template-columns: 14ch 1fr;
-  gap: 1ch;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+  gap: 0.9rem;
+  max-width: 92ch;
+  margin: 0 0 2.6rem;
 }
 
-.label-grid dt { color: var(--dim); margin: 0; }
-.label-grid dd { color: var(--read); margin: 0; overflow-wrap: anywhere; }
-.label-grid dd code { color: var(--ink); }
+.receipt-grid .stat {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+
+.receipt-grid .stat b {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt-grid .stat b a { color: inherit; text-decoration: none; }
+.receipt-grid .stat b a:hover { color: var(--hot); text-decoration: underline; }
+
+.receipt-grid .stat span {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.receipt-grid .stat span code { color: var(--read); }
 
 /* code blocks */
 .code-block {
@@ -510,8 +550,8 @@ footer .cursor { width: 0.55em; height: 1em; }
   .sheet { margin-left: 0; padding-top: 2.5rem; }
   #hero { min-height: auto; padding: 3rem 0 2.5rem; }
   .band { padding-top: 4rem; }
-  .label-grid .row { grid-template-columns: 1fr; gap: 0.1rem; }
   .rows .row { grid-template-columns: 1fr; gap: 0.15rem; }
+  .receipt-grid { grid-template-columns: 1fr 1fr; }
   .loop { grid-template-columns: 1fr; }
   .action-note { display: none; }
 }
