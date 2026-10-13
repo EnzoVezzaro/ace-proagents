@@ -15,26 +15,6 @@ const REDUCED =
 const EASE = "easeOut";
 
 /* ------------------------------------------------------------------ */
-/* Live checkout — ACE Pro support subscription, $9.00 USD/month.      */
-/* Real Stripe Payment Link, live mode (acct_1U7JJtLbT22cdeyL).        */
-/* Never replace this with a test-mode or invented link.               */
-/* ------------------------------------------------------------------ */
-window.ACE_CHECKOUT_URL = "https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800";
-
-(function setupCheckout() {
-  const url = window.ACE_CHECKOUT_URL;
-  const btn = document.getElementById("checkout-btn");
-  const state = document.getElementById("checkout-state");
-  if (!btn || !state) return;
-  if (url) {
-    btn.setAttribute("href", url);
-    btn.removeAttribute("hidden");
-    state.setAttribute("hidden", "");
-  }
-  /* else: keep the button hidden and the honest message visible. */
-})();
-
-/* ------------------------------------------------------------------ */
 /* Copy — controls print their result, lowercase, terminal voice       */
 /* ------------------------------------------------------------------ */
 (function setupCopy() {
@@ -330,7 +310,7 @@ window.setInterval(() => {
 (function closing() {
   const end = document.getElementById("end");
   if (!end || REDUCED) return;
-  const parts = [...end.querySelectorAll(".read, .receipt, .action-line, .checkout-state, .cards, .fine")];
+  const parts = [...end.querySelectorAll(".read, .receipt, .action-line, .cards, .fine")];
   setInitial(parts);
   armReveal(end, 0.15, () => {
     parts.forEach((p, i) => printIn(p, { delay: i * 0.09 }));

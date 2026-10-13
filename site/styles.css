@@ -329,27 +329,7 @@ a.chip:hover, a.chip:focus-visible { border-color: var(--hot); color: var(--hot)
 .rows .row code { color: var(--hot); }
 .rows .row span { color: var(--dim); }
 
-/* close / checkout honesty */
-.sponsor {
-  display: inline-block;
-  margin: 1.5rem 0 0.5rem;
-  padding: 0.6rem 1.1rem;
-  border: 1px solid var(--ink);
-  color: var(--bg);
-  background: var(--ink);
-  text-decoration: none;
-  font-weight: 700;
-}
-.sponsor:hover { background: var(--hot); border-color: var(--hot); color: var(--bg); }
-
-.checkout-state {
-  max-width: 60ch;
-  margin: 0 0 1.5rem;
-  color: var(--dim);
-  font-size: 14px;
-}
-
-/* pricing receipt — the free tier stated as numbers, nothing invented */
+/* the spec receipt — what ACE is stated as numbers, nothing invented */
 .receipt {
   max-width: 64ch;
   margin: 1.8rem 0 0;

@@ -4,7 +4,7 @@
 `ace setup` asks what the work is, reads what the repository already says about
 itself, and writes the whole arrangement — the terminal spaces, one browser space
 per project, a governor over a global worker budget, one supervisor and its
-workers per project, durable memory, and a money line on every task.
+workers per project, durable memory, and an outcome line on every task.
 
 **Zero runtime dependencies.** Node ESM only (`ace.mjs`), Node 20+. Spec `ace/v1`. MIT.
 
@@ -75,8 +75,8 @@ node ace.mjs setup
 
 # or answer in one line — how an agent does it, with no terminal to prompt on
 node ace.mjs setup \
-  --goal "ship the paid API" \
-  --money "the $19/mo plan" \
+  --goal "ship the reporting API" \
+  --outcome "the report page renders under 200ms" \
   --projects experiments/alpha-api,experiments/beta-web
 
 node ace.mjs setup --dry-run --json    # the plan alone; writes nothing
@@ -114,9 +114,9 @@ operator must act · `2` a usage, intake or plan error — nothing written.
 | `herdr-spaces` | one Herdr tab per project plus a `control-plane` tab, and the orchestrator that maintains them |
 | `ego-lite-spaces` | one Ego Lite browser space per project, named after the project's own tree |
 | `govern` | one governor over a **global** worker budget, with free-model-only failover |
-| `supervisors-workers` | exactly one supervisor and its workers per project, every task carrying the money line it can produce |
+| `supervisors-workers` | exactly one supervisor and its workers per project, every task carrying the outcome line it can produce |
 | `acc` | the ACC control file and one `.acc-memory.md` per tree, so a session starts informed |
-| `proagents` | the money contract, the handoff convention every mission ends with, and the tool registry |
+| `charter` | the task contract, the handoff convention every mission ends with, and the tool registry |
 
 [docs/STACK.md](./docs/STACK.md) is their map: what each installs, what it
 requires, which exact name it hands to the next, and which files are copied
@@ -131,7 +131,7 @@ orchestration/lib/            topology · cap · herdr · ego · handoff · free
 orchestration/state/          per-project missions, handoffs, dispatch and cap logs
 STACK.md                      the map of what was installed, and how to drive it
 .acc-memory.md                durable memory, and one beside each project tree
-proagents/                    the money contract, the handoff convention, the tool registry
+charter/                    the task contract, the handoff convention, the tool registry
 ```
 
 Then, inside a Herdr session:
@@ -199,7 +199,7 @@ Installing the crew:
 
 | Command | Description |
 |---------|-------------|
-| `ace setup [--intake <file>] [--goal …] [--money …] [--projects a,b] [--dry-run] [--parts a,b] [--force] [--json]` | Install the crew stack into this repository: interrogate → inspect → plan → apply → verify |
+| `ace setup [--intake <file>] [--goal …] [--outcome …] [--projects a,b] [--dry-run] [--parts a,b] [--force] [--json]` | Install the crew stack into this repository: interrogate → inspect → plan → apply → verify |
 | `ace parts [<id>] [--questions] [--json]` | The six parts ACE installs, and the intake schema an agent can answer |
 
 Packages:
@@ -391,7 +391,7 @@ ACE SETUP     →  interrogate → inspect → plan → apply → verify      (s
 THE CREW      →  orchestration/projects.json   the data: topology, budget, projects, tasks
       │          orchestration/tabs.mjs        plan · up · status · cap · govern · dispatch
       │          orchestration/state/          missions, handoffs, dispatch, cap, governor brief
-      │          .acc-memory.md · proagents/    memory, the money contract, the handoff convention
+      │          .acc-memory.md · charter/    memory, the task contract, the handoff convention
       │
 ACE RUNTIME   →  governor → supervisors → workers, over the same projects and the same budget
       │          .ace/state.json, events.jsonl, agents/, tasks/, heartbeats/, leases/, routes/
@@ -510,7 +510,7 @@ kind-specific operations) across: multiplexer, workspace, agent-runtime,
 provider, context, handoff, tools, verification, persistence, watchdog and
 management-bot.
 
-The reference configuration is Herdr, git worktrees, ACC, ProAgents and
+The reference configuration is Herdr, git worktrees, ACC, Charter and
 OpenCode. Deterministic fakes for every kind ship in `lib/adapters/impl.mjs`, so
 the test suite needs no credential and incurs no provider cost. Declaring a
 provider that does not exist — or one that exists in the modelled world but is
@@ -623,14 +623,6 @@ Two private trees, never published, because they describe different things:
   `handoffs/`, `snapshots/`, `session.json`, `bots/` and `secrets/`. Secrets are
   referenced by name (`secret:<name>`); their values are redacted from events,
   handoffs, action journal entries and generated artifacts.
-
-## ACE Pro (support subscription)
-
-ACE is MIT-licensed and the CLI stays free. **ACE Pro** is a $9.00 USD/month support subscription, billed through Stripe — cancel any time.
-
-- Landing: <https://ace-seven-blue.vercel.app>
-- Subscribe directly: <https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800>
-- Cancel any time in the Stripe customer portal: <https://billing.stripe.com/p/login/9B6dRaclLgbjbqx1bB28800>
 
 ## License
 

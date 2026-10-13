@@ -46,7 +46,7 @@ Node >= 18 when it was written, which is no longer true of `package.json`).
 
 | Stage | What it does |
 | --- | --- |
-| interrogate | asks eleven questions (goal, the dollar the work can produce, the trees the crew works in, harness, model, the global worker budget, workers per project, browser need, what proves a change is done, a first task, a deadline) and prints **why** each matters |
+| interrogate | asks eleven questions (goal, the outcome the work can produce, the trees the crew works in, harness, model, the global worker budget, workers per project, browser need, what proves a change is done, a first task, a deadline) and prints **why** each matters |
 | inspect | reads the repository rather than trusting the answers: git state, `package.json` scripts turned into the verification commands, candidate work-area roots, an existing `orchestration/projects.json`, an existing `ace` key, an existing `.acc-memory.md` |
 | plan | the write set, which part causes each write, and the links between the parts — no filesystem effects |
 | apply | writes it, merges rather than replaces, and never overwrites what it did not seed |
@@ -63,9 +63,9 @@ the answers as flags).
 | `herdr-spaces` | one Herdr tab per project plus a `control-plane` tab; `orchestration/tabs.mjs`, `lib/{herdr,topology,cap}.mjs`, `projects.json`, `state/.gitignore`, `README.md`, `selftest.mjs` | — |
 | `ego-lite-spaces` | one Ego Lite browser space per project; `lib/ego.mjs` | `herdr-spaces` |
 | `govern` | one governor over a **global** worker budget, free-models-only failover; `lib/free-models.mjs` plus the `ace` key | `herdr-spaces`, `supervisors-workers` |
-| `supervisors-workers` | exactly one supervisor and its workers per project, every task carrying the money line it can produce; `projects.json` plus the `ace` key roles | `govern` |
+| `supervisors-workers` | exactly one supervisor and its workers per project, every task carrying the outcome line it can produce; `projects.json` plus the `ace` key roles | `govern` |
 | `acc` | the ACC control file and one `.acc-memory.md` per tree | `herdr-spaces` |
-| `proagents` | the money contract, the handoff convention, the tool registry, `STACK.md` | `supervisors-workers` |
+| `charter` | the task contract, the handoff convention, the tool registry, `STACK.md` | `supervisors-workers` |
 
 One rule links them, and it is the reason they are parts of one system rather
 than six tools:
@@ -77,7 +77,7 @@ project.id === its tab label === its browser space === basename(its tree)
 **Copied verbatim** from `assets/stack/orchestration/`: `tabs.mjs`, `selftest.mjs`,
 `README.md` and `lib/*.mjs`. **Generated per repository**: `orchestration/projects.json`,
 the `ace` key merged into `package.json` (other keys untouched), `.acc/**`,
-`proagents/**` and `STACK.md`.
+`charter/**` and `STACK.md`.
 
 ### The checks that refuse rather than warn
 
@@ -101,11 +101,11 @@ act · `2` a usage, intake or plan error — nothing written.
 - `test/stack.test.mjs` — the installer's own suite, part of the repo's 141 tests.
   It proves the plan and apply are hermetic, that the manifest merge touches no
   other key, and — the load-bearing cases — that `verifyStack` fails on every kind
-  of breakage (two supervisors, an unpriced task, a mismatched browser space, a
+  of breakage (two supervisors, a task with no outcome, a mismatched browser space, a
   duplicated project id, a budget that disagrees with the stack's cap).
 - `assets/stack/orchestration/selftest.mjs` — ships into every installed repository
   and runs there, offline: the topology rule, the cap math, the cap as a setting,
-  the space invariant, the handoff lifecycle and every failure kind, the money
+  the space invariant, the handoff lifecycle and every failure kind, the outcome
   rule, and the free-model refusal. 62 assertions, exit 0, no multiplexer, no
   network, no browser.
 - `.github/workflows/ci.yml` — a crew-stack smoke step installs into a scratch
@@ -151,7 +151,7 @@ ace-proagents/
 ├── schemas/
 │   └── workspace.schema.json
 ├── .ace/                   # runtime state (gitignored via local .gitignore)
-├── ideas.json              # engine integration (revenue_sync, owner_digest)
+├── ideas.json              # engine integration (sync, digest)
 └── metrics.json            # engine integration
 ```
 

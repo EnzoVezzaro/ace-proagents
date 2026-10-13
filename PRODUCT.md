@@ -31,8 +31,8 @@ ACE installs a crew of coding agents into a repository, and then governs it.
 about itself, and writes the arrangement as data: **six linked parts** — Herdr
 spaces (one tab per project plus a control plane), one Ego Lite browser space per
 project, a governor over one global worker budget, a supervisor and its workers
-per project with a dollar on every task, ACC memory per tree, and the ProAgents
-money contract with the handoff convention. The parts are held together by one
+per project with an outcome on every task, ACC memory per tree, and the Charter
+task contract with the handoff convention. The parts are held together by one
 name: `project.id === its tab label === its browser space === basename(its tree)`.
 
 Success means a developer understands the mechanism in one screen, trusts the
@@ -50,7 +50,7 @@ The mechanism a neighbouring tool cannot copy:
   names disagree, and the installed `selftest.mjs` fails on one.
 - **What is proven is shipped; what is specific is generated.** The modules are
   copied byte-for-byte from `assets/stack/`; only `projects.json`, the `ace` key,
-  the ACC files, the ProAgents layer and `STACK.md` are written per repository.
+  the ACC files, the Charter layer and `STACK.md` are written per repository.
   So an install is the code that runs, not a template that resembles it.
 - **It refuses rather than guesses.** No answers and no terminal → refuse and
   write nothing. Two trees colliding on one id → refuse. A check that cannot run →
@@ -91,12 +91,9 @@ Package surface third (how the `ace/v1` spec is declared by hand):
 - **Zero runtime dependencies.** Node builtins only; tests use the builtin runner.
 - **The site is self-contained:** static HTML/CSS/JS with the vendored Motion
   bundle only — no CDN, no network fonts, no external scripts. It deploys as-is.
-- **Honesty rules.** `window.ACE_CHECKOUT_URL` and `window.ACE_DONATE_URL` point
-  at the one real live Stripe Payment Link (the $9.00 USD/month ACE Pro support
-  subscription) and are never replaced with a test-mode or invented link. No
-  invented prices, customers, benchmarks or installation claims. ACTUAL /
-  ESTIMATE / FORECAST / SCENARIO language is never merged.
-- **Money is integer cents** wherever a value is shown.
+- **Honesty rules.** Nothing on the page is invented: no invented customers,
+  benchmarks or installation claims, and ACTUAL / ESTIMATE / FORECAST /
+  SCENARIO language is never merged.
 - **The installer writes only inside the target repository.** It starts no agent,
   creates no tab, opens no browser space, invents no model route, and never
   publishes, pushes or deploys.
@@ -109,8 +106,6 @@ vocabulary: interrogation, plan, apply, verify, topology, worker cap, handoff,
 refusal. Say what is not implemented in the same breath as what is.
 
 ## Open decisions
-- **Which price converts is unmeasured.** ACE Pro is $9.00 USD/month and ACE is
-  MIT-style free; there is no measured conversion to point at.
 - **The deployed application's source is not in this repository** (the landing in
   `site/` is). Whether it is folded in here is open; `docs/APP-INTEGRATION.md`
   describes the surface such an application would consume.

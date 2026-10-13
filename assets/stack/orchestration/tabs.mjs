@@ -28,7 +28,7 @@
 //   node orchestration/tabs.mjs verify [--project exp-005-autoarb]
 //   node orchestration/tabs.mjs cycle [--dry-run]
 //
-// Exit codes: 0 ok · 2 refused (cap / no verified free model / no money line)
+// Exit codes: 0 ok · 2 refused (cap / no verified free model / no outcome line)
 
 import fs from "node:fs";
 import path from "node:path";
@@ -145,9 +145,9 @@ export function buildPrompt({ project, mission, model = null, agent = null, conf
   lines.push("ACCEPTANCE CRITERIA (each must be true, with the evidence to prove it):");
   for (const a of mission.acceptance || []) lines.push(`  - ${a}`);
   lines.push("");
-  lines.push(`MONEY: ${mission.money}`);
+  lines.push(`OUTCOME: ${mission.outcome}`);
   lines.push("");
-  lines.push("HANDOFF CONTRACT (the installed convention — proagents/knowledge/CREW-PROTOCOL.md rule 3):");
+  lines.push("HANDOFF CONTRACT (the installed convention — charter/CREW-PROTOCOL.md rule 3):");
   lines.push(`  Write your handoff to ${rel(mission.handoff_path)} starting with these exact field values:`);
   lines.push(`  mission: ${mission.id}`);
   lines.push(`  project: ${project.id}`);
@@ -161,7 +161,7 @@ export function buildPrompt({ project, mission, model = null, agent = null, conf
   lines.push("");
   lines.push(browserBrief(project));
   lines.push("");
-  lines.push("Definition of done: the handoff artifact exists, every acceptance line above is backed by evidence, and you report the live-revenue movement this round caused — or state plainly that none was caused.");
+  lines.push("Definition of done: the handoff artifact exists, every acceptance line above is backed by evidence, and you report the outcome this round produced — or state plainly that it produced none.");
   return lines.join("\n");
 }
 
@@ -501,10 +501,10 @@ export async function buildGovernorBrief(config) {
       space: spaceFor(project),
       supervisor: supervisor?.name || null,
       supervisor_live: agents.some((a) => a.name === supervisor?.name),
-      money: project.money,
+      outcome: project.outcome,
       workers: (project.agents || []).filter((a) => a.role === "worker").map((a) => ({ name: a.name, pool: a.pool || "default", live: agents.some((x) => x.name === a.name) })),
       missions: missions.map((m) => ({ id: m.id, state: m.state, owner: m.owner, status: m.handoff_status || null, attempts: m.attempts, retries: m.retries, last_action: m.last_transition?.action || null })),
-      queue_pending: pendingTasks(project, byId).map((t) => ({ id: t.id, priority: t.priority, money: t.money })),
+      queue_pending: pendingTasks(project, byId).map((t) => ({ id: t.id, priority: t.priority, outcome: t.outcome })),
       unbacked_or_refused: violations.map((m) => ({ id: m.id, kind: m.last_transition?.kind, action: m.last_transition?.action })),
     });
   }
@@ -517,7 +517,7 @@ export async function buildGovernorBrief(config) {
     projects,
     empty_queues: projects.flatMap((p) => (p.queue_pending.length === 0 ? [p.id] : [])),
     unverified_claims: projects.flatMap((p) => p.unbacked_or_refused.map((v) => ({ project: p.id, ...v }))),
-    next: "for every project with an empty queue, mint exactly one task with a money line (AGENTS.md standing rule); for every unverified claim, re-prompt the owner for evidence before accepting it",
+    next: "for every project with an empty queue, mint exactly one task with an outcome line (AGENTS.md standing rule); for every unverified claim, re-prompt the owner for evidence before accepting it",
   };
 }
 
@@ -527,7 +527,7 @@ export function renderGovernorBrief(brief) {
   // produced this, and its pane may hold an earlier session. Say who it is and
   // what scopes it, before any of the state.
   lines.push(`You are \`${brief.governor}\`, the governor of this workspace. Work ONLY from this brief and the repo. If this pane carries an earlier conversation, it is not your task: do not continue it.`);
-  lines.push(`Your job: check each supervisor below, check that every claim is backed by evidence, arbitrate between the projects, and for every project whose queue is EMPTY mint exactly one task WITH a money line (AGENTS.md standing rule). Report what you did and what the live revenue movement was — or state plainly that there was none. You rank and authorise; a supervisor dispatches to its own workers.`);
+  lines.push(`Your job: check each supervisor below, check that every claim is backed by evidence, arbitrate between the projects, and for every project whose queue is EMPTY mint exactly one task with an outcome line (AGENTS.md standing rule). Report what you did and what it changed — or state plainly that nothing changed. You rank and authorise; a supervisor dispatches to its own workers.`);
   lines.push("");
   lines.push(`GOVERNOR BRIEF — ${brief.at}`);
   lines.push(`cap: ${brief.cap.limit} workers (${brief.cap.source}); occupied ${brief.cap.occupied}; free ${brief.cap.free}`);
@@ -536,9 +536,9 @@ export function renderGovernorBrief(brief) {
     lines.push("");
     lines.push(`PROJECT ${p.id} (space ${p.space})`);
     lines.push(`  supervisor ${p.supervisor}${p.supervisor_live ? " (live)" : " (NOT RUNNING)"}`);
-    lines.push(`  money: ${p.money}`);
+    lines.push(`  outcome: ${p.outcome}`);
     lines.push(`  workers: ${p.workers.map((w) => `${w.name}${w.live ? "" : " (not running)"}[${w.pool}]`).join(", ") || "none"}`);
-    lines.push(`  queue pending: ${p.queue_pending.map((t) => t.id).join(", ") || "EMPTY — mint one task with a money line"}`);
+    lines.push(`  queue pending: ${p.queue_pending.map((t) => t.id).join(", ") || "EMPTY — mint one task with an outcome line"}`);
     for (const m of p.missions) lines.push(`  mission ${m.id}: ${m.state}${m.status ? `/${m.status}` : ""} owner ${m.owner} attempts ${m.attempts} retries ${m.retries}${m.last_action ? ` last ${m.last_action}` : ""}`);
     for (const v of p.unbacked_or_refused) lines.push(`  CLAIM NOT BACKED: ${v.id} (${v.kind} → ${v.action}) — re-prompt for evidence before accepting`);
   }
@@ -580,8 +580,8 @@ async function cmdDispatch(config, args) {
   const project = projectById(config, args.project);
   const task = (project.tasks || []).find((t) => t.id === args.task);
   if (!task) throw new Error(`unknown task ${args.task} in ${project.id}`);
-  if (!task.money) {
-    console.error(`refused: task ${task.id} has no money line`);
+  if (!task.outcome) {
+    console.error(`refused: task ${task.id} has no outcome line`);
     return 2;
   }
   const cap = workerCap(config);

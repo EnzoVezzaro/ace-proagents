@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ACE — install a crew of coding agents into any repository</title>
-  <meta name="description" content="ACE is one skill and one CLI that installs a crew of coding agents into a repository: Herdr spaces, one browser space per project, a governor over a global worker budget, a supervisor and workers per project with a money line on every task, durable memory, and a handoff convention. Zero runtime dependencies, MIT.">
+  <meta name="description" content="ACE is one CLI that installs a crew of coding agents into a repository: Herdr spaces, one browser space per project, a governor over a global worker budget, one supervisor and its workers per project with an outcome on every task, durable memory, and the handoff convention every mission ends with. Zero runtime dependencies, MIT.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="ACE — install a crew of coding agents into any repository">
-  <meta property="og:description" content="One skill and one CLI that writes the whole arrangement: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers with a money line on every task, durable memory. MIT, zero runtime dependencies.">
+  <meta property="og:description" content="One CLI that writes the whole arrangement: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers with an outcome on every task, durable memory. MIT, zero runtime dependencies.">
   <meta property="og:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://ph-files.imgix.net/04d7f844-e11f-4ce4-b647-85762be5fed0.png?auto=format&fit=crop&frame=1&h=512&w=1024">
@@ -38,7 +38,7 @@
       <h1 class="claim"><span class="c-line">Six parts, one name:</span>
         <span class="c-line">a crew of agents</span>
         <span class="c-line">for your repository.</span></h1>
-      <p class="lead">One skill and one CLI. <code>ace setup</code> asks what the work is, reads what your repository already says about itself, then writes the whole arrangement: a Herdr tab per project plus a control plane, one Ego Lite browser space per project, a governor over a <em>global</em> worker budget, one supervisor and its workers per project with the dollar on every task, durable memory per tree, and the handoff convention every mission ends with. The parts are held together by one name — <code>project.id === its tab label === its browser space === basename(its tree)</code>.</p>
+      <p class="lead">One CLI. <code>ace setup</code> asks what the work is, reads what your repository already says about itself, then writes the whole arrangement: a Herdr tab per project plus a control plane, one Ego Lite browser space per project, a governor over a <em>global</em> worker budget, one supervisor and its workers per project with the outcome on every task, durable memory per tree, and the handoff convention every mission ends with. The parts are held together by one name — <code>project.id === its tab label === its browser space === basename(its tree)</code>.</p>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
         <code id="q-start">git clone https://github.com/EnzoVezzaro/ace-proagents &amp;&amp; node ace-proagents/ace.mjs --help</code>
@@ -46,15 +46,14 @@
       </div>
       <div class="chips" aria-label="what ace is">
         <a class="chip live" href="https://www.producthunt.com/products/ace-14" target="_blank" rel="noopener">★ on product hunt</a>
-        <span class="chip">mit-style free</span>
+        <span class="chip">MIT licensed</span>
         <span class="chip">zero runtime deps</span>
         <span class="chip">spec ace/v1</span>
         <span class="chip">6 linked parts</span>
         <span class="chip">one global worker budget</span>
         <span class="chip">node 20+</span>
       </div>
-      <a class="sponsor" href="https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800" rel="noopener">Sponsor / ACE Pro — $9.00/mo</a>
-      <p class="status-print">exp-007 · spec ace/v1 · npm ships <code>0.1.4</code> · <code>ace setup</code> and the runtime are both in it, and on <code>origin/main</code></p>
+      <p class="status-print">spec ace/v1 · npm ships <code>0.1.4</code> · <code>ace setup</code> and the runtime are both in it, and on <code>origin/main</code></p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
@@ -67,8 +66,8 @@
         <p class="out">ACE setup — demo-repo
 
 intake
-  goal        ship the paid API
-  money       the $19/mo plan
+  goal        ship the reporting API
+  outcome     the report page renders under 200ms
   projects    alpha-api (experiments/alpha-api), beta-web (experiments/beta-web)
   harness     opencode
   budget      4 worker(s), global across every project
@@ -94,7 +93,7 @@ plan — 6 part(s), 21 write(s)
       Govern — one governor over a global worker budget
       → orchestration/lib/free-models.mjs
   supervisors-workers
-      Supervisors and workers — one owner per project, priced tasks
+      Supervisors and workers — one owner per project, tasks that name an outcome
       → orchestration/lib/handoff.mjs
       → package.json
   acc
@@ -104,20 +103,20 @@ plan — 6 part(s), 21 write(s)
       → .acc-memory.md
       → experiments/alpha-api/.acc-memory.md
       → experiments/beta-web/.acc-memory.md
-  proagents
-      ProAgents — the money contract and the handoff convention
-      → proagents/MONEY-CONTRACT.md
-      → proagents/knowledge/CREW-PROTOCOL.md
-      → proagents/registry/experts.json
+  charter
+      Charter — the task contract, the handoff convention and the tool registry
+      → charter/TASK-CONTRACT.md
+      → charter/CREW-PROTOCOL.md
+      → charter/registry/experts.json
       → STACK.md
 
 linked
   herdr-spaces → ego-lite-spaces: project.id — the tab label and the browser space are the same string
   ego-lite-spaces → herdr-spaces: browser_space — the space name is the project id, which is also its tab label
   govern → supervisors-workers: cap — the budget the supervisor must respect when it starts a worker
-  supervisors-workers → proagents: tasks[].money — the money contract is what the supervisor enforces at dispatch
+  supervisors-workers → charter: tasks[].outcome — the task contract is what the supervisor enforces at dispatch
   acc → govern: memory — the governor reports against what the memory records as decided
-  proagents → supervisors-workers: acceptance — a handoff that claims DONE without evidence is not accepted
+  charter → supervisors-workers: acceptance — a handoff that claims DONE without evidence is not accepted
 
 apply — 21 written, 0 left alone
   + orchestration/tabs.mjs
@@ -136,7 +135,7 @@ apply — 21 written, 0 left alone
   + .acc/config/templates/agents.md</p>
       </div>
       <button type="button" class="replay" id="session-replay">replay session</button>
-      <p class="fine">Nothing above was retyped: it is one run's output. The <code>apply</code> list is shown as far as it was captured — fourteen of its twenty-one lines; the remaining seven are <code>.acc-memory.md</code>, one memory file inside each project tree, the three ProAgents files and <code>STACK.md</code>. The <code>apply</code> step merges the <code>ace</code> key into <code>package.json</code> and touches no other key; the generated files that already exist and differ are left alone, and memory is seeded once and never overwritten. The run then verified itself — 14 checks passed, 2 reported as <em>not run</em> with their precondition (live tab creation needs a running Herdr session; one governor cycle needs live state) — and every install writes <code>STACK.md</code>, the map of what it just did.</p>
+      <p class="fine">Nothing above was retyped: it is one run's output. The <code>apply</code> list is shown as far as it was captured — fourteen of its twenty-one lines; the remaining seven are <code>.acc-memory.md</code>, one memory file inside each project tree, the three charter files and <code>STACK.md</code>. The <code>apply</code> step merges the <code>ace</code> key into <code>package.json</code> and touches no other key; the generated files that already exist and differ are left alone, and memory is seeded once and never overwritten. The run then verified itself — 14 checks passed, 2 reported as <em>not run</em> with their precondition (live tab creation needs a running Herdr session; one governor cycle needs live state) — and every install writes <code>STACK.md</code>, the map of what it just did.</p>
     </section>
 
     <!-- the six parts -->
@@ -147,9 +146,9 @@ apply — 21 written, 0 left alone
         <div class="row"><code>herdr-spaces</code><span>one tab per project, plus a control-plane tab holding the governor and one supervisor per project. The number of tabs is always 1 + the number of projects.</span></div>
         <div class="row"><code>ego-lite-spaces</code><span>one browser space per project, named after the project's own tree. A second space is never opened to escape a stuck page.</span></div>
         <div class="row"><code>govern</code><span>one governor over a global worker budget: it checks liveness <em>and</em> evidence-backed progress, swaps an unusable model route for a validated one, and escalates what it cannot recover.</span></div>
-        <div class="row"><code>supervisors-workers</code><span>exactly one supervisor per project and its workers — and every task declares the dollar it can produce, or it is refused at dispatch.</span></div>
+        <div class="row"><code>supervisors-workers</code><span>exactly one supervisor per project and its workers — and every task declares the outcome it produces, or it is refused at dispatch.</span></div>
         <div class="row"><code>acc</code><span>durable memory per tree: a control file and one <code>.acc-memory.md</code> beside each project, so a new session starts informed instead of re-learning the repo.</span></div>
-        <div class="row"><code>proagents</code><span>the layer on top: the money contract, the handoff convention every mission ends with, and the registry of tools the crew may use.</span></div>
+        <div class="row"><code>charter</code><span>the layer on top: the task contract, the handoff convention every mission ends with, and the registry of tools the crew may use.</span></div>
       </div>
       <div class="code-block">
         <div class="code-head">
@@ -161,9 +160,9 @@ apply — 21 written, 0 left alone
 herdr-spaces        → ego-lite-spaces:     project.id
 ego-lite-spaces     → herdr-spaces:        browser_space
 govern              → supervisors-workers: cap
-supervisors-workers → proagents:           tasks[].money
+supervisors-workers → charter:             tasks[].outcome
 acc                 → govern:              memory
-proagents           → supervisors-workers: acceptance</pre>
+charter             → supervisors-workers: acceptance</pre>
       </div>
       <p class="fine">That first line is the whole boundary system. It is not a convention anyone has to remember: <code>ace setup</code> refuses a setup whose names would disagree — a project root that does not exist, two trees that collide on one id, an agent name the multiplexer cannot attach — and the installed <code>selftest.mjs</code> fails on a project whose space stops matching its id.</p>
     </section>
@@ -179,7 +178,7 @@ proagents           → supervisors-workers: acceptance</pre>
         <div class="row"><dt>model policy</dt><dd>free models only — a name containing <code>-free</code> is not evidence; with nothing verified, dispatch is refused</dd></div>
         <div class="row"><dt>handoff</dt><dd>mission · project · owner · status · evidence · a final <code>HANDOFF:</code> line</dd></div>
         <div class="row"><dt>verification</dt><dd>npm run test · npm run build</dd></div>
-        <div class="row"><dt>project</dt><dd>alpha-api — space <code>alpha-api</code> — money: the $19/mo plan</dd></div>
+        <div class="row"><dt>project</dt><dd>alpha-api — space <code>alpha-api</code> — outcome: the report page renders under 200ms</dd></div>
       </dl>
       <div class="code-block">
         <div class="code-head">
@@ -216,7 +215,7 @@ proagents           → supervisors-workers: acceptance</pre>
                       "orchestration/state/alpha-api"],
       "forbidden_paths": ["experiments/beta-web",
                           "orchestration/state/beta-web"],
-      "money": "the $19/mo plan",
+      "outcome": "the report page renders under 200ms",
       "agents": [
         { "role": "supervisor", "name": "alpha-api-supervisor" },
         { "role": "worker", "name": "alpha-api-worker" }
@@ -226,7 +225,7 @@ proagents           → supervisors-workers: acceptance</pre>
   ]
 }</pre>
       </div>
-      <p class="fine">Every field is data: adding a project, a worker or a task is an edit to this file, never a branch in the orchestrator. An empty <code>tasks</code> list is allowed; an unpriced task is not — the money line is what the supervisor reads before it dispatches, and the governor ranks the next dollar across the whole portfolio.</p>
+      <p class="fine">Every field is data: adding a project, a worker or a task is an edit to this file, never a branch in the orchestrator. An empty <code>tasks</code> list is allowed; a task without an outcome is not — the outcome line is what the supervisor reads before it dispatches, and the governor ranks the next outcome across the whole portfolio.</p>
     </section>
 
     <!-- commands -->
@@ -281,13 +280,13 @@ orchestration/README.md
 orchestration/selftest.mjs
 orchestration/state/.gitignore
 orchestration/tabs.mjs
-proagents/knowledge/CREW-PROTOCOL.md
-proagents/MONEY-CONTRACT.md
-proagents/registry/experts.json
+charter/CREW-PROTOCOL.md
+charter/TASK-CONTRACT.md
+charter/registry/experts.json
 .acc-memory.md
 STACK.md</pre>
       </div>
-      <p class="fine">Twenty-one paths were written in that run: the eighteen above, the <code>ace</code> key merged into <code>package.json</code>, and one <code>.acc-memory.md</code> inside each project tree. The modules under <code>orchestration/lib/</code> and <code>tabs.mjs</code> are copied verbatim from the package's <code>assets/stack/</code> — the generic copy the installer ships, which is a sibling of this lab's own <code>orchestration/</code> rather than the same file (the shipped <code>free-models</code> and <code>cap</code> carry their own sources): <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">docs/STACK.md</a> maps which is which. Everything else is generated from your answers: <code>projects.json</code>, the <code>ace</code> key, the ACC files, the ProAgents layer and <code>STACK.md</code>. The install starts no agent, creates no tab, opens no browser space and invents no model route; it writes nothing outside your repository, and it never publishes or pushes.</p>
+      <p class="fine">Twenty-one paths were written in that run: the eighteen above, the <code>ace</code> key merged into <code>package.json</code>, and one <code>.acc-memory.md</code> inside each project tree. The modules under <code>orchestration/lib/</code> and <code>tabs.mjs</code> are copied verbatim from the package's <code>assets/stack/</code> — the generic copy the installer ships, which is a sibling of the project's own <code>orchestration/</code> rather than the same file (the shipped <code>free-models</code> and <code>cap</code> carry their own sources): <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/STACK.md" target="_blank" rel="noopener">docs/STACK.md</a> maps which is which. Everything else is generated from your answers: <code>projects.json</code>, the <code>ace</code> key, the ACC files, the charter layer and <code>STACK.md</code>. The install starts no agent, creates no tab, opens no browser space and invents no model route; it writes nothing outside your repository, and it never publishes or pushes.</p>
     </section>
 
     <!-- runtime state -->
@@ -336,9 +335,9 @@ CONTROL PLANE INCOMPLETE: alpha-api-supervisor, beta-web-supervisor — a superv
 
 PROJECT alpha-api (space alpha-api)
   supervisor alpha-api-supervisor (NOT RUNNING)
-  money: the $19/mo plan
+  outcome: the report page renders under 200ms
   workers: alpha-api-worker (not running)[project]
-  queue pending: EMPTY — mint one task with a money line
+  queue pending: EMPTY — mint one task with an outcome line
 
 PROJECT beta-web (space beta-web)</p>
       </div>
@@ -346,7 +345,7 @@ PROJECT beta-web (space beta-web)</p>
       <dl class="label-grid" id="govern-grid">
         <div class="row"><dt>hierarchy</dt><dd>governor → supervisors → workers · a governor → worker message is refused in code</dd></div>
         <div class="row"><dt>budget</dt><dd>one global worker budget across every project tab · the control plane is never counted against it</dd></div>
-        <div class="row"><dt>money</dt><dd>every task names the dollar it can produce · the governor ranks the next dollar across the portfolio</dd></div>
+        <div class="row"><dt>outcome</dt><dd>every task names the outcome it produces · the governor ranks the next outcome across the portfolio</dd></div>
         <div class="row"><dt>models</dt><dd>free models only, with provenance · no verified free model means the dispatch is refused, not billed</dd></div>
         <div class="row"><dt>handoffs</dt><dd>verified against evidence · a DONE claim with nothing behind it is <code>unverified</code></dd></div>
         <div class="row"><dt>failover</dt><dd>validated fallback routes · bounded retries · cooldown · a circuit that clears only on a passing probe</dd></div>
@@ -369,23 +368,20 @@ PROJECT beta-web (space beta-web)</p>
     <!-- close -->
     <section id="end" class="band">
       <h2 class="cmd">$ ace status</h2>
-      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the money line. 141 tests pass on Node 20 and Node 22; the two-project install on this page verifies itself in 14 checks, and the code it wrote into the repository proves itself offline in 62 assertions (one project reports 13 and 61). It is on <code>origin/main</code> and published as <code>0.1.4</code>; the <code>v0.1.3</code> tag predates it.</p>
+      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the outcome line. 141 tests pass on Node 20 and Node 22; the two-project install on this page verifies itself in 14 checks, and the code it wrote into the repository proves itself offline in 62 assertions (one project reports 13 and 61). It is on <code>origin/main</code> and published as <code>0.1.4</code>; the <code>v0.1.3</code> tag predates it.</p>
       <div class="receipt">
-        <p class="r-head">pricing · what ACE costs today</p>
-        <div class="r-row"><span>ACE core · spec draft ace/v1</span><b>$0.00</b></div>
+        <p class="r-head">ace/v1 · what ACE is today</p>
+        <div class="r-row"><span>license</span><b>MIT</b></div>
         <div class="r-row"><span>runtime dependencies</span><b>0</b></div>
-        <div class="r-row"><span>the six parts</span><b>$0.00</b></div>
-        <div class="r-row"><span>ACE Pro · optional support sub</span><b>$9.00/mo</b></div>
-        <div class="r-row total"><span>total to install ACE</span><b>$0.00</b></div>
+        <div class="r-row"><span>linked parts</span><b>6</b></div>
+        <div class="r-row"><span>tests on node 20 + 22</span><b>141</b></div>
+        <div class="r-row total"><span>spec</span><b>ace/v1</b></div>
       </div>
       <div class="action-line">
         <span class="prompt" aria-hidden="true">$</span>
         <code id="q-quick">node ace-proagents/ace.mjs --help</code>
         <button type="button" class="copy" data-copy="q-quick">copy</button>
       </div>
-      <a class="sponsor" id="checkout-btn" data-checkout hidden>Sponsor / ACE Pro — $9.00/mo</a>
-      <p class="fine">$9.00 USD/month via Stripe · cancel any time in the <a href="https://billing.stripe.com/p/login/9B6dRaclLgbjbqx1bB28800" rel="noopener">Stripe customer portal</a></p>
-      <p class="checkout-state" id="checkout-state">ACE Pro is a $9.00 USD/month support subscription, billed through Stripe. Opening checkout needs JavaScript; the direct link is <a href="https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800" rel="noopener">buy.stripe.com/9B6dRaclLgbjbqx1bB28800</a>. Cancel any time via the Stripe customer portal: <a href="https://billing.stripe.com/p/login/9B6dRaclLgbjbqx1bB28800" rel="noopener">billing.stripe.com/p/login/9B6dRaclLgbjbqx1bB28800</a>. ACE itself stays MIT-style and free.</p>
       <div class="cards">
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents#readme" target="_blank" rel="noopener">
           <span class="c-t">quick start</span>
@@ -433,19 +429,10 @@ PROJECT beta-web (space beta-web)</p>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents" target="_blank" rel="noopener">github</a></li>
               <li><a href="https://github.com/EnzoVezzaro/ace-proagents/issues" target="_blank" rel="noopener">issues</a></li>
               <li><a href="https://www.producthunt.com/products/ace-14" target="_blank" rel="noopener">product hunt</a></li>
-              <li><a href="donate.html">sponsor</a></li>
-            </ul>
-          </div>
-          <div class="foot-col">
-            <h4>more from this lab</h4>
-            <ul>
-              <li><a href="https://buy.stripe.com/9B628s71rgbjfGNbQf28806" target="_blank" rel="noopener">llm watchdog pro — $9.00/mo</a></li>
-              <li><a href="https://buy.stripe.com/7sYfZi3Pf8IR3Y5g6v28803" target="_blank" rel="noopener">iscited pro — $9 first month with code FOUNDER, ends 2026-10-14</a></li>
-              <li><a href="https://public-deathwatch.vercel.app" target="_blank" rel="noopener">the lab itself — live status</a></li>
             </ul>
           </div>
         </div>
-        <p>end of transmission · exp-007 ace · spec ace/v1 <span class="cursor" aria-hidden="true"></span></p>
+        <p>end of transmission · ace · spec ace/v1 <span class="cursor" aria-hidden="true"></span></p>
       </footer>
     </section>
 

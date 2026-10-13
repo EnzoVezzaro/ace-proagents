@@ -38,8 +38,8 @@ The same `ace/v1` `ace` key is written by `ace setup` (from the answers) and by
   versus generated, and which copy of the bundle is which. `docs/APP-INTEGRATION.md`
   — the machine-readable surface a UI may consume.
 - `test/*.test.mjs` — `test/stack.test.mjs` is the installer's acceptance suite.
-- `site/` — the static landing (`index.html`, `donate.html`, `styles.css`,
-  `app.js`, `vendor/motion.mjs`); `launch/` — launch materials.
+- `site/` — the static landing (`index.html`, `styles.css`, `app.js`,
+  `vendor/motion.mjs`); `launch/` — launch materials.
 - `PRODUCT.md` product framing · `DESIGN.md` the Phosphor Terminal design world ·
   `PLAN.md` the historical build contracts · `SECURITY.md` the reporting policy.
 
@@ -52,7 +52,7 @@ The installer files — `lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`,
 ```bash
 node ace.mjs --help                    # the command surface
 node ace.mjs parts --questions --json  # the intake schema, with defaults and reasons
-node ace.mjs setup --dry-run --goal "…" --money "…" --projects path/a,path/b
+node ace.mjs setup --dry-run --goal "…" --outcome "…" --projects path/a,path/b
 node ace.mjs setup …                   # the same, for real: plan → apply → verify
 
 npm test                               # node --test test/*.test.mjs — builtin runner, zero deps
@@ -70,7 +70,7 @@ To exercise an install by hand, work in a scratch directory — never in this re
 d=$(mktemp -d) && cd "$d"
 mkdir -p experiments/api && echo '# api' > experiments/api/README.md
 printf '{"name":"scratch","version":"1.0.0","scripts":{"test":"node --test"}}' > package.json
-node <this-repo>/ace.mjs setup --goal "…" --money "…" --projects experiments/api
+node <this-repo>/ace.mjs setup --goal "…" --outcome "…" --projects experiments/api
 node orchestration/selftest.mjs        # the written code proves itself, offline
 node orchestration/tabs.mjs cap        # reads the generated data; no multiplexer needed
 ```
@@ -122,11 +122,9 @@ node orchestration/tabs.mjs cap        # reads the generated data; no multiplexe
   `ace` key are the only places a second run has anything to say about.
 - **Do not fake a timestamp** to make a generated document byte-identical, and do
   not "fix" an idempotency report by rewriting content that did not change.
-- **Honesty gates.** `window.ACE_CHECKOUT_URL` (`site/app.js`) and
-  `window.ACE_DONATE_URL` (`site/donate.html`) point at the one real live Stripe
-  Payment Link — the $9.00 USD/month ACE Pro support subscription. Never replace
-  one with a test-mode link, and never invent a price, a customer, a benchmark or
-  an installation claim.
+- **Honesty gates.** Never invent a customer, a benchmark, a price or an
+  installation claim on the landing or in the docs, and never show a command in
+  the landing that a visitor could not actually run today.
 - **Self-contained site.** No external assets (fonts, scripts, styles); links to
   this repository are fine.
 - **No secrets.** Never commit tokens, keys or `.env` files.

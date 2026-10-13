@@ -1,7 +1,7 @@
 // orchestration/lib/handoff.mjs — the installed handoff framework, reused.
 //
 // THE FRAMEWORK THAT EXISTS (do not replace it, do not build a parallel one):
-// proagents/knowledge/CREW-PROTOCOL.md rule 3 — "Every mission ends with a
+// charter/CREW-PROTOCOL.md rule 3 — "Every mission ends with a
 // <MISSION>-DONE.md handoff (commands run, trimmed outputs, failures)", the
 // supervisor dispatches a self-contained prompt, and every worker reply ends
 // with a `HANDOFF: <path>` marker. That convention, plus the mission prompt as
@@ -11,7 +11,7 @@
 // WHAT THIS ADDS — nothing about ownership or delivery (the herdr/supervisor
 // path owns that), only:
 //   - a mission record: ownership, scope, expected outputs, acceptance criteria,
-//     money line, dispatch time, handoff destination (the delegation contract);
+//     outcome line, dispatch time, handoff destination (the delegation contract);
 //   - artifact PARSING and VALIDATION, so "done" is a checked fact and not a claim;
 //   - the explicit failure behavior from projects.json > handoff.failure_behavior.
 //
@@ -83,21 +83,21 @@ export function ledger(projectId, row) {
   fs.appendFileSync(file, `${JSON.stringify({ at: iso(), ...row })}\n`);
 }
 
-/** The delegation contract. A task without a money line is refused. */
+/** The delegation contract. A task without an outcome line is refused. */
 export function createMission({ project, task, agent, dispatchedAt = iso() }) {
-  if (!task?.money || !String(task.money).trim()) {
-    throw new Error(`task ${task?.id || "?"} has no money line — the orchestrator refuses to dispatch it`);
+  if (!task?.outcome || !String(task.outcome).trim()) {
+    throw new Error(`task ${task?.id || "?"} has no outcome line — the orchestrator refuses to dispatch it`);
   }
   const id = `${task.id}`;
   return {
     id,
     project: project.id,
     title: task.title,
-    money: task.money,
+    outcome: task.outcome,
     owner: agent?.name || null,
     role: agent?.role || "worker",
     harness: agent?.harness || project.agents?.[0]?.harness || "opencode",
-    // The agent's own scope when it declares one (a pro agent owns a proagents
+    // The agent's own scope when it declares one (a pro agent owns a charter
     // subtree, not the whole experiment), else its project's.
     scope: agent?.owned_paths || project.owned_paths || [],
     forbidden: project.forbidden_paths || [],

@@ -3,10 +3,9 @@
 ## Status: the landing lives here; a separate application's source does not
 
 `https://ace-seven-blue.vercel.app` serves the static landing in `site/`
-(`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`),
+(`index.html`, `styles.css`, `app.js`, `vendor/motion.mjs`),
 built and deployed from this repository (`vercel --prod` from `site/`). Three
-hosts serve that same landing, all verified serving an identical 32,489-byte
-page with the three live Stripe links:
+hosts serve that same landing:
 
 | Host | Vercel project | How it deploys |
 | --- | --- | --- |
@@ -64,7 +63,7 @@ facts          dir, is_git, branch, manifest (name, scripts, workspaces) or null
                detected_verification[{ name, command }], browser_work_suggested, node
 plan           at, dir, force, parts[{ id, title, requires, installs, verify }],
                writes[{ path, kind, from?, part }], links[{ from, to, name, how }],
-               config{ name, goal, money, harness, model, cap, browser, verification, projects },
+               config{ name, goal, outcome, harness, model, cap, browser, verification, projects },
                violations[]
 applied        written[{ path, kind, bytes?, note? }], skipped[{ path, reason }],
                created_dirs[], at
@@ -73,7 +72,7 @@ verify         ok, passed, failed, skipped,
 ```
 
 `plan.links` is the part-to-part contract as data: which exact name one part
-hands to the next (`project.id`, `browser_space`, `cap`, `tasks[].money`,
+hands to the next (`project.id`, `browser_space`, `cap`, `tasks[].outcome`,
 `acceptance`). `plan.violations` is non-empty only when the answers would produce
 a setup the rules reject — a project root that does not exist, two trees that
 collide on one id, an agent name the multiplexer cannot attach. A UI should show

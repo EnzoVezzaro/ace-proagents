@@ -17,7 +17,7 @@
 //   5. the HANDOFF LIFECYCLE: a complete artifact closes a mission, and every
 //      failure kind (missing, unverified, isolation, stale) is refused with the
 //      documented next action — bounded, never a loop;
-//   6. the MONEY RULE: every task in this repo declares the dollar it produces;
+//   6. the OUTCOME RULE: every task in this repo declares the outcome it produces;
 //   7. FREE MODELS ONLY: a verified catalog is used and reported as live; with
 //      nothing verified, dispatch is REFUSED instead of falling back to a paid
 //      model. The failover state machine is driven with an INJECTED probe.
@@ -288,7 +288,7 @@ const project = PROJECTS[0];
 const task = (project.tasks || [])[0] || {
   id: "t1-selftest",
   title: "a synthesized task for this check",
-  money: project.money || "this check proves the lifecycle, not a dollar",
+  outcome: project.outcome || "this check proves the lifecycle, not an outcome",
   acceptance: ["the artifact exists"],
   prompt: "selftest-only task",
 };
@@ -325,17 +325,17 @@ function artifactText(mission, { evidence = "`node --test test/*.test.mjs` exite
 }
 
 const mission = createMission({ project, task, agent });
-ok("a mission records its owner, scope, acceptance and money", mission.owner === agent.name && mission.money === task.money && mission.acceptance.length >= 0, JSON.stringify({ owner: mission.owner, money: mission.money }));
+ok("a mission records its owner, scope, acceptance and outcome", mission.owner === agent.name && mission.outcome === task.outcome && mission.acceptance.length >= 0, JSON.stringify({ owner: mission.owner, outcome: mission.outcome }));
 ok("a mission's artifact path is inside its own project's handoff directory", path.resolve(mission.handoff_path).startsWith(path.resolve(handoffDir(project.id)) + path.sep), rel(mission.handoff_path));
 ok("the artifact path uses a declared state suffix", STATES.some((s) => mission.handoff_path.endsWith(`${mission.id}-${s}.md`)));
 
-let unpricedRefused = false;
+let missingOutcomeRefused = false;
 try {
-  createMission({ project, task: { id: "t1-unpriced", title: "no money line", prompt: "x" }, agent });
+  createMission({ project, task: { id: "t1-missingOutcome", title: "no outcome line", prompt: "x" }, agent });
 } catch {
-  unpricedRefused = true;
+  missingOutcomeRefused = true;
 }
-ok("a task with no money line is refused at dispatch", unpricedRefused);
+ok("a task with no outcome line is refused at dispatch", missingOutcomeRefused);
 
 saveMission(mission);
 ok("the mission record is durable", Boolean(loadMissions(project.id)[mission.id]), rel(path.join(TMP, project.id, "missions.json")));
@@ -400,19 +400,19 @@ ok("a bounded failure never exceeds the configured budget", seen.filter((a) => a
 ok("the ledger recorded every transition it applied", fs.readFileSync(path.join(TMP, project.id, "handoff-ledger.jsonl"), "utf8").trim().split("\n").length >= 4);
 
 // ---------------------------------------------------------------------------
-// 6. the money rule
+// 6. the outcome rule
 // ---------------------------------------------------------------------------
 
-section("the money rule — every task names its dollar");
+section("the outcome rule — every task names its outcome");
 
 const allTasks = PROJECTS.flatMap((p) => (p.tasks || []).map((t) => ({ ...t, project: p.id })));
-const unpriced = allTasks.filter((t) => !String(t.money ?? "").trim());
+const missingOutcome = allTasks.filter((t) => !String(t.outcome ?? "").trim());
 ok(
-  allTasks.length ? `every declared task carries a money line (${allTasks.length} task(s))` : "no task is declared yet (an empty queue is allowed, an unpriced task is not)",
-  unpriced.length === 0,
-  unpriced.map((t) => `${t.project}:${t.id}`).join(", ")
+  allTasks.length ? `every declared task carries an outcome line (${allTasks.length} task(s))` : "no task is declared yet (an empty queue is allowed, a task without an outcome is not)",
+  missingOutcome.length === 0,
+  missingOutcome.map((t) => `${t.project}:${t.id}`).join(", ")
 );
-ok("every project states the dollar its work can produce", PROJECTS.every((p) => String(p.money ?? "").trim().length > 0), PROJECTS.filter((p) => !String(p.money ?? "").trim()).map((p) => p.id).join(", "));
+ok("every project states the outcome its work can produce", PROJECTS.every((p) => String(p.outcome ?? "").trim().length > 0), PROJECTS.filter((p) => !String(p.outcome ?? "").trim()).map((p) => p.id).join(", "));
 
 // ---------------------------------------------------------------------------
 // 7. free models only, and the refusal when there are none

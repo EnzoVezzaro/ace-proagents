@@ -97,7 +97,7 @@ Motion is deliberately machine-shaped rather than web-shaped: text arrives by ty
 - CRT scanline and vignette overlay as world material, fixed above the sheet
 - Fixed left history rail (`15ch`) with a `> ` prompt marker on the active section
 - Browser surfaces themed to the world: selection, caret, scrollbar, focus ring
-- Honest checkout gate styled as part of the session, not a marketing CTA
+- No marketing CTA: the session itself is the page
 
 ## Colors
 
@@ -173,7 +173,7 @@ Zero radius, everywhere, without exception: buttons, code blocks, action line, t
 
 ### Buttons
 - **Shape:** sharp (0px radius), 1px border, monospace 13px label, no icons ever.
-- **Primary (sponsor/checkout):** Phosphor Live background with Glass Night text (`padding: 10px 18px`, weight 700). Hover lifts to Bloom White background, still dark text. It is the only filled button in the resting state of the page.
+- **Primary (run):** Phosphor Live background with Glass Night text (`padding: 10px 18px`, weight 700). Hover lifts to Bloom White background, still dark text. It is the only filled button in the resting state of the page.
 - **Ghost (replay):** transparent with Armature Line border and Phosphor Dim text (`padding: 7px 15px`). Hover inverts hard: Phosphor Live fill, Glass Night text. No fades, no easing of the color itself.
 - **Copy:** transparent with Armature Line border and Phosphor Live text (`padding: 3px 11px`). While copying, the `data-state="copied"` state flips to the filled Phosphor Live treatment, then reverts to the `copied` label before returning to `copy`.
 - **Focus:** `2px solid #33ff66` outline at `2px` offset on every `:focus-visible`, on every control.
@@ -219,5 +219,5 @@ Selection inverts to Phosphor Live on Glass Night, the caret is Phosphor Live, t
 - **Don't** use gradient text, hard offset shadows, border-radius, or glow on headings and chrome.
 - **Don't** put Phosphor Live behind large surfaces or on paragraphs; if it is everywhere, it means nothing.
 - **Don't** let animated elements carry pre-applied `clip-path` (it zeroes the intersection rect and starves reveal observers) or animate layout-affecting width in transcripts; reveal by clip-path instead.
-- **Don't** write copy that the product cannot back. The checkout gate stays honest: no fake pricing, no invented urgency, and no claim about the published package that the npm registry does not support.
+- **Don't** write copy that the product cannot back: no invented urgency, and no claim about the published package that the npm registry does not support.
 - **Don't** show a command in the action line or a transcript that a visitor could not actually run today. The hero line and the session block are real output; if a step is aspirational, it is labelled as the target rather than printed as though it happened.

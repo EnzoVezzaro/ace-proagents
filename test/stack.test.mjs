@@ -56,7 +56,7 @@ function readJson(file) {
 
 const ANSWERS = {
   goal: "ship the paid API",
-  money: "the $19/mo plan",
+  outcome: "the report page renders under 200ms",
   projects: ["experiments/alpha-api", "experiments/beta-web"],
   harness: "opencode",
   cap: 4,
@@ -111,7 +111,7 @@ test("validateAnswers names every missing required answer", () => {
   const verdict = intake.validateAnswers({}, {});
   assert.equal(verdict.ok, false);
   const fields = verdict.errors.map((e) => e.field);
-  for (const field of ["goal", "money", "projects"]) {
+  for (const field of ["goal", "outcome", "projects"]) {
     assert.ok(fields.includes(field), `missing "${field}" must be reported: ${JSON.stringify(verdict.errors)}`);
   }
   for (const error of verdict.errors) assert.ok(String(error.fix).length > 0, "every error carries a fix");
@@ -236,16 +236,16 @@ test("resolveContext derives one name per project and isolation by path", () => 
   }
 });
 
-test("a first task is priced, self-contained and scoped", () => {
+test("a first task names its outcome, self-contained and scoped", () => {
   const dir = makeRepo();
   try {
-    const resolved = intake.resolveContext({ dir, answers: { ...ANSWERS, first_task: "wire the checkout link", workers_per_project: 2 } });
+    const resolved = intake.resolveContext({ dir, answers: { ...ANSWERS, first_task: "wire the report page", workers_per_project: 2 } });
     assert.equal(resolved.ok, true, resolved.violations.join("; "));
     const [alpha] = resolved.context.projects;
     assert.equal(alpha.tasks.length, 1);
     const [task] = alpha.tasks;
-    assert.equal(task.money, "the $19/mo plan", "an unpriced task is refused at dispatch, so it is priced at birth");
-    assert.match(task.prompt, /wire the checkout link/);
+    assert.equal(task.outcome, "the report page renders under 200ms", "a task with no outcome is refused at dispatch, so it names one at birth");
+    assert.match(task.prompt, /wire the report page/);
     assert.match(task.prompt, /Scope: write only inside experiments\/alpha-api/);
     assert.ok(task.acceptance.length >= 2);
     assert.deepEqual(
@@ -267,8 +267,8 @@ test("partsFor pulls in what a part requires, transitively", () => {
     ["herdr-spaces", "ego-lite-spaces"]
   );
   assert.deepEqual(
-    stack.partsFor(["proagents"]).map((p) => p.id),
-    ["herdr-spaces", "govern", "supervisors-workers", "proagents"],
+    stack.partsFor(["charter"]).map((p) => p.id),
+    ["herdr-spaces", "govern", "supervisors-workers", "charter"],
     "the top layer drags the chain below it, and never acc, which nothing requires"
   );
   assert.deepEqual(stack.partsFor([]).map((p) => p.id), stack.PART_IDS);
@@ -299,7 +299,7 @@ test("planStack writes exactly what the chosen parts cause, from real assets", (
       "orchestration/lib/handoff.mjs",
       "package.json",
       "STACK.md",
-      "proagents/registry/experts.json",
+      "charter/registry/experts.json",
       ".acc/config/config.yaml",
       "experiments/alpha-api/.acc-memory.md",
     ]) {
@@ -410,7 +410,7 @@ test("applyStack never clobbers, and a second apply changes nothing", () => {
     assert.equal(readFileSync(join(dir, ".acc-memory.md"), "utf8"), first.memory);
 
     const again = stack.applyStack(plan, context);
-    for (const doc of ["STACK.md", ".acc/config/config.yaml", "proagents/MONEY-CONTRACT.md", "proagents/registry/experts.json"]) {
+    for (const doc of ["STACK.md", ".acc/config/config.yaml", "charter/TASK-CONTRACT.md", "charter/registry/experts.json"]) {
       assert.ok(again.skipped.some((s) => s.path === doc), `${doc} should be reported rather than rewritten`);
     }
   } finally {
@@ -464,7 +464,7 @@ test("verifyStack passes on a clean install and covers every part", async () => 
 test("verifyStack fails on a broken setup, for every kind of breakage", async () => {
   const dir = makeRepo();
   try {
-    const { context, plan } = fullInstall(dir, { first_task: "wire the checkout link" });
+    const { context, plan } = fullInstall(dir, { first_task: "wire the report page" });
     const configFile = join(dir, "orchestration", "projects.json");
     const manifestFile = join(dir, "package.json");
 
@@ -491,7 +491,7 @@ test("verifyStack fails on a broken setup, for every kind of breakage", async ()
     });
 
     await failsFor("supervisors-workers", (config) => {
-      config.projects[1].tasks = [{ id: "t1-unpriced", title: "do the thing", priority: 1, status: "pending", money: "", prompt: "x", acceptance: ["y"] }];
+      config.projects[1].tasks = [{ id: "t1-missingOutcome", title: "do the thing", priority: 1, status: "pending", outcome: "", prompt: "x", acceptance: ["y"] }];
     });
 
     await failsFor("ego-lite-spaces", (config) => {
@@ -534,7 +534,7 @@ test("setup without answers and without a terminal refuses, names the fields, an
 
     assert.equal(r.status, 2, `expected a usage error: ${r.stdout}${r.stderr}`);
     assert.match(r.stderr, /INTAKE_INVALID/);
-    for (const field of ["goal", "money", "projects"]) {
+    for (const field of ["goal", "outcome", "projects"]) {
       assert.match(r.stderr, new RegExp(field), `the refusal must name "${field}"`);
     }
     assert.equal(readFileSync(join(dir, "package.json"), "utf8"), before);
@@ -550,7 +550,7 @@ test("setup installs from flags and the result is inspectable", () => {
   const dir = makeRepo();
   try {
     const r = ace(
-      ["setup", "--goal", "ship the paid API", "--money", "the $19/mo plan", "--projects", "experiments/alpha-api,experiments/beta-web"],
+      ["setup", "--goal", "ship the reporting API", "--outcome", "the report page renders under 200ms", "--projects", "experiments/alpha-api,experiments/beta-web"],
       dir
     );
     assert.equal(r.status, 0, `install failed: ${r.stdout}${r.stderr}`);
@@ -572,13 +572,13 @@ test("setup installs from flags and the result is inspectable", () => {
     const manifest = readJson(join(dir, "package.json"));
     assert.equal(manifest.ace.concurrency.max_active_agents, config.cap.max_active_workers);
     assert.ok(existsSync(join(dir, "STACK.md")));
-    assert.ok(existsSync(join(dir, "proagents", "registry", "experts.json")));
+    assert.ok(existsSync(join(dir, "charter", "registry", "experts.json")));
     assert.ok(existsSync(join(dir, ".acc", "config", "config.yaml")));
     assert.ok(existsSync(join(dir, "experiments", "alpha-api", ".acc-memory.md")));
     assert.ok(existsSync(join(dir, "orchestration", "lib", "topology.mjs")));
 
     // A second run is a no-op on content, and still exits 0.
-    const again = ace(["setup", "--goal", "ship the paid API", "--money", "the $19/mo plan", "--projects", "experiments/alpha-api,experiments/beta-web"], dir);
+    const again = ace(["setup", "--goal", "ship the reporting API", "--outcome", "the report page renders under 200ms", "--projects", "experiments/alpha-api,experiments/beta-web"], dir);
     assert.equal(again.status, 0, `${again.stdout}${again.stderr}`);
     assert.equal(readFileSync(join(dir, "orchestration", "projects.json"), "utf8"), `${JSON.stringify(config, null, 2)}\n`);
   } finally {
@@ -590,7 +590,7 @@ test("setup --dry-run writes nothing", () => {
   const dir = makeRepo();
   try {
     const before = readFileSync(join(dir, "package.json"), "utf8");
-    const r = ace(["setup", "--dry-run", "--goal", "g", "--money", "m", "--projects", "experiments/alpha-api"], dir);
+    const r = ace(["setup", "--dry-run", "--goal", "g", "--outcome", "m", "--projects", "experiments/alpha-api"], dir);
     assert.equal(r.status, 0, `${r.stdout}${r.stderr}`);
     assert.match(r.stdout, /plan — \d+ part/);
     assert.match(r.stdout, /alpha-api/);
@@ -610,7 +610,7 @@ test("setup refuses an unknown part, and a broken setup exits 1", () => {
     assert.match(unknown.stderr, /UNKNOWN_PART/);
     assert.equal(existsSync(join(dir, "orchestration")), false);
 
-    const r = ace(["setup", "--goal", "g", "--money", "m", "--projects", "experiments/alpha-api"], dir);
+    const r = ace(["setup", "--goal", "g", "--outcome", "m", "--projects", "experiments/alpha-api"], dir);
     assert.equal(r.status, 0, `${r.stdout}${r.stderr}`);
 
     // Break the installed data by hand: the next run must keep the operator's
@@ -620,7 +620,7 @@ test("setup refuses an unknown part, and a broken setup exits 1", () => {
     config.projects[0].browser_space = "wrong-space";
     writeFileSync(configFile, `${JSON.stringify(config, null, 2)}\n`);
 
-    const after = ace(["setup", "--goal", "g", "--money", "m", "--projects", "experiments/alpha-api"], dir);
+    const after = ace(["setup", "--goal", "g", "--outcome", "m", "--projects", "experiments/alpha-api"], dir);
     assert.equal(after.status, 1, `a failed check must exit 1: ${after.stdout}${after.stderr}`);
     assert.match(after.stdout, /FAIL/);
     assert.equal(readJson(configFile).projects[0].browser_space, "wrong-space", "the operator's file is never clobbered without --force");
@@ -645,7 +645,7 @@ test("ace parts describes the catalogue and the questions an agent must answer",
 
     const questions = ace(["parts", "--questions"], dir);
     assert.equal(questions.status, 0, questions.stderr);
-    for (const id of ["goal", "money", "projects", "cap", "verification"]) {
+    for (const id of ["goal", "outcome", "projects", "cap", "verification"]) {
       assert.match(questions.stdout, new RegExp(id));
     }
 

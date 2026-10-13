@@ -26,7 +26,7 @@ Owner: `ace.mjs` (CLI) and `lib/stack.mjs` (the installer). Contracts:
 
 ## Inputs
 
-- The operator's answers: goal, the dollar the work can produce, the trees the
+- The operator's answers: goal, the outcome the work can produce, the trees the
   crew works in, harness, budget, browser need, what proves a change is done.
 - The target repository: git state, `package.json` scripts, work-area roots, an
   existing `ace` key or `.acc-memory.md`.
@@ -35,7 +35,7 @@ Owner: `ace.mjs` (CLI) and `lib/stack.mjs` (the installer). Contracts:
 
 - In the target repo: `orchestration/**` (copied plus a generated
   `projects.json`), the `ace` key merged into `package.json`, `.acc/**`,
-  `proagents/**` and `STACK.md`.
+  `charter/**` and `STACK.md`.
 - In this repo: the package itself, and the JSON documents every command emits.
 
 ## Dependencies

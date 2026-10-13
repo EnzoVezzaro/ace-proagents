@@ -60,7 +60,7 @@ carry one name.
 
 | Role | Where it lives | What it owns |
 |---|---|---|
-| `governor` | the control plane | one agent, the only one that reads across projects: checks each supervisor, checks that claims carry evidence, arbitrates when two projects want the same worker slot, mints the next task when a queue is empty, and ranks the next dollar across the portfolio |
+| `governor` | the control plane | one agent, the only one that reads across projects: checks each supervisor, checks that claims carry evidence, arbitrates when two projects want the same worker slot, mints the next task when a queue is empty, and ranks the next outcome across the portfolio |
 | `supervisor` | the control plane | exactly one per project. Owns that project's queue, missions, handoffs and recovery, and never dispatches into another project |
 | `worker` | its project's tab | does the work inside its own project's tree and its own browser space, and ends with a handoff artifact |
 
@@ -106,7 +106,7 @@ effect, not by a promise in this document.
 | Code | When |
 |---|---|
 | `0` | the command ran and reported |
-| `2` | **refused**: a task with no money line; more workers active than the cap; no verified free model; no live pane assigned to the owner; `up` outside a multiplexer session (`HERDR_ENV != 1`); a topology violation; the governor is not running when `--dispatch` was asked for |
+| `2` | **refused**: a task with no outcome line; more workers active than the cap; no verified free model; no live pane assigned to the owner; `up` outside a multiplexer session (`HERDR_ENV != 1`); a topology violation; the governor is not running when `--dispatch` was asked for |
 | `1` | usage error (unknown subcommand prints usage and exits 1) or an uncaught error, such as an unknown project or task id |
 
 `verify` and `cycle` report; they exit `0` and put the per-mission verdicts in
@@ -159,14 +159,14 @@ and never opens a duplicate project tab.
 
 ## Delegation, and the handoff that closes it
 
-A mission is created from a task, and a task **without a money line is refused**
+A mission is created from a task, and a task **without an outcome line is refused**
 (`lib/handoff.mjs` throws; `dispatch` exits 2). The delivered prompt is
 self-contained on purpose: the receiving agent cannot see anyone's chat, so the
 prompt names the project, the scope it may write, what is forbidden, the
-acceptance criteria, the money line and where the handoff goes.
+acceptance criteria, the outcome line and where the handoff goes.
 
 ```
-DELEGATE  supervisor → worker: ownership, scope, outputs, acceptance, money, destination
+DELEGATE  supervisor → worker: ownership, scope, outputs, acceptance, outcome, destination
 WORK      the worker works in its own tree, its own tab, its own browser space
 HANDOFF   the worker writes state/<project>/handoffs/<mission>-<STATE>.md
 VERIFY    exists · complete · right project · right mission · right owner · not stale · evidence
@@ -268,7 +268,7 @@ It drives the real code paths against a scratch state directory
 It checks the tab contract and the placement invariant (including planted
 violations it must catch), the cap as arithmetic and as a setting with its
 precedence, the browser-space invariant, the handoff lifecycle and each failure
-kind, that every declared task carries a money line, and free-model selection
+kind, that every declared task carries an outcome line, and free-model selection
 with an injected source — refusals included.
 
 ### What it does not cover
@@ -279,4 +279,4 @@ with an injected source — refusals included.
 - No network: it never calls a model provider, so it proves the free-model
   *policy*, not today's availability. Probe for that.
 - No browser: the space invariant is checked, no page is opened.
-- No profit: it proves the setup is coherent, not that the work is worth doing.
+- It proves the setup is coherent, not that the work is worth doing.

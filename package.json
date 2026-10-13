@@ -1,7 +1,7 @@
 {
   "name": "ace-proagents",
   "version": "0.1.4",
-  "description": "ACE — install a crew of coding agents into any repository: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that price every task, ACC memory, and the ProAgents money contract. One skill, one CLI.",
+  "description": "ACE — install a crew of coding agents into any repository: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that name the outcome of every task, ACC memory, and the Charter task contract. One skill, one CLI.",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -30,7 +30,7 @@
   "ace": {
     "spec": "ace/v1",
     "name": "ace",
-    "description": "ACE — install a crew of coding agents into a repository, then govern it: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that price every task, ACC memory and the ProAgents money contract.",
+    "description": "ACE — install a crew of coding agents into a repository, then govern it: Herdr spaces, one browser space per project, a governor over a global worker budget, supervisors and workers that name the outcome of every task, ACC memory and the Charter task contract.",
     "goal": {
       "statement": "Ship an orchestrator-first Agentic Compute Environment whose governor keeps per-project supervisors and workers moving toward each goal inside a central agent budget, with isolated workspaces, durable state, bounded failover and an independent watchdog — reporting only what it can evidence."
     },

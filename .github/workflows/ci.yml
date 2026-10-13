@@ -37,7 +37,7 @@ jobs:
       # The installer's acceptance test, end to end and without a terminal:
       # interrogate → inspect → plan → apply → verify, then run the code that was
       # WRITTEN into the target repo. If the shipped bundle still depended on this
-      # lab (an engine/ or proagents/ import left in place), the installed
+      # lab (an engine/ or charter/ import left in place), the installed
       # selftest is where it shows up.
       - name: Crew stack smoke test
         env:
@@ -53,7 +53,7 @@ jobs:
 
           node "$GITHUB_WORKSPACE/ace.mjs" setup --json \
             --goal "ship the paid API" \
-            --money "the 19/mo plan" \
+            --outcome "the 19/mo plan" \
             --projects experiments/alpha-api,experiments/beta-web > setup.json
           node -e 'const d=JSON.parse(require("fs").readFileSync("setup.json","utf8"));if(!d.verify.ok)throw new Error("install verify failed: "+JSON.stringify(d.verify.checks.filter(c=>c.status==="fail")));if(d.applied.written.length<20)throw new Error("too few files written: "+d.applied.written.length);'
 
@@ -61,7 +61,7 @@ jobs:
           test -f orchestration/tabs.mjs
           test -f orchestration/lib/ego.mjs
           test -f .acc/config/config.yaml
-          test -f proagents/MONEY-CONTRACT.md
+          test -f charter/TASK-CONTRACT.md
           test -f STACK.md
 
           # The written code proves itself, offline, with no multiplexer.
@@ -72,7 +72,7 @@ jobs:
           # A second install must not overwrite the memory it seeded, and must not
           # fail on files it already wrote.
           before=$(cat .acc-memory.md)
-          node "$GITHUB_WORKSPACE/ace.mjs" setup --goal "ship the paid API" --money "the 19/mo plan" --projects experiments/alpha-api,experiments/beta-web > /dev/null
+          node "$GITHUB_WORKSPACE/ace.mjs" setup --goal "ship the paid API" --outcome "the 19/mo plan" --projects experiments/alpha-api,experiments/beta-web > /dev/null
           test "$before" = "$(cat .acc-memory.md)"
 
           # An install with no answers and no terminal refuses and names the fields.

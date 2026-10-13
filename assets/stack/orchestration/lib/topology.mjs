@@ -25,7 +25,7 @@
 //   governor     (control-plane)  reads across every project: it checks the
 //                                 supervisors, checks that a worker's claim is
 //                                 backed by evidence, arbitrates, and ranks the
-//                                 next dollar across the portfolio.
+//                                 next outcome across the portfolio.
 //   supervisor   (control-plane)  owns ONE project's queue, missions, handoffs
 //                                 and recovery. It never dispatches into, reads
 //                                 or recovers another project.

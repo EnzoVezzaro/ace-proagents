@@ -470,7 +470,7 @@
     },
     "adapters": {
       "type": "object",
-      "description": "One provider per swappable capability. The reference configuration uses herdr, git-worktree, acc, proagents and opencode, but every one of them can be replaced here.",
+      "description": "One provider per swappable capability. The reference configuration uses herdr, git-worktree, acc, charter and opencode, but every one of them can be replaced here.",
       "properties": {
         "multiplexer": {
           "$ref": "#/$defs/adapterSelection"
