@@ -5,8 +5,12 @@
 `https://ace-seven-blue.vercel.app` serves the static landing in `site/`
 (`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`), built
 and deployed from this repository against Vercel project `ace` (`vercel --prod`
-from `site/`). What this repository does not contain is an application's source:
-what such an application would consume is the surface described below.
+from `site/`). Deploys come from the CLI only: the project carries no Git link,
+because it once carried one to the lab repository and every push there deployed
+that repository's root — which has no `index.html` — silently replacing this
+landing with a 404 (first observed 2026-10-13; link removed). What this
+repository does not contain is an application's source: what such an application
+would consume is the surface described below.
 
 What this repository does provide is the machine-consumable surface such an
 application needs, in two layers:
