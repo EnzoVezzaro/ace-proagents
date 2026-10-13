@@ -410,7 +410,8 @@ and Node 22, with `npm run check` clean.
 
 The strongest check is the end-to-end one: `ace setup` installs the bundle into a
 scratch repository, and then the code that was written there has to pass its own
-proof (`node orchestration/selftest.mjs`, 62 assertions, exit 0). The CI workflow
+proof (`node orchestration/selftest.mjs`, 62 assertions, exit 0 for the
+two-project install above — 61 with one project). The CI workflow
 runs exactly that; it was added on 2026-10-13 and has not yet been exercised on
 GitHub, because nothing has been pushed since.
 
