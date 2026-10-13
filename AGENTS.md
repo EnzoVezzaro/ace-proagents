@@ -44,9 +44,8 @@ The same `ace/v1` `ace` key is written by `ace setup` (from the answers) and by
   `PLAN.md` the historical build contracts · `SECURITY.md` the reporting policy.
 
 The installer files — `lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`,
-`assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs` — are committed on
-`main` but **not pushed**: `origin/main` and the `v0.1.3` tag still carry the
-runtime alone.
+`assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs` — are on `origin/main`
+(pushed 2026-10-13). The `v0.1.3` tag predates them and carries the runtime only.
 
 ## Commands
 
@@ -140,11 +139,11 @@ node orchestration/tabs.mjs cap        # reads the generated data; no multiplexe
   and a fake to `lib/adapters/impl.mjs`.
 - **Never report a check you did not run.** Reports carry `checksNotRun`, and a
   completion claim with no command that exited 0 is rejected.
-- **The npm release is not the repository.** npm serves `0.1.2`, which predates
-  the installer and the governance layer, and `origin/main` (with the `v0.1.3`
-  tag) carries the runtime alone until the installer is pushed. Never describe it
-  as available from a clone or from the registry before that push. Do not bump
-  the version, publish, push a tag or deploy without being asked.
+- **The npm release is not the repository.** `origin/main` carries the installer
+  and the runtime; npm serves `0.1.2`, which predates the installer, and the
+  `v0.1.3` tag predates it too. State the registry version as it is — never claim
+  the published package has `ace setup`. Do not bump the version, publish, push a
+  tag or deploy without being asked.
 
 ## Ownership
 

@@ -54,7 +54,7 @@
         <span class="chip">node 20+</span>
       </div>
       <a class="sponsor" href="https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800" rel="noopener">Sponsor / ACE Pro — $9.00/mo</a>
-      <p class="status-print">exp-007 · spec ace/v1 · npm serves 0.1.2 · <code>ace setup</code> is committed here and not pushed — <code>origin/main</code> gives the runtime, not the installer</p>
+      <p class="status-print">exp-007 · spec ace/v1 · <code>ace setup</code> is on <code>origin/main</code> · the <code>v0.1.3</code> tag predates it · npm still serves <code>0.1.2</code></p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
@@ -250,16 +250,16 @@ proagents           → supervisors-workers: acceptance</pre>
         <div class="row"><code>ace init · install · run</code><span>the runtime's package layer: scaffold a workspace, resolve deps, start it</span></div>
         <div class="row"><code>ace status · snapshot · restore</code><span>human overview, and roll the environment back to a snapshot</span></div>
       </div>
-      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>0</code> installed and verified · <code>1</code> a check failed, or an operator must act · <code>2</code> a usage, intake or plan error — nothing written. With no answers and no terminal, <code>ace setup</code> refuses with <code>INTAKE_INVALID</code> and names every missing field instead of guessing. <code>ace setup</code> and <code>ace parts</code> are committed on this checkout's <code>main</code> and not pushed; <code>origin/main</code> and the <code>v0.1.3</code> tag carry the runtime alone, and npm serves <code>0.1.2</code>, which predates the installer.</p>
+      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>0</code> installed and verified · <code>1</code> a check failed, or an operator must act · <code>2</code> a usage, intake or plan error — nothing written. With no answers and no terminal, <code>ace setup</code> refuses with <code>INTAKE_INVALID</code> and names every missing field instead of guessing. <code>ace setup</code> and <code>ace parts</code> are on <code>origin/main</code> (pushed 2026-10-13); the <code>v0.1.3</code> tag predates them, and npm serves <code>0.1.2</code>, which predates the installer. CI is green on Node 20 and Node 22, including the step that installs into a scratch repo and runs the proof it wrote there.</p>
     </section>
 
     <!-- install -->
     <section id="git" class="band">
       <h2 class="cmd">$ ace --help &amp;&amp; ls</h2>
       <div class="rows" id="git-rows">
-        <div class="row"><code>git clone https://github.com/EnzoVezzaro/ace-proagents</code><span>what is published today: the runtime at <code>origin/main</code> (tag <code>v0.1.3</code>) and npm's <code>0.1.2</code>. Zero runtime dependencies; nothing to build</span></div>
-        <div class="row"><code>node ace-proagents/ace.mjs --help</code><span>the command surface a clone gives you today</span></div>
-        <div class="row"><code>node ace-proagents/ace.mjs setup</code><span>the installer — committed on <code>main</code>, not pushed: it asks, or you answer with <code>--intake &lt;file.json&gt;</code> or flags</span></div>
+        <div class="row"><code>git clone https://github.com/EnzoVezzaro/ace-proagents</code><span>the installer, on <code>main</code> since 2026-10-13 · zero runtime dependencies; nothing to build</span></div>
+        <div class="row"><code>node ace-proagents/ace.mjs --help</code><span>the command surface the clone gives you</span></div>
+        <div class="row"><code>node ace-proagents/ace.mjs setup</code><span>it asks, or you answer with <code>--intake &lt;file.json&gt;</code> or flags</span></div>
         <div class="row"><code>node orchestration/tabs.mjs up</code><span>inside Herdr: create the tabs and start the agents that fit</span></div>
         <div class="row"><code>ace install github:&lt;owner&gt;/&lt;repo&gt;</code><span>the runtime's package layer — resolve a specification, lock it by hash</span></div>
       </div>
@@ -369,7 +369,7 @@ PROJECT beta-web (space beta-web)</p>
     <!-- close -->
     <section id="end" class="band">
       <h2 class="cmd">$ ace status</h2>
-      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the money line. 141 tests pass on Node 20 and Node 22; the two-project install on this page verifies itself in 14 checks, and the code it wrote into the repository proves itself offline in 62 assertions (one project reports 13 and 61). It is not published yet: npm serves <code>0.1.2</code> and <code>origin/main</code> carries the runtime alone, so the installer comes from a checkout that has it.</p>
+      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. Installed, the arrangement is written down as data: the terminal spaces, the browser spaces, the budget, the roles, the memory, the money line. 141 tests pass on Node 20 and Node 22; the two-project install on this page verifies itself in 14 checks, and the code it wrote into the repository proves itself offline in 62 assertions (one project reports 13 and 61). It has been on <code>origin/main</code> since 2026-10-13; npm still serves <code>0.1.2</code>, which predates the installer.</p>
       <div class="receipt">
         <p class="r-head">pricing · what ACE costs today</p>
         <div class="r-row"><span>ACE core · spec draft ace/v1</span><b>$0.00</b></div>

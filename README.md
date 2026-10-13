@@ -43,12 +43,12 @@ node ace.mjs --help
 ```
 
 `package.json` declares `"bin": { "ace": "./ace.mjs" }`, so `npm i ace-proagents`
-also installs an `ace` command. **What is published predates the installer:** npm
-serves `0.1.2`, and `origin/main` (tag `v0.1.3`) carries the `ace/v1` package, the
-CLI and the governance runtime. The installer — `lib/stack.mjs`,
-`lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`,
-`test/stack.test.mjs` — is committed on this checkout's `main` and **not pushed
-yet**, so a clone of `origin/main` answers "unknown command: setup".
+also installs an `ace` command — but **npm serves `0.1.2`, which predates the
+installer**: the published package has no `ace setup`. The installer —
+`lib/stack.mjs`, `lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`,
+`docs/STACK.md`, `test/stack.test.mjs` — is on `origin/main` (pushed
+2026-10-13), so a clone has it; the `v0.1.3` tag predates it and carries the
+`ace/v1` package, the CLI and the governance runtime.
 
 Run `ace setup` from a checkout that has the installer, with the **target
 repository** as the working directory:
@@ -411,9 +411,10 @@ and Node 22, with `npm run check` clean.
 The strongest check is the end-to-end one: `ace setup` installs the bundle into a
 scratch repository, and then the code that was written there has to pass its own
 proof (`node orchestration/selftest.mjs`, 62 assertions, exit 0 for the
-two-project install above — 61 with one project). The CI workflow
-runs exactly that; it was added on 2026-10-13 and has not yet been exercised on
-GitHub, because nothing has been pushed since.
+two-project install above — 61 with one project). CI runs exactly that: on the
+push that shipped the installer (2026-10-13) the `Crew stack smoke test` step
+passed on Node 20 and Node 22, next to the syntax check, the scaffold smoke run
+and the 141 tests.
 
 [PLAN.md](./PLAN.md) holds module contracts and worker assignments,
 [PRODUCT.md](./PRODUCT.md) the product framing, [docs/STACK.md](./docs/STACK.md)

@@ -23,10 +23,10 @@ runtime implements — not because it describes the current architecture.
 | the stack that ships into an installed repo, and its proof | `assets/stack/orchestration/` |
 | the read-only surface a UI may consume | `docs/APP-INTEGRATION.md` |
 
-**Committed, not pushed.** The installer files (`lib/stack.mjs`,
-`lib/intake.mjs`, `lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`,
-`test/stack.test.mjs`) are committed on `main` in this checkout; `origin/main`
-and the `v0.1.3` tag carry the runtime only, and npm serves `0.1.2`.
+**Pushed 2026-10-13.** The installer files (`lib/stack.mjs`, `lib/intake.mjs`,
+`lib/cli-stack.mjs`, `assets/stack/**`, `docs/STACK.md`, `test/stack.test.mjs`)
+are on `origin/main`; the `v0.1.3` tag carries the runtime only, and npm serves
+`0.1.2`.
 
 > **Historical positioning (v0.1.x).** ACE was first built as *npm for agentic
 > coding environments*: an open, Git-native package ecosystem for reproducible
@@ -109,8 +109,9 @@ act · `2` a usage, intake or plan error — nothing written.
   rule, and the free-model refusal. 62 assertions, exit 0, no multiplexer, no
   network, no browser.
 - `.github/workflows/ci.yml` — a crew-stack smoke step installs into a scratch
-  repo and runs the installed `selftest.mjs` and `tabs.mjs cap`. It has not run on
-  GitHub yet (nothing has been pushed since it was added).
+  repo and runs the installed `selftest.mjs` and `tabs.mjs cap`. It ran green on
+  GitHub on 2026-10-13 (run `38436935008`, Node 20 and 22) on the push that
+  shipped the installer.
 
 ---
 

@@ -17,10 +17,9 @@ application needs, in two layers:
    `adapters`, plus the orchestrator the installer writes into the target repo
    (`orchestration/tabs.mjs`). Read-only surfaces for a status view.
 
-Both layers exist in this checkout. The installer is committed on `main` and
-**not pushed**, so it is not reachable from `origin/main` or from npm (`0.1.2`,
-which predates it); only a checkout that has the installer can offer `ace setup`
-to a UI.
+Both layers are on `origin/main` (pushed 2026-10-13). npm still serves `0.1.2`,
+which predates the installer, so a UI ships against a clone or a checkout rather
+than against the registry.
 
 Every command below is implemented and covered by `test/`. All are read-only
 except where noted; none prints a credential.
