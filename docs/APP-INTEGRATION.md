@@ -1,11 +1,12 @@
 # Application integration
 
-## Status: the deployed app's source is not in this repository
+## Status: the landing lives here; a separate application's source does not
 
-`https://ace-seven-blue.vercel.app` is deployed from a separate workspace. This
-repository contains the CLI package and the static landing under `site/`
-(`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`) — it
-does not contain the application's source.
+`https://ace-seven-blue.vercel.app` serves the static landing in `site/`
+(`index.html`, `donate.html`, `styles.css`, `app.js`, `vendor/motion.mjs`), built
+and deployed from this repository against Vercel project `ace` (`vercel --prod`
+from `site/`). What this repository does not contain is an application's source:
+what such an application would consume is the surface described below.
 
 What this repository does provide is the machine-consumable surface such an
 application needs, in two layers:
