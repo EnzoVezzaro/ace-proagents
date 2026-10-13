@@ -49,25 +49,30 @@
         <span class="chip">spec ace/v1</span>
         <span class="chip">git-native</span>
         <span class="chip">orchestrator: opencode</span>
+        <span class="chip">4 agents/project by default</span>
       </div>
       <a class="sponsor" href="https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800" rel="noopener">Sponsor / ACE Pro — $9.00/mo</a>
-      <p class="status-print">exp-007 · MVP phases 1–6</p>
+      <p class="status-print">exp-007 · spec draft ace/v1</p>
       <p class="cursor-row" aria-hidden="true"><span class="cursor"></span></p>
     </header>
 
     <!-- live session -->
     <section id="session" class="band">
       <h2 class="cmd">$ ace init &amp;&amp; ace run</h2>
-      <p class="note">demo output: synthetic lines, real command structure from README</p>
+      <p class="note">verbatim output: a fresh workspace, nothing installed yet</p>
       <div class="transcript" id="session-block">
         <p class="t-line">node ../ace-proagents/ace.mjs init --name my-workspace</p>
-        <p class="out">wrote package.json · spec ace/v1 · orchestrator=opencode · workers=5</p>
+        <p class="out">Initialized ACE package in my-workspace</p>
         <p class="t-line">node ../ace-proagents/ace.mjs install</p>
-        <p class="out">resolved ace@0.1.2 · integrity sha256 · lockfile ace-lock.json</p>
+        <p class="out">install: no packages in lockfile — nothing to install</p>
         <p class="t-line">node ../ace-proagents/ace.mjs run</p>
-        <p class="out">runtime started · network=restricted · filesystem=workspace · memory=persistent</p>
+        <p class="out">Runtime started.</p>
         <p class="t-line">node ../ace-proagents/ace.mjs status</p>
-        <p class="out">agents 5 · tasks 0 · events 0 · state: running</p>
+        <p class="out">Status: running</p>
+        <p class="out">Governance: governor governor · opencode:fledge-alpha-free · 1 supervisor(s), 5 worker(s) declared</p>
+        <p class="out">Budget: 0/4 active</p>
+        <p class="out">Watchdog: armed, not running · governor NOT ALIVE</p>
+        <p class="out">Goal: (none declared — set goal.statement in the ace key)</p>
       </div>
       <button type="button" class="replay" id="session-replay">replay session</button>
     </section>
@@ -133,7 +138,17 @@
         <div class="row"><code>ace events [--limit N]</code><span>event stream</span></div>
         <div class="row"><code>ace snapshot / restore &lt;id&gt;</code><span>snapshot and roll back the environment</span></div>
         <div class="row"><code>ace stop</code><span>graceful stop</span></div>
+        <div class="row"><code>ace config [--resolve]</code><span>effective configuration, its layer, the security floor</span></div>
+        <div class="row"><code>ace crew</code><span>the roster and the live agent budget</span></div>
+        <div class="row"><code>ace govern [--dry-run]</code><span>one governor cycle: liveness, progress, failover, escalation</span></div>
+        <div class="row"><code>ace supervise [--dry-run]</code><span>one supervisor cycle: assign, monitor, verify, integrate</span></div>
+        <div class="row"><code>ace task / handoff</code><span>durable tasks (single owner) and structured handoffs</span></div>
+        <div class="row"><code>ace route show|set &lt;agent&gt;</code><span>an agent's model and provider route</span></div>
+        <div class="row"><code>ace watchdog [status|cycle]</code><span>independent recovery for a failed governor</span></div>
+        <div class="row"><code>ace adapters [health|audit]</code><span>the swap points, their providers and their health</span></div>
+        <div class="row"><code>ace bots [status]</code><span>experimental management bots — off by default</span></div>
       </div>
+      <p class="fine">Every governance command takes <code>--json</code>: one document on stdout, or one structured error on stderr. Exit <code>1</code> means an operator must act, <code>2</code> a usage or configuration error. These ship in the repository now (<code>v0.1.3</code>); the npm release still serves <code>v0.1.2</code>, which predates the governance layer.</p>
     </section>
 
     <!-- git-native install -->
@@ -183,13 +198,41 @@ ace status</pre>
       <p class="note">example event shapes, structure from the ace/v1 event stream</p>
     </section>
 
+    <!-- governance -->
+    <section id="govern" class="band">
+      <h2 class="cmd">$ ace govern --dry-run</h2>
+      <p class="note">verbatim output: a fresh workspace, one heartbeat and one task in</p>
+      <div class="transcript" id="govern-block">
+        <p class="out">governor cycle at 13:58:56Z — scope environment</p>
+        <p class="out">goal: (none declared) — no goal declared — set goal.statement in the ace key (0 done, 1 open)</p>
+        <p class="out">budget: 1/4 active</p>
+        <p class="out">  primary-supervisor [primary] alive — heartbeat 0s; route opencode:fledge-alpha-free ok; progress: yes (1 events, 1 task updates)</p>
+        <p class="out">detections: none</p>
+        <p class="out">not run:</p>
+        <p class="out">  · provider quota and usage APIs (no quota endpoint is integrated in this build)</p>
+      </div>
+      <p class="fine">A heartbeat is not proof of progress. The same cycle with no heartbeat, or with a heartbeat but no movement in the window, reports <code>SUPERVISOR_ABSENT</code> or a stalled supervisor, plans recovery, and escalates to the operator when it cannot deliver one — the report says <code>delivered: false</code> rather than claiming a restart that did not happen.</p>
+      <dl class="label-grid" id="govern-grid">
+        <div class="row"><dt>hierarchy</dt><dd>governor → supervisor → worker</dd></div>
+        <div class="row"><dt>active agents</dt><dd>4 per project by default · raisable, not a ceiling · one budget across runtimes</dd></div>
+        <div class="row"><dt>boundary</dt><dd>the governor never messages a worker — refused in policy, not by prompt</dd></div>
+        <div class="row"><dt>failover</dt><dd>validated fallback routes · bounded restarts · backoff · escalation</dd></div>
+        <div class="row"><dt>watchdog</dt><dd>a control plane outside the governor, so a dead governor is still recovered</dd></div>
+        <div class="row"><dt>adapters</dt><dd>11 swap points · 34 providers, including deterministic fakes for tests</dd></div>
+        <div class="row"><dt>isolation</dt><dd>worktrees · bounded write scopes · one owner per task</dd></div>
+        <div class="row"><dt>management bots</dt><dd>experimental · off by default · intake cannot bypass the budget</dd></div>
+        <div class="row"><dt>interface</dt><dd>the CLI and its <code>--json</code> documents · no HTTP API yet</dd></div>
+      </dl>
+      <p class="fine">Each line above is a command in this package: <code>ace crew</code>, <code>ace govern --json</code>, <code>ace watchdog status</code>, <code>ace task list --json</code>, <code>ace adapters audit</code>, <code>ace bots status</code>. What is <em>not</em> implemented is listed as plainly: no HTTP API, no live management-bot transport, no provider quota check — see <a href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/docs/APP-INTEGRATION.md" target="_blank" rel="noopener">docs/APP-INTEGRATION.md</a>.</p>
+    </section>
+
     <!-- close -->
     <section id="end" class="band">
       <h2 class="cmd">$ ace status</h2>
-      <p class="read">ACE is an MVP (phases 1–6), MIT-style free, zero runtime dependencies. The environment you just watched is the environment you get: orchestrator, workers, tools, models, policies, memory, lifecycle, described in one manifest, locked by hash, restored anywhere.</p>
+      <p class="read">ACE is an MIT-style free early release (spec draft ace/v1), zero runtime dependencies. The environment you just watched is the environment you get: orchestrator, workers, tools, models, policies, memory, lifecycle, described in one manifest, locked by hash, restored anywhere.</p>
       <div class="receipt">
         <p class="r-head">pricing · what ACE costs today</p>
-        <div class="r-row"><span>ACE core · MVP phases 1–6</span><b>$0.00</b></div>
+        <div class="r-row"><span>ACE core · spec draft ace/v1</span><b>$0.00</b></div>
         <div class="r-row"><span>runtime dependencies</span><b>0</b></div>
         <div class="r-row"><span>git-native install</span><b>$0.00</b></div>
         <div class="r-row"><span>ACE Pro · optional support sub</span><b>$9.00/mo</b></div>
@@ -210,7 +253,7 @@ ace status</pre>
         </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PLAN.md" target="_blank" rel="noopener">
           <span class="c-t">the plan</span>
-          <span class="c-d">MVP phases 1–6: scope, order of work, what ships when.</span>
+          <span class="c-d">scope, order of work, what ships when, and what is still open.</span>
         </a>
         <a class="card" href="https://github.com/EnzoVezzaro/ace-proagents/blob/main/PRODUCT.md" target="_blank" rel="noopener">
           <span class="c-t">product spec</span>
@@ -231,6 +274,7 @@ ace status</pre>
               <li><a href="#cli">ace --help</a></li>
               <li><a href="#git">install</a></li>
               <li><a href="#state">.ace/</a></li>
+              <li><a href="#govern">ace govern</a></li>
             </ul>
           </div>
           <div class="foot-col">

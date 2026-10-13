@@ -67,6 +67,17 @@ function printJson(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
 
+/** Recursive directory copy — lib/ contains subdirectories. */
+function copyTree(src, dst) {
+  fs.mkdirSync(dst, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const from = path.join(src, entry.name);
+    const to = path.join(dst, entry.name);
+    if (entry.isDirectory()) copyTree(from, to);
+    else if (entry.isFile()) fs.copyFileSync(from, to);
+  }
+}
+
 function printTable(rows, columns) {
   if (!rows.length) { console.log("  (none)"); return; }
   const widths = columns.map((c) => Math.max(c.header.length, ...rows.map((r) => String(r[c.key] ?? "").length)));
@@ -80,8 +91,11 @@ function printTable(rows, columns) {
 
 function gitInfo(dir) {
   try {
-    const branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: dir, encoding: "utf8" }).trim();
-    const commit = execFileSync("git", ["rev-parse", "--short", "HEAD"], { cwd: dir, encoding: "utf8" }).trim();
+    // stderr is discarded: a workspace that is not a git repository is a normal
+    // state, not an error to print over the status output.
+    const quiet = { cwd: dir, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] };
+    const branch = execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], quiet).trim();
+    const commit = execFileSync("git", ["rev-parse", "--short", "HEAD"], quiet).trim();
     return { branch, commit };
   } catch {
     return { branch: null, commit: null };
@@ -108,7 +122,7 @@ async function cmdInit(args) {
     description: "ACE package",
     license: "MIT",
     type: "module",
-    engines: { ace: ">=1.0.0" },
+    engines: { node: ">=20" },
     dependencies: {},
     ace: {
       spec: "ace/v1",
@@ -161,16 +175,11 @@ ace status
 `;
   fs.writeFileSync(path.join(target, "README.md"), readme, "utf8");
 
-  // Copy ace.mjs + lib/ so the scaffolded package is self-contained
+  // Copy ace.mjs + lib/ so the scaffolded package is self-contained.
+  // lib/ has subdirectories (lib/adapters/), so the copy must recurse.
   fs.copyFileSync(HERE_FILE, path.join(target, "ace.mjs"));
   const libSrc = path.join(HERE, "lib");
-  const libDst = path.join(target, "lib");
-  if (fs.existsSync(libSrc)) {
-    fs.mkdirSync(libDst, { recursive: true });
-    for (const f of fs.readdirSync(libSrc)) {
-      fs.copyFileSync(path.join(libSrc, f), path.join(libDst, f));
-    }
-  }
+  if (fs.existsSync(libSrc)) copyTree(libSrc, path.join(target, "lib"));
 
   console.log(`Initialized ACE package in ${target}`);
 }
@@ -320,13 +329,28 @@ async function cmdRun() {
   console.log("Runtime started.");
 }
 
-async function cmdStatus() {
+async function cmdStatus(args = []) {
   const rt = await loadLib("runtime.mjs");
   if (!rt) {
     console.log("status: runtime not available yet (lib/runtime.mjs not found)");
     return;
   }
   const dir = process.cwd();
+
+  // The machine-readable surface. A UI consumes this instead of scraping the
+  // human output; it never contains a credential.
+  if (args.includes("--json")) {
+    const snapshot = await governanceSnapshotSafe(dir);
+    printJson({
+      command: "status",
+      status: rt.getState(dir).status,
+      updatedAt: rt.getState(dir).updatedAt,
+      git: gitInfo(dir),
+      governance: snapshot,
+    });
+    return;
+  }
+
   const state = rt.getState(dir);
   const agents = rt.getAgents(dir);
   const tasks = rt.getTasks(dir);
@@ -339,6 +363,8 @@ async function cmdStatus() {
   console.log(`Tasks: ${tasks.length}`);
   console.log(`Git: ${git.branch || "—"} @ ${git.commit || "—"}`);
   console.log(`Resources: ${agents.filter((a) => a.status === "working").length} working, ${agents.filter((a) => a.status === "idle").length} idle`);
+  await printGovernanceSummary(dir);
+  console.log("governance JSON: ace status --json");
   console.log("pro: ACE Pro $9.00/mo — https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800");
 }
 
@@ -427,13 +453,25 @@ async function cmdEvents(args) {
   }
 }
 
-async function cmdStop() {
+async function cmdStop(args = []) {
   const rt = await loadLib("runtime.mjs");
   if (!rt) {
     console.log("stop: runtime not available yet (lib/runtime.mjs not found)");
     return;
   }
   const dir = process.cwd();
+
+  // Emergency stop, defined: the lifecycle state changes and every durable
+  // artifact survives. Nothing is deleted and no external process is killed —
+  // reporting that honestly is the point of this command.
+  const active = typeof rt.getAgentRecords === "function"
+    ? rt.getAgentRecords(dir).filter((a) => ["working", "starting", "restarting"].includes(a.status))
+    : [];
+  const open = typeof rt.listTaskRecords === "function"
+    ? rt.listTaskRecords(dir).filter((t) => ["pending", "assigned", "in_progress", "review", "blocked"].includes(t.status))
+    : [];
+  const leases = typeof rt.listLeases === "function" ? rt.listLeases(dir) : [];
+
   rt.setStatus(dir, "stopped");
   rt.appendEvent(dir, {
     id: `evt_${crypto.randomBytes(6).toString("hex")}`,
@@ -443,7 +481,33 @@ async function cmdStop() {
     task: null,
     metadata: {},
   });
+  const payload = {
+    command: "stop",
+    status: "stopped",
+    preserved: {
+      openTasks: open.map((t) => t.id),
+      activeAgents: active.map((a) => a.id),
+      leases: leases.map((l) => l.name),
+    },
+    killed: [],
+    note: "durable state survives; no external process is killed by this command",
+    resume: "ace restart",
+  };
+
+  // Exactly one document on stdout when --json is asked for, the same contract
+  // `verify` and `autopilot` keep.
+  if (args.includes("--json")) {
+    printJson(payload);
+    return;
+  }
+
   console.log("Runtime stopped.");
+  console.log("  status is now \"stopped\"; tasks, handoffs, checkpoints and the event journal are untouched");
+  console.log(`  agents still recorded active: ${active.length ? active.map((a) => a.id).join(", ") : "none"}`);
+  console.log(`  open tasks kept: ${open.length}${open.length ? ` (${open.map((t) => t.id).join(", ")})` : ""}`);
+  console.log(`  leases still held: ${leases.length} — they expire on their own TTL; stop releases none implicitly`);
+  console.log("  external processes are not killed: stop the multiplexer or the agent runtime itself");
+  console.log("  resume: ace restart (reconciles interrupted agents and requeues their tasks)");
 }
 
 async function cmdSnapshot() {
@@ -648,11 +712,28 @@ async function cmdRestart() {
     return;
   }
   const dir = process.cwd();
+  // Reconcile durable state before announcing ready: an agent whose process
+  // died while we were down must not keep ownership of a task.
+  let reconciled = null;
+  if (typeof rt.reconcile === "function") {
+    try {
+      reconciled = rt.reconcile(dir);
+    } catch {
+      reconciled = null;
+    }
+  }
   const statePath = path.join(dir, ".ace", "state.json");
   if (typeof rt.recover === "function" && fs.existsSync(statePath)) {
     rt.recover(dir);
   }
   rt.setStatus(dir, "ready");
+  if (reconciled) {
+    const interrupted = reconciled.agents.filter((a) => a.action === "interrupted");
+    const requeued = reconciled.tasks.filter((t) => t.action === "requeued");
+    if (interrupted.length) console.log(`Interrupted agents: ${interrupted.map((a) => a.id).join(", ")}`);
+    if (requeued.length) console.log(`Tasks returned to the queue: ${requeued.map((t) => t.id).join(", ")}`);
+    if (reconciled.agents.length === 0 && reconciled.tasks.length === 0) console.log("State reconciled: nothing was interrupted.");
+  }
   rt.appendEvent(dir, {
     id: `evt_${crypto.randomBytes(6).toString("hex")}`,
     timestamp: new Date().toISOString(),
@@ -1081,6 +1162,103 @@ async function cmdAutopilot(args) {
 }
 
 // ---------------------------------------------------------------------------
+// Governance surface — dispatched into lib/cli-governance.mjs
+// ---------------------------------------------------------------------------
+
+const GOVERNANCE_COMMANDS = new Set([
+  "config",
+  "crew",
+  "govern",
+  "supervise",
+  "task",
+  "handoff",
+  "route",
+  "heartbeat",
+  "watchdog",
+  "bots",
+  "adapters",
+]);
+
+/**
+ * The governance commands live in their own module and receive this file's
+ * helpers, so there is exactly one implementation of workspace detection,
+ * structured errors and verification.
+ */
+async function runGovernance(command, args) {
+  let mod;
+  try {
+    mod = await import(path.join(HERE, "lib", "cli-governance.mjs"));
+  } catch (err) {
+    writeStructuredError({
+      code: "GOVERNANCE_UNAVAILABLE",
+      message: `governance commands need lib/cli-governance.mjs: ${(err && err.message) || err}`,
+      recoverable: true,
+      suggestions: ["Reinstall the ace package so lib/ is complete"],
+    });
+    process.exitCode = 1;
+    return;
+  }
+  await mod.run(command, args, {
+    workspaceInitialized,
+    notInitialized,
+    writeStructuredError,
+    printJson,
+    printTable,
+    runVerifyChecks,
+    gitInfo,
+  });
+}
+
+/**
+ * The governance snapshot for `ace status --json`, or null when the module is
+ * missing — status must never fail because of it.
+ */
+async function governanceSnapshotSafe(dir) {
+  try {
+    const mod = await import(path.join(HERE, "lib", "cli-governance.mjs"));
+    return typeof mod.governanceSnapshot === "function" ? mod.governanceSnapshot(dir) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * One-screen governance summary for `ace status`.
+ * Best-effort by design: status must still work in a workspace whose lib/ is
+ * incomplete, so every failure here is swallowed rather than fatal.
+ */
+async function printGovernanceSummary(dir) {
+  try {
+    const [config, crewLib, watchdog, bots, rt] = await Promise.all([
+      loadLib("config.mjs"),
+      loadLib("crew.mjs"),
+      loadLib("watchdog.mjs"),
+      loadLib("bots.mjs"),
+      loadLib("runtime.mjs"),
+    ]);
+    if (!config || !crewLib) return;
+    const resolved = config.resolveConfig({ dir });
+    const built = crewLib.buildCrew(resolved.effective);
+    const records = rt && typeof rt.getAgentRecords === "function" ? rt.getAgentRecords(dir) : [];
+    const occupancy = crewLib.computeOccupancy(resolved.effective, records);
+    console.log(`Governance: governor ${built.governor.id} · ${built.governor.route.map(crewLib.routeLabel).join(" → ")} · ${built.supervisors.length} supervisor(s), ${built.workers.length} worker(s) declared`);
+    console.log(`Budget: ${occupancy.occupied}/${occupancy.limit} active`);
+    if (watchdog) {
+      const w = watchdog.watchdogStatus(dir, resolved.effective);
+      console.log(`Watchdog: ${w.running ? `running (pid ${w.pid})` : w.enabled ? "armed, not running" : "disabled"} · governor ${w.governor.alive ? "alive" : "NOT ALIVE"}`);
+    }
+    if (bots) {
+      const b = bots.botStatus(resolved.effective, process.env);
+      console.log(`Management bots: ${b.enabled ? `enabled (${b.provider})` : "off (experimental)"}`);
+    }
+    const goal = resolved.effective.goal?.statement;
+    console.log(`Goal: ${goal ?? "(none declared — set goal.statement in the ace key)"}`);
+  } catch {
+    /* best effort: a governance summary must never break `ace status` */
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
 
@@ -1126,7 +1304,7 @@ Commands:
   info <pkg>             Show package detail
   search <q>             Search local registry
   run                    Start runtime
-  status                 Show human-readable status
+  status [--json]        Show status; --json adds the governance snapshot
   context [--json]       Show environment context
   agents                 List agents
   tasks                  List tasks
@@ -1148,6 +1326,33 @@ Commands:
   autopilot run          Run cycles here, then exit (--max-cycles N) [--json]
   autopilot off          Stop exactly the recorded pid
 
+Governance:
+  config [show] [--resolve] Show the effective configuration and its layers [--json]
+  config check           Validate the effective configuration (actionable errors)
+  config set <k=v>       Write a session override, or --task <id> for a task override
+  crew [--json]          The roster: governor, supervisors, workers, live budget
+  crew spawn <role>      Start a worker, refused when the budget is exhausted
+  govern [--dry-run]     One governor cycle: liveness, progress, failover, escalation
+  supervise [--dry-run]  One supervisor cycle: assign, monitor, verify, integrate
+  task add|list|show     Durable tasks (claim is single-owner)
+  task claim|start|review|integrate|done|fail|block|cancel
+  handoff submit <task> --file <json>   Structured handoff artifact
+  handoff list|verify <task>            Supervisor-side acceptance check
+  route show|set <agent>  Inspect or change an agent's model/provider route
+  heartbeat --agent <id>  Record liveness for an agent
+  watchdog [status]      Independent control plane for governor failures
+  watchdog cycle|on|off  One cycle [--dry-run] | spawn the loop | stop it
+  watchdog run           Foreground loop [--max-cycles N] [--json: one doc/cycle]
+  bots [status]          Experimental management bots (off by default)
+  bots enable <provider> | intake --file <json> | inbox | deliver
+  adapters [list]        The adapter registry [--kind K] | health | audit
+
+Governance defaults:
+  The active-agent limit is 4 per project and is not a maximum — raise it with
+  concurrency.max_active_agents. Management bots are experimental and off by
+  default (experimental.management_bots.enabled). Governance exits 1 when an
+  action needs an operator, 2 on a usage or configuration error.
+
 Options:
   --name <n>             Target directory for init
   --limit N              Limit for events/logs command
@@ -1158,6 +1363,11 @@ Options:
 
 pro: ACE Pro $9.00/mo — https://buy.stripe.com/9B6dRaclLgbjbqx1bB28800 (free core · MIT · cancel any time)
 `);
+    return;
+  }
+
+  if (GOVERNANCE_COMMANDS.has(cmd)) {
+    await runGovernance(cmd, args.slice(1));
     return;
   }
 

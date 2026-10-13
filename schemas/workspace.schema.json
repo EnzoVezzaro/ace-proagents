@@ -7,6 +7,125 @@
     "spec",
     "name"
   ],
+  "description": "Validates the object at manifest.ace in package.json. Describes the agentic coding environment (orchestrator, roles, adapters, models, policies, runtime state) — not application source. Every field below is optional except spec and name: an ace/v1 package written before governance existed still validates.",
+  "$defs": {
+    "modelSelection": {
+      "type": "object",
+      "description": "One model/provider route entry. Provider names are validated in code against lib/adapters/index.mjs, never frozen here, so the registry stays swappable.",
+      "required": [
+        "provider",
+        "model"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Model provider key (see lib/adapters/index.mjs)."
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The provider's exact model identifier."
+        }
+      }
+    },
+    "routeChain": {
+      "type": "object",
+      "description": "Primary route plus the fallbacks that may replace it during recovery. Fallbacks are validated before they are installed, so a chain of unusable routes surfaces as an escalation instead of a silent switch.",
+      "properties": {
+        "primary": {
+          "$ref": "#/$defs/modelSelection"
+        },
+        "fallbacks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/modelSelection"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "supervisor": {
+      "type": "object",
+      "description": "A project execution owner. One supervisor per project.",
+      "required": [
+        "role",
+        "project"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "description": "Stable agent id. Defaults to <project>-supervisor."
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The project this supervisor owns."
+        },
+        "workspace": {
+          "type": "string",
+          "description": "Workspace root this supervisor's workers may write to, relative to the package unless absolute."
+        },
+        "runtime": {
+          "type": "string",
+          "description": "Coding-agent runtime for this supervisor (see adapters.agent-runtime)."
+        },
+        "model": {
+          "$ref": "#/$defs/modelSelection"
+        },
+        "heartbeat_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "How often this supervisor is expected to heartbeat."
+        }
+      },
+      "additionalProperties": true
+    },
+    "worker": {
+      "type": "object",
+      "description": "A bounded implementer. Workers report evidence; they never redefine the goal.",
+      "required": [
+        "role"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "description": "Stable agent id. Defaults to <project>-<role>."
+        },
+        "project": {
+          "type": "string",
+          "description": "Owning project. Defaults to the first supervisor's project."
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "model": {
+          "$ref": "#/$defs/modelSelection"
+        }
+      },
+      "additionalProperties": true
+    },
+    "adapterSelection": {
+      "type": "object",
+      "description": "Selects the implementation for one swappable capability.",
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Adapter name from lib/adapters/index.mjs for this kind. Swap it here; the core resolves through the contract."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
   "properties": {
     "spec": {
       "const": "ace/v1"
@@ -49,7 +168,8 @@
           "type": "array",
           "items": {
             "type": "object"
-          }
+          },
+          "description": "The ace/v1 native worker declaration. Governance reads this when roles.workers is absent."
         }
       }
     },
@@ -60,25 +180,94 @@
       }
     },
     "models": {
-      "type": "object"
+      "type": "object",
+      "description": "Default model selection and per-role route chains. routes.<role> is either a primary+fallbacks object or an ordered array; a primary is tried first and each fallback is validated before it is installed during recovery.",
+      "properties": {
+        "default": {
+          "$ref": "#/$defs/modelSelection"
+        },
+        "routes": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/routeChain"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/modelSelection"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
     },
     "runtime": {
       "type": "object"
     },
     "network": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Security-relevant. \"restricted\" denies outbound connections unless an action is explicitly allowed; a lower-trust layer may not loosen this once a higher-authority layer has set it."
+        }
+      },
+      "additionalProperties": true
     },
     "filesystem": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Security-relevant. \"workspace\" bounds reads and writes to the workspace root; widening it from a project or task layer is refused."
+        }
+      },
+      "additionalProperties": true
     },
     "memory": {
       "type": "object"
     },
     "git": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "worktrees": {
+          "type": "boolean",
+          "description": "Allow one git worktree per independent task."
+        },
+        "push": {
+          "type": "boolean",
+          "description": "Security-relevant. Push is denied unless this is explicitly true."
+        }
+      },
+      "additionalProperties": true
     },
     "policies": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "require_review_before_merge": {
+          "type": "boolean",
+          "description": "Security-relevant. A lower-trust layer may not turn this off once a higher-authority layer required it."
+        },
+        "production_access": {
+          "type": "boolean",
+          "description": "Security-relevant. Denied by default."
+        }
+      },
+      "additionalProperties": true
+    },
+    "production": {
+      "type": "object",
+      "properties": {
+        "access": {
+          "type": "boolean",
+          "description": "Security-relevant alias of policies.production_access. Denied by default."
+        }
+      },
+      "additionalProperties": true
     },
     "lifecycle": {
       "type": "object"
@@ -125,6 +314,336 @@
           "description": "Orchestrator config (if separate from agentConfig)"
         }
       }
+    },
+    "default_agent_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 4,
+      "description": "Declared default for the active-agent limit. The value actually enforced is concurrency.max_active_agents."
+    },
+    "goal": {
+      "type": "object",
+      "description": "The project's declared main goal. The governor reports alignment against this instead of inventing one.",
+      "properties": {
+        "statement": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "One sentence describing what this project is for."
+        },
+        "milestones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "roles": {
+      "type": "object",
+      "description": "The Governor → Supervisor → Worker hierarchy. The governor may message supervisors only; worker-level action is requested through the responsible supervisor.",
+      "properties": {
+        "governor": {
+          "type": "object",
+          "properties": {
+            "role": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "string",
+              "description": "What the governor oversees — \"environment\" for every project in this package."
+            },
+            "runtime": {
+              "type": "string"
+            },
+            "model": {
+              "$ref": "#/$defs/modelSelection"
+            },
+            "heartbeat_seconds": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "idle_mode": {
+              "type": "string",
+              "description": "What the governor does when no useful work remains: monitor, maintenance or stop."
+            }
+          },
+          "additionalProperties": true
+        },
+        "supervisors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/supervisor"
+          }
+        },
+        "workers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/worker"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "concurrency": {
+      "type": "object",
+      "description": "The active-agent budget, enforced centrally across every runtime so two runtimes cannot each spend it.",
+      "properties": {
+        "max_active_agents": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 4,
+          "description": "Four is the shipped default, not a hard maximum: raising it is a supported configuration."
+        },
+        "count_governor": {
+          "type": "boolean",
+          "description": "Whether the governor counts toward the budget. Default false."
+        },
+        "count_supervisors": {
+          "type": "boolean",
+          "description": "Whether supervisors count toward the worker budget. Default false."
+        },
+        "runtime_overrides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "description": "Additional per-runtime caps. Both the global limit and the runtime cap must pass."
+        },
+        "enforce_across_runtimes": {
+          "type": "boolean",
+          "description": "When false the budget is reported but not enforced. Default true."
+        },
+        "allow_project_raise": {
+          "type": "boolean",
+          "description": "Whether a project or task layer may raise the limit above an installation-pinned one."
+        },
+        "pinned_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "An installation-level ceiling that project raises may not exceed unless allow_project_raise is true."
+        }
+      },
+      "additionalProperties": true
+    },
+    "recovery": {
+      "type": "object",
+      "description": "Bounding rules for liveness detection, progress verification and failover.",
+      "properties": {
+        "stale_heartbeat_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "A heartbeat older than this makes an agent unresponsive."
+        },
+        "progress_window_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Window used to decide whether a live agent is actually progressing. A fresh heartbeat alone never proves progress."
+        },
+        "max_restarts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_route_switches": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cooldown_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum gap between recovery actions on the same subject."
+        },
+        "lease_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Lease TTL used to keep exactly one owner per task and per route."
+        },
+        "backoff_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "adapters": {
+      "type": "object",
+      "description": "One provider per swappable capability. The reference configuration uses herdr, git-worktree, acc, proagents and opencode, but every one of them can be replaced here.",
+      "properties": {
+        "multiplexer": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "workspace": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "agent-runtime": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "provider": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "context": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "handoff": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "tools": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "verification": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "persistence": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "watchdog": {
+          "$ref": "#/$defs/adapterSelection"
+        },
+        "management-bot": {
+          "$ref": "#/$defs/adapterSelection"
+        }
+      },
+      "additionalProperties": true
+    },
+    "watchdog": {
+      "type": "object",
+      "description": "The independent control plane that recovers or escalates a failed governor. It acts without the governor's model.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "interval_seconds": {
+          "type": "number",
+          "minimum": 10,
+          "description": "How often the watchdog inspects the governor."
+        },
+        "restarts_allowed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bounded restarts before it escalates to the operator."
+        },
+        "cooldown_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "delivery": {
+          "type": "object",
+          "description": "How a restart is delivered on this host. Without a delivery function the watchdog records the action and escalates instead of claiming a restart."
+        }
+      },
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "sharing": {
+          "enum": [
+            "isolated",
+            "shared"
+          ],
+          "description": "Cross-project context and messages are refused unless this is \"shared\"."
+        },
+        "providers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "verification": {
+      "type": "object",
+      "description": "What must be true before a task may be integrated.",
+      "properties": {
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Checks re-run after integration. Passing in a worker's isolated workspace does not prove the integrated project passes."
+        },
+        "require_evidence": {
+          "type": "boolean",
+          "description": "A completion claim without a reported command that exited 0 is rejected."
+        }
+      },
+      "additionalProperties": true
+    },
+    "experimental": {
+      "type": "object",
+      "properties": {
+        "management_bots": {
+          "type": "object",
+          "description": "Experimental management-bot sidecar. Off by default. An enabled bot submits work through ACE, which stays authoritative for task ids, budgets, isolation, verification and audit; a bot can never launch a second group of agents that bypasses the budget.",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Off by default. This feature is experimental; nothing is accepted until it is explicitly enabled and the connection fields below are complete."
+            },
+            "provider": {
+              "type": "string",
+              "description": "Management-bot provider. GitBot is the default selection once the feature is explicitly enabled. See lib/adapters/index.mjs."
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "Inbound endpoint. Missing or partial security configuration fails closed."
+            },
+            "identity": {
+              "type": "string",
+              "description": "The identity this bot is expected to present."
+            },
+            "secret_ref": {
+              "type": "string",
+              "description": "Name of the stored secret (see `ace secret set`). Secrets are referenced by name, never inlined."
+            },
+            "allow_remote_endpoint": {
+              "type": "boolean",
+              "default": false,
+              "description": "Explicit opt-in required before a non-loopback endpoint is accepted. Off by default because the default provider documents no authentication of its own; a remote endpoint additionally requires HTTPS and a secret_ref."
+            },
+            "projects": {
+              "type": "object",
+              "description": "Inbound project identifier to ACE project mapping. An unmapped project is refused."
+            },
+            "permissions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Operations the bot may request. A wildcard is refused."
+            },
+            "approvals": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Requested actions that require an explicit approval before a task is created."
+            },
+            "delivery": {
+              "type": "object",
+              "properties": {
+                "max_attempts": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "backoff_seconds": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
     }
   },
   "description": "Validates the object at manifest.ace in package.json."

@@ -1,6 +1,6 @@
 {
   "name": "ace-proagents",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "ACE — Agentic Compute Environment. npm for agentic coding environments.",
   "license": "MIT",
   "type": "module",
@@ -15,13 +15,20 @@
     "package-manager"
   ],
   "engines": {
-    "ace": ">=1.0.0"
+    "node": ">=20"
   },
   "dependencies": {},
+  "scripts": {
+    "test": "node --test test/",
+    "check": "node --check ace.mjs && for f in lib/*.mjs lib/adapters/*.mjs site/app.js; do node --check \"$f\" || exit 1; done"
+  },
   "ace": {
     "spec": "ace/v1",
     "name": "ace",
     "description": "ACE — Agentic Compute Environment. The package manager and registry for reproducible orchestrator-driven agentic coding environments.",
+    "goal": {
+      "statement": "Ship an orchestrator-first Agentic Compute Environment whose governor keeps per-project supervisors and workers moving toward each goal inside a central agent budget, with isolated workspaces, durable state, bounded failover and an independent watchdog — reporting only what it can evidence."
+    },
     "orchestrator": {
       "runtime": "opencode",
       "role": "orchestrator"

@@ -232,3 +232,102 @@ ace restart                 recover + continue
 | bunny-3 | `lib/runtime.mjs` — recover/trackResources/enforcePolicies/spawnWorker/healthcheck | 8 |
 
 Do NOT rewrite existing working functions — extend them. The MVP (phases 1-6) must keep passing.
+
+---
+
+## 10. Phase 9 — Governance (implemented)
+
+The orchestrator becomes a Governor → Supervisor → Worker environment. Every
+module below is implemented and covered by `test/`; `npm test` runs the whole
+suite with the built-in runner.
+
+### `lib/adapters/index.mjs` — the swap points
+
+```js
+ADAPTER_KINDS              // multiplexer, workspace, agent-runtime, provider, context,
+                           // handoff, tools, verification, persistence, watchdog, management-bot
+ADAPTERS                   // the registry: kind → provider → adapter
+resolveAdapter(kind, name) → { adapter, ok, reason }   // refuses unknown and known-unimplemented
+listAdapters(kind)         → [{ name, capabilities[], requiresEnv[], describe }]
+checkContract(adapter)     → { ok, missing[] }          // describe/validate/health/status + name/kind
+adapterConfigs(config)     → every provider selection, with the config path that chose it
+missingCredentials(config) → active providers whose env vars are unset (never values)
+healthAll(config, env)     → per-capability health, never throwing
+```
+
+Every adapter object is `{ name, kind, capabilities[], requiresEnv[], describe(),
+validate(cfg), health(env, cfg), status(env, cfg), ops }`. Core modules never
+import a concrete product; `lib/adapters/impl.mjs` holds deterministic fakes so
+tests need no credential.
+
+### `lib/config.mjs` — the effective configuration
+
+```js
+LAYER_ORDER      // defaults < installation < environment < project < task < session
+SECURITY_KEYS    // paths a lower-trust layer may not loosen
+mergeOverride(target, source)   // objects merge, arrays REPLACE (unlike pkg.compose)
+resolveConfig({ dir, taskId, env }) → { effective, sources, layers, warnings, security }
+validateEffective(config, { env, layers }) → { ok, errors[{ code, where, message, fix }] }
+parseOverridePair("a.b=6")      → { key, value, patch }
+writeSessionOverride(dir, patch) / readSessionOverride(dir)
+redactConfig(value)             // masks credentials before anything is printed
+```
+
+Error codes are stable: `UNSUPPORTED_SETTING`, `INVALID_MODEL`,
+`INCOMPATIBLE_ADAPTER`, `MISSING_CREDENTIAL`, `SECURITY_OVERRIDE_DENIED`.
+
+### `lib/crew.mjs` — the roster, the budget, the boundary (pure, no I/O)
+
+```js
+buildCrew(config)               → { governor, supervisors[], workers[], projects[] }
+governanceRole(agent)           // governor | supervisor | worker, independent of naming
+budget(config) / computeOccupancy(config, agents) / canStart(config, agents, candidate)
+routeChain(config, role, project) / nextRoute(chain, current) / routeLabel(route)
+checkRoute(from, to, config)    // refuses GOVERNOR_WORKER_BOUNDARY and CROSS_PROJECT_DENIED
+supervisorFor(crew, workerId)   // governor → supervisor routing, or ORPHAN_WORKER
+checkWriteScope(root, target, { crossProjectRoots })   // OUT_OF_SCOPE_WRITE / CROSS_PROJECT_WRITE
+```
+
+### `lib/runtime.mjs` — durable state (extended, all previous exports intact)
+
+Heartbeats (`writeHeartbeat`, `readHeartbeats`, `isStale`), leases
+(`acquireLease`, `releaseLease` — single-owner coordination), tasks
+(`createTask`, `claimTask`, `setTaskStatus`, `TASK_TRANSITIONS`), checkpoints,
+routes, the action journal, handoffs (`writeHandoff`, `verifyHandoff`), secret
+storage and redaction (`storeSecret`, `redactSecrets`), and `reconcile(dir)` for
+restart recovery.
+
+### `lib/governance.mjs` — the two cycles
+
+```js
+governorCycle(dir, config, { apply, nowMs, crew, deliver, env }) → {
+  supervisors[{ alive, responsive, heartbeatAgeSeconds, pidAlive, route, routeHealth, evidence }],
+  detections[{ code, severity, subject }],      // DETECTION_CODES
+  actions[{ type: "restart"|"route.replace"|"request_diagnosis"|"escalate", ok, delivered, reason }],
+  escalations[{ code, needsOperator }], budget, goal, checksNotRun, ok,
+}
+supervisorCycle(dir, config, { project, apply, verifyChecks, nowMs, env }) → {
+  workers[], assignments[], routeChanges[], verifications[], blockers[], budget, goal, ok,
+}
+```
+
+`ok` means "nothing here needs an operator". A detection that was acted on
+successfully is not an open problem; an unanswered one is.
+
+### `lib/watchdog.mjs` / `lib/bots.mjs` / `lib/cli-governance.mjs`
+
+```js
+watchdogStatus(dir, config) / watchdogCycle(dir, config, { apply, deliver, nowMs })
+watchdogStart(dir, config, { intervalSeconds, spawn }) / watchdogStop(dir, config)
+botStatus(config, env) / intake(dir, config, request, { apply, deliver })
+inbox(dir) / deliverPending(dir, config, deliverFn, opts)
+run(command, args, ctx)      // the governance CLI dispatcher, registered in ace.mjs
+```
+
+### Quality gates for this phase
+
+- `npm test` — the whole suite, built-in runner only, no credentials, no network.
+- `npm run check` — `node --check` over `ace.mjs`, `lib/**` and `site/app.js`.
+- A scaffolded workspace (`ace init`) must carry every module: `lib/` is copied
+  recursively, and CI runs `config check` and `crew` inside the scaffold.
+- No command is documented before it is implemented and tested.

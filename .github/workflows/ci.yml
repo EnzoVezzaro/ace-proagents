@@ -1,8 +1,9 @@
 name: ci
 
-# Quality gate for the ACE package: syntax check, a real scaffold smoke
-# run, and the built-in test runner when a test/ suite exists.
-# Zero install — the package has no dependencies.
+# Quality gate for the ACE package: syntax check, a real scaffold smoke run
+# (including the governance commands inside the scaffold, which proves the
+# recursive lib/ copy), and the built-in test runner. Zero install — the
+# package has no dependencies.
 
 on:
   push:
@@ -26,7 +27,7 @@ jobs:
       - name: Syntax check
         run: |
           node --check ace.mjs
-          for f in lib/*.mjs site/app.js; do node --check "$f"; done
+          for f in lib/*.mjs lib/adapters/*.mjs site/app.js; do node --check "$f"; done
 
       - name: Scaffold smoke test
         run: |
@@ -35,8 +36,26 @@ jobs:
           node "$GITHUB_WORKSPACE/ace.mjs" init --name ci-smoke
           test -f ci-smoke/package.json
           test -f ci-smoke/ace-lock.json
+          test -f ci-smoke/lib/governance.mjs
+          test -f ci-smoke/lib/adapters/index.mjs
           node "$GITHUB_WORKSPACE/ace.mjs" --help
+          cd ci-smoke
+          # The scaffolded workspace must be self-contained for governance too.
+          node ace.mjs config check
+          node ace.mjs crew
+          node ace.mjs adapters audit
+
+          # Zero prose on stdout: every --json report is one parseable document.
+          node ace.mjs status --json > status.json
+          node ace.mjs bots status --json > bots.json
+          node ace.mjs task add "ci smoke task" --json > task.json
+          node ace.mjs watchdog run --max-cycles 1 --json > watchdog.ndjson
+          node -e 'const fs=require("fs");for(const f of ["status.json","bots.json","task.json"]){JSON.parse(fs.readFileSync(f,"utf8"))}const w=fs.readFileSync("watchdog.ndjson","utf8");if(!/"command": "watchdog cycle"/.test(w))throw new Error("watchdog run produced no cycle document");'
+
+          # With nothing running, govern must exit 1 and name the operator action.
+          if node ace.mjs govern --json > govern.json; then echo "govern should have escalated"; exit 1; fi
+          node -e 'const d=JSON.parse(require("fs").readFileSync("govern.json","utf8"));if(!d.escalations.length)throw new Error("no escalation reported");if(!d.checksNotRun.length)throw new Error("checks not run were not disclosed");'
 
       - name: Tests
         run: |
-          if [ -d test ]; then node --test test/; else echo "no test suite yet - skipped"; fi
+          if [ -d test ]; then npm test; else echo "no test suite yet - skipped"; fi
